@@ -3,7 +3,7 @@ var WINDOW_HEIGHT = 400;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
-camera.position.set(15, 65, -15);
+camera.position.set(0, 50, -0);
 camera.lookAt(scene.position);
 
 var light = new THREE.AmbientLight(0xFFFFFF);
