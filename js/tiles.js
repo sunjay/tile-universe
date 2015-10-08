@@ -10,7 +10,6 @@ function loadModel(modelName) {
       'models/' + modelName + '.mtl',
       // Function when both resources are loaded
       function (object) {
-        console.log(object);
         resolve(object);
       },
       // Function called when downloads progress
