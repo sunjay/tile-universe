@@ -3,6 +3,8 @@ var WINDOW_HEIGHT = 400;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
+camera.position.set(5, 5, 5);
+camera.lookAt(scene.position);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
