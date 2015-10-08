@@ -22,14 +22,13 @@ for (var i = 1; i <= 302; i++) {
   (function(index) {
     var num = ('000' + index).slice(-3);
     loadModel('roadTile_' + num).then(function(object) {
-      console.log('Finished loading ' + index);
-      console.log(object);
-
       var horizontal_offset = object_width * (index - 1);
       object.position.z = -(horizontal_offset % row_width - row_width/2);
       object.position.x = Math.floor(horizontal_offset / row_width) * object_width - row_width/2;
 
       scene.add(object);
+
+      console.log('Finished loading ' + index);
     }).catch(console.log.bind(console));
   })(i);
 }
