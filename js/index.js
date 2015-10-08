@@ -3,7 +3,7 @@ var WINDOW_HEIGHT = 400;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
-camera.position.set(0, 50, -0);
+camera.position.set(10, 50, -10);
 camera.lookAt(scene.position);
 
 var light = new THREE.AmbientLight(0xFFFFFF);
@@ -13,6 +13,18 @@ var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 renderer.setClearColor(0xEEEEEE, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
+
+controls = new THREE.TrackballControls( camera );
+
+controls.rotateSpeed = 1.0;
+controls.zoomSpeed = 1.2;
+controls.panSpeed = 0.8;
+
+controls.noZoom = false;
+controls.noPan = false;
+
+controls.staticMoving = true;
+controls.dynamicDampingFactor = 0.3;
 
 // Setup scene
 var object_width = 4;
@@ -35,6 +47,8 @@ for (var i = 1; i <= 302; i++) {
 
 function render() {
 	requestAnimationFrame(render);
+
+  controls.update();
 	renderer.render(scene, camera);
 }
 render();
