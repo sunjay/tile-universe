@@ -12,7 +12,7 @@ renderer.setClearColor(0xEEEEEE, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
 // Setup scene
-loadModel('roadTile_001').then(scene.add.bind(scene)).catch(console.log.bind(console));
+loadModel('roadTile_255').then(scene.add.bind(scene)).catch(console.log.bind(console));
 
 function render() {
 	requestAnimationFrame(render);
