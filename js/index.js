@@ -12,7 +12,7 @@ scene.add(light);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-renderer.setClearColor(0xFFFFFF, 1);
+renderer.setClearColor(0xEEEEFF, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
 controls = new THREE.TrackballControls( camera );
