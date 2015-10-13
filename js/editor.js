@@ -7,6 +7,10 @@ var editor = {
   renderer: null,
   camera: null,
 
+  raycaster: null,
+  modelsGroup: null,
+  groundPlane: null,
+
   viewportControls: null,
 
   selectedObject: null,
@@ -20,6 +24,11 @@ var editor = {
     this.scene = scene;
     this.renderer = renderer;
     this.camera = camera;
+
+    this.raycaster = new THREE.Raycaster();
+    this.modelsGroup = new THREE.Group();
+    this.scene.add(this.modelsGroup);
+    this.groundPlane = new THREE.Plane(this.scene.up);
 
     this.populateTilesPanel();
     this.addGridAndAxis();
@@ -94,7 +103,7 @@ var editor = {
           return;
         }
 
-        this.scene.add(object);
+        this.modelsGroup.add(object);
         this.hideLoading();
 
         this.selectObject(object);
@@ -130,6 +139,7 @@ var editor = {
     this.selectedObject = object;
 
     this.selectionIndicator = new THREE.BoxHelper(this.selectedObject);
+    this.selectionIndicator.position.set(-this.selectedObject.position.x, -this.selectedObject.position.y, -this.selectedObject.position.z);
     this.selectedObject.add(this.selectionIndicator);
   },
 
@@ -140,6 +150,7 @@ var editor = {
 
   beginDrag: function(object, origin) {
     this.viewportControls.noRotate = true;
+    renderer.domElement.classList.add("dragging");
     this.dragTarget = object;
     this.dragOrigin = origin || null;
   },
@@ -155,8 +166,7 @@ var editor = {
     }
     else {
       this.clearSelection();
-      this.deselectAllTiles();
-      this.scene.remove(this.dragTarget);
+      this.modelsGroup.remove(this.dragTarget);
     }
 
     this.endDrag();
@@ -165,7 +175,25 @@ var editor = {
   endDrag: function() {
     this.dragTarget = null;
     this.dragOrigin = null;
+    renderer.domElement.classList.remove("dragging");
     this.viewportControls.noRotate = false;
+    this.deselectAllTiles();
+  },
+
+  drag: function(x, y) {
+    if (!this.dragTarget) {
+      return;
+    }
+
+    this.setRaycasterFromMouse(x, y);
+
+    var intersection = this.raycaster.ray.intersectPlane(this.groundPlane);
+    if (!intersection) {
+      return;
+    }
+
+    intersection.multiplyScalar(1/TILE_SIZE).floor().multiplyScalar(TILE_SIZE);
+    this.dragTarget.position.set(intersection.x, intersection.y, intersection.z);
   },
 
   update: function() {
@@ -173,12 +201,51 @@ var editor = {
   },
 
   bindEvents: function() {
-    document.onkeydown = function(evt) {
+    document.addEventListener('keyup', function(evt) {
       evt = evt || window.event;
       if (evt.keyCode == 27) {
         this.cancel();
       }
-    }.bind(this);
+    }.bind(this));
+
+    document.addEventListener('mousemove', function(evt) {
+      this.drag(evt.clientX, evt.clientY);
+    }.bind(this));
+
+    renderer.domElement.addEventListener('mousedown', this.onmousedown.bind(this));
+    renderer.domElement.addEventListener('mouseup', this.onmouseup.bind(this));
+  },
+
+  onmousedown: function(evt) {
+    if (this.dragTarget) {
+      return;
+    }
+
+    var target = this.objectAtMouse(evt.clientX, evt.clientY);
+    if (!target) {
+      return;
+    }
+
+    // Select first, then drag on next click
+    if (this.selectedObject === target) {
+      this.beginDrag(target);
+      return;
+    }
+  },
+
+  onmouseup: function(evt) {
+    if (this.dragTarget) {
+      this.endDrag();
+      return;
+    }
+
+    var target = this.objectAtMouse(evt.clientX, evt.clientY);
+    if (!target || this.selectedObject === target) {
+      return;
+    }
+
+    this.clearSelection();
+    this.selectObject(target);
   },
 
   showLoading: function() {
@@ -187,5 +254,31 @@ var editor = {
 
   hideLoading: function() {
     document.getElementById("loading").style.display = "none";
+  },
+
+  objectAtMouse: function(x, y) {
+    this.setRaycasterFromMouse(x, y);
+
+    var selectionGroup = this.modelsGroup.children;
+    var intersect = this.raycaster.intersectObjects(selectionGroup, true)[0];
+    if (!intersect) {
+      return null;
+    }
+
+    intersect = intersect.object;
+    while (selectionGroup.indexOf(intersect) < 0 && intersect.parent) {
+      intersect = intersect.parent;
+    }
+
+    return intersect;
+  },
+
+  setRaycasterFromMouse: function(x, y) {
+    // Normalizing coordinates to values between -1 and 1
+    var mouse = new THREE.Vector2();
+    mouse.x = 2 * (x / this.renderer.domElement.width) - 1;
+    mouse.y = 1 - 2 * (y / this.renderer.domElement.height);
+
+    this.raycaster.setFromCamera(mouse, this.camera);
   }
 };

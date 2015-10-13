@@ -42,6 +42,11 @@ html, body
   margin: 2px;
 }
 
+.dragging
+{
+  cursor: none;
+}
+
 #tiles-container
 {
   width: 240px;
