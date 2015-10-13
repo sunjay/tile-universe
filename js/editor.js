@@ -7,17 +7,19 @@ var editor = {
   renderer: null,
 
   viewportControls: null,
-  objectControls: null,
 
   // Methods
   setup: function(scene, renderer, camera) {
     this.scene = scene;
     this.renderer = renderer;
+    this.camera = camera;
 
     this.populateTilesPanel();
     this.addGridAndAxis();
 
-    this.setupControls(camera);
+    this.setupControls();
+
+    this.bindEvents();
   },
 
   populateTilesPanel: function() {
@@ -49,13 +51,12 @@ var editor = {
     this.scene.add(gridHelper);
   },
 
-  setupControls: function(camera) {
-    this.setupViewportControls(camera);
-    this.setupObjectControls(camera);
+  setupControls: function() {
+    this.setupViewportControls();
   },
 
-  setupViewportControls: function(camera) {
-    controls = new THREE.TrackballControls(camera, this.renderer.domElement);
+  setupViewportControls: function() {
+    controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
 
     controls.rotateSpeed = 1.4;
     controls.zoomSpeed = 2;
@@ -70,13 +71,20 @@ var editor = {
     this.viewportControls = controls;
   },
 
-  setupObjectControls: function(camera) {
-    var controls = new THREE.TransformControls(camera, this.renderer.domElement);
-    this.objectControls = controls;
+  cancel: function() {
+    alert("Cancel");
   },
 
   update: function() {
     this.viewportControls.update();
-    this.objectControls.update();
+  },
+
+  bindEvents: function() {
+    document.onkeydown = function(evt) {
+      evt = evt || window.event;
+      if (evt.keyCode == 27) {
+        this.cancel();
+      }
+    }.bind(this);
   }
 };
