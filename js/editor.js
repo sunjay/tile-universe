@@ -144,6 +144,10 @@ var editor = {
   },
 
   clearSelection: function() {
+    if (!this.selectedObject) {
+      return;
+    }
+
     this.selectedObject.remove(this.selectionIndicator);
     this.selectedObject = null;
   },
