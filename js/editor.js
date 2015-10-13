@@ -10,6 +10,7 @@ var editor = {
   viewportControls: null,
 
   selectedObject: null,
+  selectionIndicator: null,
 
   dragTarget: null,
   dragOrigin: null,
@@ -128,12 +129,14 @@ var editor = {
   },
 
   selectObject: function(object) {
-    //TODO: Add selection indicator
     this.selectedObject = object;
+
+    this.selectionIndicator = new THREE.BoxHelper(this.selectedObject);
+    this.selectedObject.add(this.selectionIndicator);
   },
 
   clearSelection: function() {
-    //TODO: Get rid of selection indicator
+    this.selectedObject.remove(this.selectionIndicator);
     this.selectedObject = null;
   },
 
