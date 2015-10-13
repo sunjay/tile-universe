@@ -5,6 +5,7 @@ var GRID_SIZE = TILE_SIZE * GRID_LINES;
 var editor = {
   scene: null,
   renderer: null,
+  camera: null,
 
   viewportControls: null,
 
