@@ -70,7 +70,7 @@ html, body
 #tiles-container .tiles li.selected img
 {
   box-sizing: border-box;
-  border: 2px solid #FFC800;
+  border: 2px solid #00FF14;
 }
 
 #controls-container .controls button

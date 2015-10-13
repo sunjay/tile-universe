@@ -75,9 +75,21 @@ var editor = {
   },
 
   selectTile: function(tileElement) {
-    var selected = tileElement.classList.toggle("selected");
-    if (selected) {
+    var wasSelected = tileElement.classList.contains("selected");
+    if (wasSelected) {
+      tileElement.classList.remove("selected");
+    }
+    else {
+      this.deselectAll();
+      tileElement.classList.add("selected");
+    }
+  },
 
+  deselectAll: function() {
+    var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+    var tiles = tilesParent.children;
+    for (var i = 0; i < tiles.length; i++) {
+      tiles[i].classList.remove("selected");
     }
   },
 
