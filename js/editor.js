@@ -1,5 +1,5 @@
 var TILE_SIZE = 3;
-var GRID_LINES = 17;
+var GRID_LINES = 20;
 var GRID_SIZE = TILE_SIZE * GRID_LINES;
 
 var editor = {
