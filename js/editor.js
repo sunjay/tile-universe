@@ -106,5 +106,13 @@ var editor = {
         this.cancel();
       }
     }.bind(this);
+  },
+
+  showLoading: function() {
+    document.getElementById("loading").style.display = "block";
+  },
+
+  hideLoading: function() {
+    document.getElementById("loading").style.display = "none";
   }
 };
