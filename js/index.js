@@ -15,25 +15,13 @@ renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 renderer.setClearColor(0xEEEEFF, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
-controls = new THREE.TrackballControls(camera, renderer.domElement);
-
-controls.rotateSpeed = 1.4;
-controls.zoomSpeed = 2;
-controls.panSpeed = 0.8;
-
-controls.noZoom = false;
-controls.noPan = false;
-
-controls.staticMoving = true;
-controls.dynamicDampingFactor = 0.3;
-
 // Setup scene
-editor.setup(scene, renderer);
+editor.setup(scene, renderer, camera);
 
 loadModel('roadTile_201').then(scene.add.bind(scene));
 
 function render() {
-  controls.update();
+  editor.update();
 	renderer.render(scene, camera);
 }
 
