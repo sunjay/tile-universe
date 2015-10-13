@@ -8,8 +8,6 @@ var editor = {
 
   viewportControls: null,
 
-  modelCache: {},
-
   // Methods
   setup: function(scene, renderer, camera) {
     this.scene = scene;
