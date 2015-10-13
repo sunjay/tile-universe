@@ -73,6 +73,8 @@ var editor = {
   },
 
   selectTile: function(tileElement) {
+    this.cancel();
+
     var wasSelected = tileElement.classList.contains("selected");
     if (wasSelected) {
       tileElement.classList.remove("selected");
@@ -92,7 +94,7 @@ var editor = {
   },
 
   cancel: function() {
-    alert("Cancel");
+    console.log("Cancel");
   },
 
   update: function() {
