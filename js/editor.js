@@ -94,7 +94,21 @@ var editor = {
 
   selectionRotate: function() {
     if (this.selectedObject) {
-      this.selectedObject.rotation.y += Math.PI / 2;
+      var rotation = this.selectedObject.rotation.y % (2*Math.PI);
+      var cos = Math.round(Math.cos(rotation));
+      var sin = Math.round(Math.sin(rotation));
+
+      var offsetToCenter = new THREE.Vector3(TILE_SIZE/2, 0, -TILE_SIZE/2);
+      offsetToCenter.x *= cos - sin;
+      offsetToCenter.z *= cos + sin;
+
+      var origin = this.selectedObject.position.clone().add(offsetToCenter);
+      var relativePosition = this.selectedObject.position.clone().sub(origin);
+      relativePosition.set(-relativePosition.z, relativePosition.y, relativePosition.x);
+      var position = relativePosition.add(origin);
+      this.selectedObject.position.set(position.x, position.y, position.z);
+
+      this.selectedObject.rotation.y -= Math.PI / 2;
     }
   },
 
