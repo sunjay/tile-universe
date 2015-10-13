@@ -50,7 +50,10 @@ var editor = {
         var tile = document.createElement('li');
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
-        tile.addEventListener('mousedown', this.selectTile.bind(this, tile));
+        tile.addEventListener('mousedown', function(evt) {
+          this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
+          this.selectTile(tile);
+        }.bind(this));
 
         var thumbnail = URI("models/").filename(tileData.image).toString();
         var thumb = document.createElement('img');
@@ -227,7 +230,7 @@ var editor = {
 
   beginDrag: function(object, origin) {
     this.viewportControls.noRotate = true;
-    renderer.domElement.classList.add("dragging");
+    document.body.classList.add("dragging");
     this.dragTarget = object;
     this.dragOrigin = origin || null;
   },
@@ -252,7 +255,7 @@ var editor = {
   endDrag: function() {
     this.dragTarget = null;
     this.dragOrigin = null;
-    renderer.domElement.classList.remove("dragging");
+    document.body.classList.remove("dragging");
     this.viewportControls.noRotate = false;
     this.deselectAllTiles();
   },
@@ -316,15 +319,16 @@ var editor = {
   },
 
   onmouseup: function(evt) {
-    if (this.dragTarget) {
-      this.endDrag();
-      return;
-    }
-
     // Click selection if this is a click and not a drag
     var distance = this.mouseStart.distanceTo(new THREE.Vector2(evt.clientX, evt.clientY));
     if (distance <= 10) {
+      this.cancelDrag();
       this.clearSelection();
+    }
+
+    if (this.dragTarget) {
+      this.endDrag();
+      return;
     }
 
     var target = this.objectAtMouse(evt.clientX, evt.clientY);
