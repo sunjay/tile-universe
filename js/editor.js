@@ -84,7 +84,7 @@ var editor = {
     document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
   },
 
-  selectionDuplicate: function() {
+  selectionDuplicate: function(evt) {
     if (this.selectedObject) {
       var selected = this.selectedObject;
       this.clearSelection();
@@ -93,6 +93,8 @@ var editor = {
       this.modelsGroup.add(copy);
 
       this.selectObject(copy);
+
+      this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
       this.beginDrag(this.selectedObject);
     }
   },
@@ -301,10 +303,10 @@ var editor = {
   },
 
   onmousedown: function(evt) {
-    this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
     if (this.dragTarget) {
       return;
     }
+    this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
 
     var target = this.objectAtMouse(evt.clientX, evt.clientY);
     if (!target) {
