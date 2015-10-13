@@ -10,6 +10,7 @@ html, body
 {
   z-index: 2;
   position: absolute;
+  top: 20px;
   padding: 10px;
   background: #BBBBFF;
   box-shadow: 0px 0px 5px gray;
@@ -17,8 +18,12 @@ html, body
 
 .panel-left
 {
-  top: 20px;
   left: 20px;
+}
+
+.panel-right
+{
+  right: 20px;
 }
 
 .panel h2,

@@ -15,7 +15,7 @@ renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 renderer.setClearColor(0xEEEEFF, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
-controls = new THREE.TrackballControls(camera);
+controls = new THREE.TrackballControls(camera, renderer.domElement);
 
 controls.rotateSpeed = 1.4;
 controls.zoomSpeed = 2;
