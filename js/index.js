@@ -18,8 +18,6 @@ document.getElementById("main-container").appendChild(renderer.domElement);
 // Setup scene
 editor.setup(scene, renderer, camera);
 
-loadModel('roadTile_201').then(scene.add.bind(scene));
-
 function render() {
   editor.update();
 	renderer.render(scene, camera);
