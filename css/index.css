@@ -71,6 +71,7 @@ html, body
 
 #tiles-container .tiles li img
 {
+  pointer-events: none;
   width: 100px;
 }
 

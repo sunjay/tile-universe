@@ -50,7 +50,7 @@ var editor = {
         var tile = document.createElement('li');
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
-        tile.onclick = this.selectTile.bind(this, tile);
+        tile.addEventListener('mousedown', this.selectTile.bind(this, tile));
 
         var thumbnail = URI("models/").filename(tileData.image).toString();
         var thumb = document.createElement('img');
@@ -138,6 +138,7 @@ var editor = {
   },
 
   selectTile: function(tileElement) {
+    console.log('test');
     var wasSelected = tileElement.classList.contains("selected");
 
     this.cancel();
@@ -219,7 +220,7 @@ var editor = {
 
     // If there is no drag origin, this must be a new object
     if (this.dragOrigin) {
-      this.dragTarget.position = this.dragOrigin;
+      this.dragTarget.position.set(this.dragOrigin.x, this.dragOrigin.y, this.dragOrigin.z);
     }
     else {
       this.clearSelection();
@@ -266,6 +267,9 @@ var editor = {
     }.bind(this));
 
     document.addEventListener('mousemove', function(evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+
       this.drag(evt.clientX, evt.clientY);
     }.bind(this));
 
@@ -286,7 +290,7 @@ var editor = {
 
     // Select first, then drag on next click
     if (this.selectedObject === target) {
-      this.beginDrag(target);
+      this.beginDrag(target, target.position.clone());
       return;
     }
   },

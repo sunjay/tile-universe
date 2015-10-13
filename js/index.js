@@ -6,9 +6,13 @@ var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 
 camera.position.set(10, 5, -10);
 camera.lookAt(scene.position);
 
-var light = new THREE.SpotLight(0xFFFFFF, 1, 1000);
-light.position.set(100, 100, -100);
+var light = new THREE.PointLight(0xffffff, 0.5, 1000);
+light.position.set(100, 500, -100);
 scene.add(light);
+
+var light2 = new THREE.PointLight(0xffffff, 0.5, 1000);
+light2.position.set(-100, 500, 100);
+scene.add(light2);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
