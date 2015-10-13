@@ -114,7 +114,7 @@ var editor = {
   },
 
   cancel: function() {
-    // There is a very clear order to these cancellations
+    // There is a very specific order to these cancellations
     if (this.dragTarget) {
       this.cancelDrag();
       return;
