@@ -31,6 +31,8 @@ controls.staticMoving = true;
 controls.dynamicDampingFactor = 0.3;
 
 // Setup scene
+editor.setup();
+
 var axisHelper = new THREE.AxisHelper(52);
 axisHelper.position.z = 0.05;
 scene.add(axisHelper);
