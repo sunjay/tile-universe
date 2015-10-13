@@ -8,6 +8,8 @@ var editor = {
 
   viewportControls: null,
 
+  modelCache: {},
+
   // Methods
   setup: function(scene, renderer, camera) {
     this.scene = scene;
@@ -31,6 +33,7 @@ var editor = {
         var tile = document.createElement('li');
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
+        tile.onclick = this.selectTile.bind(this, tile);
 
         var thumbnail = URI("models/").filename(tileData.image).toString();
         var thumb = document.createElement('img');
@@ -38,8 +41,8 @@ var editor = {
 
         tile.appendChild(thumb);
         tilesParent.appendChild(tile);
-      });
-    });
+      }.bind(this));
+    }.bind(this));
   },
 
   addGridAndAxis: function() {
@@ -69,6 +72,13 @@ var editor = {
     controls.dynamicDampingFactor = 0.3;
 
     this.viewportControls = controls;
+  },
+
+  selectTile: function(tileElement) {
+    var selected = tileElement.classList.toggle("selected");
+    if (selected) {
+
+    }
   },
 
   cancel: function() {
