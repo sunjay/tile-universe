@@ -69,7 +69,8 @@ html, body
 
 #tiles-container .tiles li.selected img
 {
-  box-shadow: 0px 0px 10px #00FF22;
+  box-sizing: border-box;
+  border: 2px solid #FFC800;
 }
 
 #controls-container .controls button
