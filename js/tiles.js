@@ -6,7 +6,7 @@ var models = {
    */
   load: function(modelName) {
     if (this.modelCache.hasOwnProperty(modelName)) {
-      return Promise.resolve(this.modelCache[modelName]);
+      return Promise.resolve(this.modelCache[modelName].clone());
     }
 
     var loader = new THREE.OBJMTLLoader();
@@ -18,7 +18,7 @@ var models = {
         // Function when both resources are loaded
         function (object) {
           this.modelCache[modelName] = object;
-          resolve(object);
+          resolve(object.clone());
         }.bind(this),
         // Function called when downloads progress
         function (xhr) {

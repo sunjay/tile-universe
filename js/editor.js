@@ -139,6 +139,7 @@ var editor = {
     this.selectedObject = object;
 
     this.selectionIndicator = new THREE.BoxHelper(this.selectedObject);
+    this.selectionIndicator.position.set(-this.selectedObject.position.x, -this.selectedObject.position.y, -this.selectedObject.position.z);
     this.selectedObject.add(this.selectionIndicator);
   },
 
@@ -165,7 +166,6 @@ var editor = {
     }
     else {
       this.clearSelection();
-      this.deselectAllTiles();
       this.modelsGroup.remove(this.dragTarget);
     }
 
@@ -177,6 +177,7 @@ var editor = {
     this.dragOrigin = null;
     renderer.domElement.classList.remove("dragging");
     this.viewportControls.noRotate = false;
+    this.deselectAllTiles();
   },
 
   drag: function(x, y) {
@@ -210,6 +211,41 @@ var editor = {
     document.addEventListener('mousemove', function(evt) {
       this.drag(evt.clientX, evt.clientY);
     }.bind(this));
+
+    renderer.domElement.addEventListener('mousedown', this.onmousedown.bind(this));
+    renderer.domElement.addEventListener('mouseup', this.onmouseup.bind(this));
+  },
+
+  onmousedown: function(evt) {
+    if (this.dragTarget) {
+      return;
+    }
+
+    var target = this.objectAtMouse(evt.clientX, evt.clientY);
+    if (!target) {
+      return;
+    }
+
+    // Select first, then drag on next click
+    if (this.selectedObject === target) {
+      this.beginDrag(target);
+      return;
+    }
+  },
+
+  onmouseup: function(evt) {
+    if (this.dragTarget) {
+      this.endDrag();
+      return;
+    }
+
+    var target = this.objectAtMouse(evt.clientX, evt.clientY);
+    if (!target || this.selectedObject === target) {
+      return;
+    }
+
+    this.clearSelection();
+    this.selectObject(target);
   },
 
   showLoading: function() {
@@ -223,8 +259,18 @@ var editor = {
   objectAtMouse: function(x, y) {
     this.setRaycasterFromMouse(x, y);
 
-    var intersects = this.raycaster.intersectObjects(this.modelsGroup.children, true);
-    return intersects[0] ? intersects[0].object : null;
+    var selectionGroup = this.modelsGroup.children;
+    var intersect = this.raycaster.intersectObjects(selectionGroup, true)[0];
+    if (!intersect) {
+      return null;
+    }
+
+    intersect = intersect.object;
+    while (selectionGroup.indexOf(intersect) < 0 && intersect.parent) {
+      intersect = intersect.parent;
+    }
+
+    return intersect;
   },
 
   setRaycasterFromMouse: function(x, y) {
