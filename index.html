@@ -4,6 +4,7 @@
   <title>Driving</title>
 
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <link href="css/index.css" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -11,12 +12,20 @@
     <h3>Insert Tiles</h3>
     <ul class="tiles"></ul>
   </aside>
-  <aside id="controls" class="panel panel-right">
+  <aside id="controls-container" class="panel panel-right">
     <h3>Controls</h3>
     <p><small>
-        MOVE mouse &amp; press - <br>
-        LEFT: rotate, MIDDLE: zoom, RIGHT: pan
+        MOVE mouse &amp; press - LEFT: rotate,<br>
+        MIDDLE: zoom, RIGHT: pan
     </small></p>
+    <p><small>Click on a tile to select it and use<br>
+        the following controls to edit it</small></p>
+    <div class="controls">
+      <button id="tile-move-up" title="Move up"><i class="fa fa-arrow-up fa-fw"></i></button>
+      <button id="tile-move-down" title="Move down"><i class="fa fa-arrow-down fa-fw"></i></button>
+      <button id="tile-rotate" title="Rotate"><i class="fa fa-rotate-right fa-fw"></i></button>
+      <button id="tile-delete" title="Delete"><i class="fa fa-trash-o fa-fw"></i></button>
+    </div>
   </aside>
 
   <main id="main-container"></main>

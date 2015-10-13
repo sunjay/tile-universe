@@ -64,3 +64,31 @@ html, body
   width: 100px;
 }
 
+#controls-container .controls button
+{
+  width: 23%;
+  font-size: 20px;
+  background: darkgray;
+  border: 1px solid #444444;
+}
+
+#controls-container .controls button:focus
+{
+  outline: none;
+}
+
+#controls-container .controls button:not(:disabled):hover
+{
+  background: lightgray;
+}
+
+#controls-container .controls button:not(:disabled):active
+{
+  background: white;
+}
+
+#controls-container .controls button:disabled
+{
+  color: #444;
+}
+
