@@ -138,7 +138,6 @@ var editor = {
   },
 
   selectTile: function(tileElement) {
-    console.log('test');
     var wasSelected = tileElement.classList.contains("selected");
 
     this.cancel();
