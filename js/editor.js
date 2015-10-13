@@ -74,10 +74,24 @@ var editor = {
   setupControls: function() {
     this.setupViewportControls();
 
+    document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
     document.getElementById('tile-rotate').addEventListener('click', this.selectionRotate.bind(this));
     document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
+  },
+
+  selectionDuplicate: function() {
+    if (this.selectedObject) {
+      var selected = this.selectedObject;
+      this.clearSelection();
+
+      var copy = selected.clone();
+      this.modelsGroup.add(copy);
+
+      this.selectObject(copy);
+      this.beginDrag(this.selectedObject);
+    }
   },
 
   selectionMoveUp: function() {
@@ -187,9 +201,15 @@ var editor = {
   selectObject: function(object) {
     this.selectedObject = object;
 
+    // Need to reset and re-apply rotation before selection so that the box helper is applied properly
+    var rotation = this.selectedObject.rotation.clone();
+    this.selectedObject.rotation.set(0, 0, 0);
+
     this.selectionIndicator = new THREE.BoxHelper(this.selectedObject);
     this.selectionIndicator.position.set(-this.selectedObject.position.x, -this.selectedObject.position.y, -this.selectedObject.position.z);
     this.selectedObject.add(this.selectionIndicator);
+
+    this.selectedObject.setRotationFromEuler(rotation);
 
     this.enableControls();
   },
@@ -249,7 +269,8 @@ var editor = {
       return;
     }
 
-    intersection.multiplyScalar(1/TILE_SIZE).floor().multiplyScalar(TILE_SIZE);
+    var snapStep = TILE_SIZE/6;
+    intersection.divideScalar(snapStep).floor().multiplyScalar(snapStep);
     this.dragTarget.position.set(intersection.x, this.dragTarget.position.y, intersection.z);
   },
 
