@@ -88,6 +88,7 @@ html, body
 
 #controls-container .controls button
 {
+  width: 18.4%;
   font-size: 18px;
   background: darkgray;
   border: 1px solid #444444;
