@@ -248,12 +248,14 @@ var editor = {
       return;
     }
 
+    // Always clear selection even if nothing else is being selected
+    this.clearSelection();
+
     var target = this.objectAtMouse(evt.clientX, evt.clientY);
     if (!target || this.selectedObject === target) {
       return;
     }
 
-    this.clearSelection();
     this.selectObject(target);
   },
 
