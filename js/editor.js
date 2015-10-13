@@ -34,6 +34,7 @@ var editor = {
     this.addGridAndAxis();
 
     this.setupControls();
+    this.disableControls();
 
     this.bindEvents();
   },
@@ -141,6 +142,8 @@ var editor = {
     this.selectionIndicator = new THREE.BoxHelper(this.selectedObject);
     this.selectionIndicator.position.set(-this.selectedObject.position.x, -this.selectedObject.position.y, -this.selectedObject.position.z);
     this.selectedObject.add(this.selectionIndicator);
+
+    this.enableControls();
   },
 
   clearSelection: function() {
@@ -150,6 +153,8 @@ var editor = {
 
     this.selectedObject.remove(this.selectionIndicator);
     this.selectedObject = null;
+
+    this.disableControls();
   },
 
   beginDrag: function(object, origin) {
@@ -258,6 +263,20 @@ var editor = {
 
   hideLoading: function() {
     document.getElementById("loading").style.display = "none";
+  },
+
+  enableControls: function() {
+    var controls = document.getElementById('controls-container').getElementsByClassName('controls')[0].children;
+    for (var i = 0; i < controls.length; i++) {
+      controls[i].disabled = false;
+    }
+  },
+
+  disableControls: function() {
+    var controls = document.getElementById('controls-container').getElementsByClassName('controls')[0].children;
+    for (var i = 0; i < controls.length; i++) {
+      controls[i].disabled = true;
+    }
   },
 
   objectAtMouse: function(x, y) {
