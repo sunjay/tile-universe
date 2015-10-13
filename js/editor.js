@@ -1,7 +1,18 @@
+var TILE_SIZE = 3;
+var GRID_LINES = 17;
+var GRID_SIZE = TILE_SIZE * GRID_LINES;
+
 var editor = {
+  scene: null,
+  renderer: null,
+
   // Methods
-  setup: function() {
+  setup: function(scene, renderer) {
+    this.scene = scene;
+    this.renderer = renderer;
+
     this.populateTilesPanel();
+    this.addGridAndAxis();
   },
 
   populateTilesPanel: function() {
@@ -22,5 +33,14 @@ var editor = {
         tilesParent.appendChild(tile);
       });
     });
+  },
+
+  addGridAndAxis: function() {
+    var axisHelper = new THREE.AxisHelper(52);
+    axisHelper.position.z = 0.02;
+    this.scene.add(axisHelper);
+
+    var gridHelper = new THREE.GridHelper(GRID_SIZE, TILE_SIZE);
+    this.scene.add(gridHelper);
   }
 };
