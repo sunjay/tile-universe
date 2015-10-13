@@ -9,6 +9,11 @@ var editor = {
 
   viewportControls: null,
 
+  selectedObject: null,
+
+  dragTarget: null,
+  dragOrigin: null,
+
   // Methods
   setup: function(scene, renderer, camera) {
     this.scene = scene;
@@ -83,6 +88,19 @@ var editor = {
     else {
       this.deselectAll();
       tileElement.classList.add("selected");
+
+      this.showLoading();
+      models.load(tileElement.dataset.model).then(function(object) {
+        if (this.selectedObject) {
+          return;
+        }
+
+        this.scene.add(object);
+        this.hideLoading();
+
+        this.selectedObject = object;
+        this.beginDragging(this.selectedObject);
+      }.bind(this));
     }
   },
 
@@ -96,6 +114,17 @@ var editor = {
 
   cancel: function() {
     console.log("Cancel");
+  },
+
+  clearSelection: function() {
+    //TODO: Get rid of selection indicator
+    this.selectedObject = null;
+  },
+
+  beginDragging: function(object, origin) {
+    this.viewportControls.noRotate = true;
+    this.dragTarget = object;
+    this.dragOrigin = origin || null;
   },
 
   update: function() {
