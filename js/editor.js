@@ -19,6 +19,8 @@ var editor = {
   dragTarget: null,
   dragOrigin: null,
 
+  mouseStart: null,
+
   // Methods
   setup: function(scene, renderer, camera) {
     this.scene = scene;
@@ -258,6 +260,7 @@ var editor = {
   },
 
   onmousedown: function(evt) {
+    this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
     if (this.dragTarget) {
       return;
     }
@@ -280,14 +283,18 @@ var editor = {
       return;
     }
 
-    // Always clear selection even if nothing else is being selected
-    this.clearSelection();
+    // Click selection if this is a click and not a drag
+    var distance = this.mouseStart.distanceTo(new THREE.Vector2(evt.clientX, evt.clientY));
+    if (distance <= 10) {
+      this.clearSelection();
+    }
 
     var target = this.objectAtMouse(evt.clientX, evt.clientY);
     if (!target || this.selectedObject === target) {
       return;
     }
 
+    this.clearSelection();
     this.selectObject(target);
   },
 
