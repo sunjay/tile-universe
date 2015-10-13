@@ -71,6 +71,38 @@ var editor = {
 
   setupControls: function() {
     this.setupViewportControls();
+
+    document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
+    document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
+    document.getElementById('tile-rotate').addEventListener('click', this.selectionRotate.bind(this));
+    document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
+  },
+
+  selectionMoveUp: function() {
+    if (this.selectedObject) {
+      this.selectedObject.position.y += 0.5;
+    }
+  },
+
+  selectionMoveDown: function() {
+    if (this.selectedObject) {
+      this.selectedObject.position.y -= 0.5;
+    }
+  },
+
+  selectionRotate: function() {
+    if (this.selectedObject) {
+      this.selectedObject.rotation.y += Math.PI / 2;
+    }
+  },
+
+  selectionDelete: function() {
+    if (this.selectedObject) {
+      var previousSelection = this.selectedObject;
+      this.clearSelection();
+
+      this.modelsGroup.remove(previousSelection);
+    }
   },
 
   setupViewportControls: function() {
@@ -202,7 +234,7 @@ var editor = {
     }
 
     intersection.multiplyScalar(1/TILE_SIZE).floor().multiplyScalar(TILE_SIZE);
-    this.dragTarget.position.set(intersection.x, intersection.y, intersection.z);
+    this.dragTarget.position.set(intersection.x, this.dragTarget.position.y, intersection.z);
   },
 
   update: function() {
