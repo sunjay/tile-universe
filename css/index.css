@@ -47,6 +47,12 @@ html, body
   cursor: none;
 }
 
+.dragging .panel
+{
+  opacity: 0.2;
+  pointer-events: none;
+}
+
 #tiles-container
 {
   width: 240px;
