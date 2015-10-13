@@ -80,13 +80,11 @@ var editor = {
   },
 
   selectTile: function(tileElement) {
+    var wasSelected = tileElement.classList.contains("selected");
+
     this.cancel();
 
-    var wasSelected = tileElement.classList.contains("selected");
-    if (wasSelected) {
-      tileElement.classList.remove("selected");
-    }
-    else {
+    if (!wasSelected) {
       this.deselectAllTiles();
       tileElement.classList.add("selected");
 
@@ -157,6 +155,7 @@ var editor = {
     }
     else {
       this.clearSelection();
+      this.deselectAllTiles();
       this.scene.remove(this.dragTarget);
     }
 
@@ -166,6 +165,7 @@ var editor = {
   endDrag: function() {
     this.dragTarget = null;
     this.dragOrigin = null;
+    this.viewportControls.noRotate = false;
   },
 
   update: function() {
