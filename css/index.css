@@ -44,7 +44,7 @@ html, body
 
 .dragging
 {
-  cursor: pointer;
+  cursor: none;
 }
 
 #tiles-container

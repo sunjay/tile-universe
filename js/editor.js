@@ -191,6 +191,7 @@ var editor = {
       return;
     }
 
+    intersection.multiplyScalar(1/TILE_SIZE).floor().multiplyScalar(TILE_SIZE);
     this.dragTarget.position.set(intersection.x, intersection.y, intersection.z);
   },
 
