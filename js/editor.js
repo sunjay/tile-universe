@@ -86,7 +86,7 @@ var editor = {
       tileElement.classList.remove("selected");
     }
     else {
-      this.deselectAll();
+      this.deselectAllTiles();
       tileElement.classList.add("selected");
 
       this.showLoading();
@@ -98,13 +98,13 @@ var editor = {
         this.scene.add(object);
         this.hideLoading();
 
-        this.selectedObject = object;
-        this.beginDragging(this.selectedObject);
+        this.selectObject(object);
+        this.beginDrag(this.selectedObject);
       }.bind(this));
     }
   },
 
-  deselectAll: function() {
+  deselectAllTiles: function() {
     var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
     var tiles = tilesParent.children;
     for (var i = 0; i < tiles.length; i++) {
@@ -113,7 +113,23 @@ var editor = {
   },
 
   cancel: function() {
-    console.log("Cancel");
+    // There is a very clear order to these cancellations
+    if (this.dragTarget) {
+      this.cancelDrag();
+      return;
+    }
+
+    if (this.selectedObject) {
+      this.clearSelection();
+      return;
+    }
+
+    this.deselectAllTiles();
+  },
+
+  selectObject: function(object) {
+    //TODO: Add selection indicator
+    this.selectedObject = object;
   },
 
   clearSelection: function() {
@@ -121,10 +137,32 @@ var editor = {
     this.selectedObject = null;
   },
 
-  beginDragging: function(object, origin) {
+  beginDrag: function(object, origin) {
     this.viewportControls.noRotate = true;
     this.dragTarget = object;
     this.dragOrigin = origin || null;
+  },
+
+  cancelDrag: function() {
+    if (!this.dragTarget) {
+      return;
+    }
+
+    // If there is no drag origin, this must be a new object
+    if (this.dragOrigin) {
+      this.dragTarget.position = this.dragOrigin;
+    }
+    else {
+      this.clearSelection();
+      this.scene.remove(this.dragTarget);
+    }
+
+    this.endDrag();
+  },
+
+  endDrag: function() {
+    this.dragTarget = null;
+    this.dragOrigin = null;
   },
 
   update: function() {
