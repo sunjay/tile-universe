@@ -1,22 +1,3 @@
-function windowWidth() {
-  return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
-}
-
-function windowHeight() {
-  return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
-}
-
-function onWindowResize(event) {
-  var width = windowWidth();
-  var height = windowHeight();
-
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(width, height);
-}
-window.addEventListener('resize', onWindowResize, false);
-
 var WINDOW_WIDTH = windowWidth();
 var WINDOW_HEIGHT = windowHeight();
 var TILE_SIZE = 3;
@@ -25,11 +6,11 @@ var GRID_SIZE = TILE_SIZE * GRID_LINES;
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
-camera.position.set(4, 2, -4);
+camera.position.set(10, 5, -10);
 camera.lookAt(scene.position);
 
-var light = new THREE.SpotLight(0xFFFFFF, 1, 100);
-light.position.set(10, 10, -10);
+var light = new THREE.SpotLight(0xFFFFFF, 1, 1000);
+light.position.set(100, 100, -100);
 scene.add(light);
 
 var renderer = new THREE.WebGLRenderer();
@@ -69,3 +50,23 @@ function loop() {
   render();
 }
 loop();
+
+function windowWidth() {
+  return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+}
+
+function windowHeight() {
+  return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+}
+
+function onWindowResize(event) {
+  var width = windowWidth();
+  var height = windowHeight();
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height);
+}
+window.addEventListener('resize', onWindowResize, false);
+
