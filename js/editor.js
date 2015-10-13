@@ -7,6 +7,10 @@ var editor = {
   renderer: null,
   camera: null,
 
+  raycaster: null,
+  modelsGroup: null,
+  groundPlane: null,
+
   viewportControls: null,
 
   selectedObject: null,
@@ -20,6 +24,11 @@ var editor = {
     this.scene = scene;
     this.renderer = renderer;
     this.camera = camera;
+
+    this.raycaster = new THREE.Raycaster();
+    this.modelsGroup = new THREE.Group();
+    this.scene.add(this.modelsGroup);
+    this.groundPlane = new THREE.Plane(this.scene.up);
 
     this.populateTilesPanel();
     this.addGridAndAxis();
@@ -94,7 +103,7 @@ var editor = {
           return;
         }
 
-        this.scene.add(object);
+        this.modelsGroup.add(object);
         this.hideLoading();
 
         this.selectObject(object);
@@ -140,6 +149,7 @@ var editor = {
 
   beginDrag: function(object, origin) {
     this.viewportControls.noRotate = true;
+    renderer.domElement.classList.add("dragging");
     this.dragTarget = object;
     this.dragOrigin = origin || null;
   },
@@ -156,7 +166,7 @@ var editor = {
     else {
       this.clearSelection();
       this.deselectAllTiles();
-      this.scene.remove(this.dragTarget);
+      this.modelsGroup.remove(this.dragTarget);
     }
 
     this.endDrag();
@@ -165,7 +175,23 @@ var editor = {
   endDrag: function() {
     this.dragTarget = null;
     this.dragOrigin = null;
+    renderer.domElement.classList.remove("dragging");
     this.viewportControls.noRotate = false;
+  },
+
+  drag: function(x, y) {
+    if (!this.dragTarget) {
+      return;
+    }
+
+    this.setRaycasterFromMouse(x, y);
+
+    var intersection = this.raycaster.ray.intersectPlane(this.groundPlane);
+    if (!intersection) {
+      return;
+    }
+
+    this.dragTarget.position.set(intersection.x, intersection.y, intersection.z);
   },
 
   update: function() {
@@ -173,12 +199,16 @@ var editor = {
   },
 
   bindEvents: function() {
-    document.onkeydown = function(evt) {
+    document.addEventListener('keyup', function(evt) {
       evt = evt || window.event;
       if (evt.keyCode == 27) {
         this.cancel();
       }
-    }.bind(this);
+    }.bind(this));
+
+    document.addEventListener('mousemove', function(evt) {
+      this.drag(evt.clientX, evt.clientY);
+    }.bind(this));
   },
 
   showLoading: function() {
@@ -187,5 +217,21 @@ var editor = {
 
   hideLoading: function() {
     document.getElementById("loading").style.display = "none";
+  },
+
+  objectAtMouse: function(x, y) {
+    this.setRaycasterFromMouse(x, y);
+
+    var intersects = this.raycaster.intersectObjects(this.modelsGroup.children, true);
+    return intersects[0] ? intersects[0].object : null;
+  },
+
+  setRaycasterFromMouse: function(x, y) {
+    // Normalizing coordinates to values between -1 and 1
+    var mouse = new THREE.Vector2();
+    mouse.x = 2 * (x / this.renderer.domElement.width) - 1;
+    mouse.y = 1 - 2 * (y / this.renderer.domElement.height);
+
+    this.raycaster.setFromCamera(mouse, this.camera);
   }
 };
