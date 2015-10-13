@@ -1,54 +1,50 @@
-var WINDOW_WIDTH = 600;
-var WINDOW_HEIGHT = 400;
+var WINDOW_WIDTH = windowWidth();
+var WINDOW_HEIGHT = windowHeight();
 
 var scene = new THREE.Scene();
 var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
-camera.position.set(10, 50, -10);
+camera.position.set(10, 5, -10);
 camera.lookAt(scene.position);
 
-var light = new THREE.AmbientLight(0xFFFFFF);
+var light = new THREE.SpotLight(0xFFFFFF, 1, 1000);
+light.position.set(100, 100, -100);
 scene.add(light);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-renderer.setClearColor(0xEEEEEE, 1);
+renderer.setClearColor(0xEEEEFF, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
-controls = new THREE.TrackballControls( camera );
-
-controls.rotateSpeed = 1.0;
-controls.zoomSpeed = 1.2;
-controls.panSpeed = 0.8;
-
-controls.noZoom = false;
-controls.noPan = false;
-
-controls.staticMoving = true;
-controls.dynamicDampingFactor = 0.3;
-
 // Setup scene
-var object_width = 4;
-var row_size = 18;
-var row_width = object_width * row_size;
-for (var i = 1; i <= 302; i++) {
-  (function(index) {
-    var num = ('000' + index).slice(-3);
-    loadModel('roadTile_' + num).then(function(object) {
-      var horizontal_offset = object_width * (index - 1);
-      object.position.z = -(horizontal_offset % row_width - row_width/2);
-      object.position.x = Math.floor(horizontal_offset / row_width) * object_width - row_width/2;
-
-      scene.add(object);
-
-      console.log('Finished loading ' + index);
-    }).catch(console.log.bind(console));
-  })(i);
-}
+editor.setup(scene, renderer, camera);
 
 function render() {
-	requestAnimationFrame(render);
-
-  controls.update();
+  editor.update();
 	renderer.render(scene, camera);
 }
-render();
+
+function loop() {
+  requestAnimationFrame(loop);
+  render();
+}
+loop();
+
+function windowWidth() {
+  return window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+}
+
+function windowHeight() {
+  return window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight;
+}
+
+function onWindowResize(event) {
+  var width = windowWidth();
+  var height = windowHeight();
+
+  camera.aspect = width / height;
+  camera.updateProjectionMatrix();
+
+  renderer.setSize(width, height);
+}
+window.addEventListener('resize', onWindowResize, false);
+

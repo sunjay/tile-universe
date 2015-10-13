@@ -1,4 +1,110 @@
 html, body
 {
+  margin: 0;
+  padding: 0;
   font-family: 'Open Sans', sans-serif;
+  overflow: hidden;
 }
+
+.panel
+{
+  z-index: 2;
+  position: absolute;
+  top: 20px;
+  padding: 10px;
+  background: #BBBBFF;
+  box-shadow: 0px 0px 5px gray;
+}
+
+.panel-left
+{
+  left: 20px;
+}
+
+.panel-right
+{
+  right: 20px;
+}
+
+.panel h2,
+.panel h3,
+.panel h4,
+.panel h5,
+.panel h6
+{
+  margin: 0;
+}
+
+#loading
+{
+  display: none;
+  float: right;
+  margin: 2px;
+}
+
+#tiles-container
+{
+  width: 240px;
+  height: 500px;
+}
+
+#tiles-container .tiles
+{
+  height: 440px;
+  overflow-y: scroll;
+  padding: 0;
+  padding-top: 5px;
+}
+
+#tiles-container .tiles li
+{
+  cursor: pointer;
+  list-style-type: none;
+  display: inline-block;
+  padding-left: 5px;
+}
+
+#tiles-container .tiles li img
+{
+  width: 100px;
+}
+
+#tiles-container .tiles li:not(.selected) img:hover
+{
+  box-shadow: 0px 0px 10px #FFEA00;
+}
+
+#tiles-container .tiles li.selected img
+{
+  box-sizing: border-box;
+  border: 2px solid #00FF14;
+}
+
+#controls-container .controls button
+{
+  width: 23%;
+  font-size: 20px;
+  background: darkgray;
+  border: 1px solid #444444;
+}
+
+#controls-container .controls button:focus
+{
+  outline: none;
+}
+
+#controls-container .controls button:not(:disabled):hover
+{
+  background: lightgray;
+}
+
+#controls-container .controls button:not(:disabled):active
+{
+  background: white;
+}
+
+#controls-container .controls button:disabled
+{
+  color: #444;
+}
+
