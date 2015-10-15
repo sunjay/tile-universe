@@ -11,6 +11,8 @@ var editor = {
   modelsGroup: null,
   groundPlane: null,
 
+  history: null,
+
   viewportControls: null,
 
   selectedObject: null,
@@ -31,6 +33,8 @@ var editor = {
     this.modelsGroup = new THREE.Group();
     this.scene.add(this.modelsGroup);
     this.groundPlane = new THREE.Plane(this.scene.up);
+
+    this.history = new HistoryQueue();
 
     this.populateTilesPanel();
     this.addGridAndAxis();
@@ -82,6 +86,27 @@ var editor = {
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
     document.getElementById('tile-rotate').addEventListener('click', this.selectionRotate.bind(this));
     document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
+
+    document.getElementById('tile-undo').addEventListener('click', function() {
+      this.clearSelection();
+      this.history.undo();
+      this.updateUndoRedoButtons();
+    }.bind(this));
+    document.getElementById('tile-redo').addEventListener('click', function() {
+      this.clearSelection();
+      this.history.redo();
+      this.updateUndoRedoButtons();
+    }.bind(this));
+
+    document.getElementById('tile-clear').addEventListener('click', this.clear.bind(this));
+    document.getElementById('tile-export').addEventListener('click', this.exportDocument.bind(this));
+    document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
+    document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
+  },
+
+  updateUndoRedoButtons: function() {
+    document.getElementById('tile-undo').disabled = !this.history.canUndo();
+    document.getElementById('tile-redo').disabled = !this.history.canRedo();
   },
 
   selectionDuplicate: function(evt) {
@@ -101,13 +126,27 @@ var editor = {
 
   selectionMoveUp: function() {
     if (this.selectedObject) {
-      this.selectedObject.position.y += 0.5;
+      var object = this.selectedObject;
+      var action = HistoryQueue.createAction(function() {
+        object.position.y += 0.5;
+      }.bind(this), function() {
+        object.position.y -= 0.5;
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
   selectionMoveDown: function() {
     if (this.selectedObject) {
-      this.selectedObject.position.y -= 0.5;
+      var object = this.selectedObject;
+      var action = HistoryQueue.createAction(function() {
+        object.position.y -= 0.5;
+      }.bind(this), function() {
+        object.position.y += 0.5;
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
@@ -125,9 +164,11 @@ var editor = {
       var relativePosition = this.selectedObject.position.clone().sub(origin);
       relativePosition.set(-relativePosition.z, relativePosition.y, relativePosition.x);
       var position = relativePosition.add(origin);
-      this.selectedObject.position.set(position.x, position.y, position.z);
 
-      this.selectedObject.rotation.y -= Math.PI / 2;
+      var rotation = this.selectedObject.rotation.clone();
+      rotation.y -= Math.PI / 2;
+
+      this.moveAndRotate(this.selectedObject, position, rotation);
     }
   },
 
@@ -136,7 +177,13 @@ var editor = {
       var previousSelection = this.selectedObject;
       this.clearSelection();
 
-      this.modelsGroup.remove(previousSelection);
+      var action = HistoryQueue.createAction(function() {
+        this.modelsGroup.remove(previousSelection);
+      }.bind(this), function() {
+        this.modelsGroup.add(previousSelection);
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
@@ -156,6 +203,15 @@ var editor = {
     this.viewportControls = controls;
   },
 
+  load: function(model) {
+    return models.load(model).then(function(object) {
+      object.userData = {
+        model: model
+      };
+      return object;
+    });
+  },
+
   selectTile: function(tileElement) {
     var wasSelected = tileElement.classList.contains("selected");
 
@@ -166,7 +222,7 @@ var editor = {
       tileElement.classList.add("selected");
 
       this.showLoading();
-      models.load(tileElement.dataset.model).then(function(object) {
+      this.load(tileElement.dataset.model).then(function(object) {
         if (this.selectedObject) {
           return;
         }
@@ -329,6 +385,13 @@ var editor = {
     }
 
     if (this.dragTarget) {
+      if (this.dragOrigin) {
+        this.finishMove(this.dragTarget, this.dragOrigin);
+      }
+      else {
+        this.createObject(this.dragTarget);
+      }
+
       this.endDrag();
       return;
     }
@@ -388,5 +451,106 @@ var editor = {
     mouse.y = 1 - 2 * (y / this.renderer.domElement.height);
 
     this.raycaster.setFromCamera(mouse, this.camera);
+  },
+
+  finishMove: function(object, start) {
+    var newPosition = object.position.clone();
+    var oldPosition = start.clone();
+
+    var action = HistoryQueue.createAction(function() {
+      object.position.set(newPosition.x, newPosition.y, newPosition.z);
+    }, function() {
+      object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
+    });
+    this.pushAction(action);
+  },
+
+  createObject: function(object) {
+    var action = HistoryQueue.createAction(function() {
+      this.modelsGroup.add(object);
+    }.bind(this), function() {
+      this.modelsGroup.remove(object);
+    }.bind(this));
+    this.pushAction(action);
+  },
+
+  moveAndRotate: function(object, position, rotation) {
+    var oldPosition = object.position.clone();
+    var oldRotation = object.rotation.clone();
+
+    var action = HistoryQueue.createAction(function() {
+      object.position.set(position.x, position.y, position.z);
+      object.rotation.set(rotation.x, rotation.y, rotation.z);
+    }.bind(this), function() {
+      object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
+      object.rotation.set(oldRotation.x, oldRotation.y, oldRotation.z);
+    }.bind(this));
+    action.forward();
+    this.pushAction(action);
+  },
+
+  pushAction: function(action) {
+    this.history.pushAction(action);
+    this.updateUndoRedoButtons();
+  },
+
+  exportDocument: function() {
+    var doc = {tiles: []};
+    this.modelsGroup.children.forEach(function(model) {
+      doc.tiles.push(Object.assign({}, model.userData, {
+        position: model.position.toArray(),
+        rotation: model.rotation.toArray()
+      }));
+    });
+
+    var content = JSON.stringify(doc, null, 2);
+    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
+    saveAs(blob, "map.json");
+  },
+
+  selectImportFile: function() {
+    document.getElementById("imported-file").click();
+  },
+
+  loadImportFile: function() {
+    var fileInput = document.getElementById('imported-file');
+
+    var reader = new FileReader();
+
+    reader.addEventListener('load', function(e) {
+      var text = reader.result;
+      var data = JSON.parse(text);
+      this.loadDocument(data)
+    }.bind(this));
+
+    var file = fileInput.files[0];
+    reader.readAsText(file);
+
+    fileInput.value = "";
+  },
+
+  loadDocument: function(data) {
+    this.clear();
+
+    this.showLoading();
+    Promise.all(data.tiles.map(function(tile) {
+      return this.load(tile.model).then(function(object) {
+        object.position.fromArray(tile.position);
+        object.rotation.fromArray(tile.rotation);
+
+        this.modelsGroup.add(object);
+      }.bind(this));
+    }.bind(this))).then(function() {
+      this.hideLoading();
+    }.bind(this));
+  },
+
+  clear: function() {
+    this.clearSelection();
+
+    var children = this.modelsGroup.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      this.modelsGroup.remove(children[i]);
+    }
   }
 };

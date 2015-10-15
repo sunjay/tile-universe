@@ -26,6 +26,12 @@ html, body
   right: 20px;
 }
 
+.panel-bottom
+{
+  top: inherit;
+  bottom: 20px;
+}
+
 .panel h2,
 .panel h3,
 .panel h4,
@@ -92,31 +98,51 @@ html, body
   border: 2px solid #00FF14;
 }
 
-#controls-container .controls button
+#controls-container hr
 {
-  width: 18.4%;
+  border: 1px solid #555555;
+  border-bottom-width: 0;
+}
+
+button .fa
+{
   font-size: 18px;
+}
+
+button
+{
+  text-transform: uppercase;
   background: darkgray;
   border: 1px solid #444444;
 }
 
-#controls-container .controls button:focus
+button:focus
 {
   outline: none;
 }
 
-#controls-container .controls button:not(:disabled):hover
+button:not(:disabled):hover
 {
   background: lightgray;
 }
 
-#controls-container .controls button:not(:disabled):active
+button:not(:disabled):active
 {
   background: white;
 }
 
-#controls-container .controls button:disabled
+button:disabled
 {
   color: #444;
+}
+
+.history-controls button
+{
+  width: 49%;
+}
+
+.file-controls button
+{
+  font-size: 14px;
 }
 
