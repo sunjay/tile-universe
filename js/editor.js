@@ -1,6 +1,7 @@
 var TILE_SIZE = 3;
 var GRID_LINES = 20;
 var GRID_SIZE = TILE_SIZE * GRID_LINES;
+var HEIGHT_DELTA = 0.10;
 
 var editor = {
   scene: null,
@@ -128,9 +129,9 @@ var editor = {
     if (this.selectedObject) {
       var object = this.selectedObject;
       var action = HistoryQueue.createAction(function() {
-        object.position.y += 0.5;
+        object.position.y += HEIGHT_DELTA;
       }.bind(this), function() {
-        object.position.y -= 0.5;
+        object.position.y -= HEIGHT_DELTA;
       }.bind(this));
       action.forward();
       this.pushAction(action);
@@ -141,9 +142,9 @@ var editor = {
     if (this.selectedObject) {
       var object = this.selectedObject;
       var action = HistoryQueue.createAction(function() {
-        object.position.y -= 0.5;
+        object.position.y -= HEIGHT_DELTA;
       }.bind(this), function() {
-        object.position.y += 0.5;
+        object.position.y += HEIGHT_DELTA;
       }.bind(this));
       action.forward();
       this.pushAction(action);
