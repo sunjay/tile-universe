@@ -121,13 +121,27 @@ var editor = {
 
   selectionMoveUp: function() {
     if (this.selectedObject) {
-      this.selectedObject.position.y += 0.5;
+      var object = this.selectedObject;
+      var action = HistoryQueue.createAction(function() {
+        object.position.y += 0.5;
+      }.bind(this), function() {
+        object.position.y -= 0.5;
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
   selectionMoveDown: function() {
     if (this.selectedObject) {
-      this.selectedObject.position.y -= 0.5;
+      var object = this.selectedObject;
+      var action = HistoryQueue.createAction(function() {
+        object.position.y -= 0.5;
+      }.bind(this), function() {
+        object.position.y += 0.5;
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
@@ -145,9 +159,11 @@ var editor = {
       var relativePosition = this.selectedObject.position.clone().sub(origin);
       relativePosition.set(-relativePosition.z, relativePosition.y, relativePosition.x);
       var position = relativePosition.add(origin);
-      this.selectedObject.position.set(position.x, position.y, position.z);
 
-      this.selectedObject.rotation.y -= Math.PI / 2;
+      var rotation = this.selectedObject.rotation.clone();
+      rotation.y -= Math.PI / 2;
+
+      this.moveAndRotate(this.selectedObject, position, rotation);
     }
   },
 
@@ -156,7 +172,13 @@ var editor = {
       var previousSelection = this.selectedObject;
       this.clearSelection();
 
-      this.modelsGroup.remove(previousSelection);
+      var action = HistoryQueue.createAction(function() {
+        this.modelsGroup.remove(previousSelection);
+      }.bind(this), function() {
+        this.modelsGroup.add(previousSelection);
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
     }
   },
 
@@ -435,6 +457,21 @@ var editor = {
     }.bind(this), function() {
       this.modelsGroup.remove(object);
     }.bind(this));
+    this.pushAction(action);
+  },
+
+  moveAndRotate: function(object, position, rotation) {
+    var oldPosition = object.position.clone();
+    var oldRotation = object.rotation.clone();
+
+    var action = HistoryQueue.createAction(function() {
+      object.position.set(position.x, position.y, position.z);
+      object.rotation.set(rotation.x, rotation.y, rotation.z);
+    }.bind(this), function() {
+      object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
+      object.rotation.set(oldRotation.x, oldRotation.y, oldRotation.z);
+    }.bind(this));
+    action.forward();
     this.pushAction(action);
   },
 
