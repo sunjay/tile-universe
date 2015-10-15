@@ -11,6 +11,8 @@ var editor = {
   modelsGroup: null,
   groundPlane: null,
 
+  history: null,
+
   viewportControls: null,
 
   selectedObject: null,
@@ -31,6 +33,8 @@ var editor = {
     this.modelsGroup = new THREE.Group();
     this.scene.add(this.modelsGroup);
     this.groundPlane = new THREE.Plane(this.scene.up);
+
+    this.history = new HistoryQueue();
 
     this.populateTilesPanel();
     this.addGridAndAxis();

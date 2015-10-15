@@ -22,11 +22,22 @@
     <p><small>Drag a tile onto the grid &amp; use<br>
         the following controls to edit it</small></p>
     <div class="controls">
-      <button id="tile-duplicate" title="Duplicate"><i class="fa fa-clone"></i></button>
+      <button id="tile-duplicate" title="Duplicate"><i class="fa fa-clone fa-fw"></i></button>
       <button id="tile-move-up" title="Move up"><i class="fa fa-arrow-up fa-fw"></i></button>
       <button id="tile-move-down" title="Move down"><i class="fa fa-arrow-down fa-fw"></i></button>
       <button id="tile-rotate" title="Rotate"><i class="fa fa-rotate-right fa-fw"></i></button>
       <button id="tile-delete" title="Delete"><i class="fa fa-trash-o fa-fw"></i></button>
+    </div>
+    <hr>
+    <div class="history-controls">
+      <button id="tile-undo" title="Undo"><i class="fa fa-mail-reply fa-fw"></i></button>
+      <button id="tile-redo" title="Redo"><i class="fa fa-mail-forward fa-fw"></i></button>
+    </div>
+  </aside>
+  <aside id="file-controls-container" class="panel panel-right panel-bottom">
+    <div class="file-controls">
+      <button id="tile-export" title="Export">Export</button>
+      <button id="tile-export" title="Import">Import</button>
     </div>
   </aside>
 
@@ -39,6 +50,7 @@
   <script type="text/javascript" src="js/lib/threejs/loaders/OBJMTLLoader.js"></script>
   <script type="text/javascript" src="js/lib/threejs/controls/TrackballControls.js"></script>
 
+  <script type="text/javascript" src="js/history-queue.js"></script>
   <script type="text/javascript" src="js/tiles.js"></script>
   <script type="text/javascript" src="js/editor.js"></script>
   <script type="text/javascript" src="js/index.js"></script>
