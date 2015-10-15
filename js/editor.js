@@ -97,6 +97,9 @@ var editor = {
       this.history.redo();
       this.updateUndoRedoButtons();
     }.bind(this));
+
+    document.getElementById('tile-export').addEventListener('click', this.exportDocument.bind(this));
+    document.getElementById('tile-import').addEventListener('click', this.importDocument.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -212,6 +215,10 @@ var editor = {
         if (this.selectedObject) {
           return;
         }
+
+        object.userData = {
+          model: tileElement.dataset.model
+        };
 
         this.modelsGroup.add(object);
         this.hideLoading();
@@ -478,5 +485,22 @@ var editor = {
   pushAction: function(action) {
     this.history.pushAction(action);
     this.updateUndoRedoButtons();
+  },
+
+  exportDocument: function() {
+    var doc = {tiles: []};
+    this.modelsGroup.children.forEach(function(model) {
+      doc.tiles.push(Object.assign({}, model.userData, {
+        position: model.position.toArray(),
+        rotation: model.rotation.toArray()
+      }));
+    });
+
+    var content = JSON.stringify(doc, null, 2);
+    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
+    saveAs(blob, "map.json");
+  },
+
+  importDocument: function() {
   }
 };
