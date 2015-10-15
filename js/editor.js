@@ -99,7 +99,8 @@ var editor = {
     }.bind(this));
 
     document.getElementById('tile-export').addEventListener('click', this.exportDocument.bind(this));
-    document.getElementById('tile-import').addEventListener('click', this.importDocument.bind(this));
+    document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
+    document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -201,6 +202,15 @@ var editor = {
     this.viewportControls = controls;
   },
 
+  load: function(model) {
+    return models.load(model).then(function(object) {
+      object.userData = {
+        model: model
+      };
+      return object;
+    });
+  },
+
   selectTile: function(tileElement) {
     var wasSelected = tileElement.classList.contains("selected");
 
@@ -211,14 +221,10 @@ var editor = {
       tileElement.classList.add("selected");
 
       this.showLoading();
-      models.load(tileElement.dataset.model).then(function(object) {
+      this.load(tileElement.dataset.model).then(function(object) {
         if (this.selectedObject) {
           return;
         }
-
-        object.userData = {
-          model: tileElement.dataset.model
-        };
 
         this.modelsGroup.add(object);
         this.hideLoading();
@@ -501,6 +507,49 @@ var editor = {
     saveAs(blob, "map.json");
   },
 
-  importDocument: function() {
+  selectImportFile: function() {
+    document.getElementById("imported-file").click();
+  },
+
+  loadImportFile: function() {
+    var fileInput = document.getElementById('imported-file');
+
+    var reader = new FileReader();
+
+    reader.addEventListener('load', function(e) {
+      var text = reader.result;
+      var data = JSON.parse(text);
+      this.loadDocument(data)
+    }.bind(this));
+
+    var file = fileInput.files[0];
+    reader.readAsText(file);
+
+    fileInput.value = "";
+  },
+
+  loadDocument: function(data) {
+    this.clear();
+
+    this.showLoading();
+    Promise.all(data.tiles.map(function(tile) {
+      return this.load(tile.model).then(function(object) {
+        object.position.fromArray(tile.position);
+        object.rotation.fromArray(tile.rotation);
+
+        this.modelsGroup.add(object);
+      }.bind(this));
+    }.bind(this))).then(function() {
+      this.hideLoading();
+    }.bind(this));
+  },
+
+  clear: function() {
+    this.clearSelection();
+
+    var children = this.modelsGroup.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      this.modelsGroup.remove(children[i]);
+    }
   }
 };
