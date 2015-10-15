@@ -10,9 +10,9 @@ HistoryQueue.createAction = function(forward, backward) {
   };
 };
 
-HistoryQueue.prototype.processAction = function(action) {
-  action.forward();
+HistoryQueue.prototype.pushAction = function(action) {
   this.previous.push(action);
+  this.next = [];
 };
 
 HistoryQueue.prototype.undo = function() {

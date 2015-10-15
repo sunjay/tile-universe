@@ -86,6 +86,22 @@ var editor = {
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
     document.getElementById('tile-rotate').addEventListener('click', this.selectionRotate.bind(this));
     document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
+
+    document.getElementById('tile-undo').addEventListener('click', function() {
+      this.clearSelection();
+      this.history.undo();
+      this.updateUndoRedoButtons();
+    }.bind(this));
+    document.getElementById('tile-redo').addEventListener('click', function() {
+      this.clearSelection();
+      this.history.redo();
+      this.updateUndoRedoButtons();
+    }.bind(this));
+  },
+
+  updateUndoRedoButtons: function() {
+    document.getElementById('tile-undo').disabled = !this.history.canUndo();
+    document.getElementById('tile-redo').disabled = !this.history.canRedo();
   },
 
   selectionDuplicate: function(evt) {
@@ -333,6 +349,13 @@ var editor = {
     }
 
     if (this.dragTarget) {
+      if (this.dragOrigin) {
+        this.finishMove(this.dragTarget, this.dragOrigin);
+      }
+      else {
+        this.createObject(this.dragTarget);
+      }
+
       this.endDrag();
       return;
     }
@@ -392,5 +415,31 @@ var editor = {
     mouse.y = 1 - 2 * (y / this.renderer.domElement.height);
 
     this.raycaster.setFromCamera(mouse, this.camera);
+  },
+
+  finishMove: function(object, start) {
+    var newPosition = object.position.clone();
+    var oldPosition = start.clone();
+
+    var action = HistoryQueue.createAction(function() {
+      object.position.set(newPosition.x, newPosition.y, newPosition.z);
+    }, function() {
+      object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
+    });
+    this.pushAction(action);
+  },
+
+  createObject: function(object) {
+    var action = HistoryQueue.createAction(function() {
+      this.modelsGroup.add(object);
+    }.bind(this), function() {
+      this.modelsGroup.remove(object);
+    }.bind(this));
+    this.pushAction(action);
+  },
+
+  pushAction: function(action) {
+    this.history.pushAction(action);
+    this.updateUndoRedoButtons();
   }
 };
