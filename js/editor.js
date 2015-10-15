@@ -547,6 +547,8 @@ var editor = {
 
   clear: function() {
     this.clearSelection();
+    this.history.clear();
+    this.updateUndoRedoButtons();
 
     var children = this.modelsGroup.children;
     for (var i = children.length - 1; i >= 0; i--) {
