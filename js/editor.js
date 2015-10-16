@@ -45,7 +45,9 @@ var editor = {
 
     this.bindEvents();
 
-    this.loadLocal();
+    if (!this.loadLocal()) {
+      this.loadRemote("examples/park.json");
+    }
   },
 
   populateTilesPanel: function() {
@@ -101,7 +103,11 @@ var editor = {
       this.updateUndoRedoButtons();
     }.bind(this));
 
-    document.getElementById('tile-clear').addEventListener('click', this.clear.bind(this));
+    document.getElementById('tile-clear').addEventListener('click', function() {
+      if (confirm("Irreversibly clear everything?")) {
+        this.clear();
+      }
+    }.bind(this));
     document.getElementById('tile-export').addEventListener('click', this.saveExportedDocument.bind(this));
     document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
     document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
@@ -520,9 +526,15 @@ var editor = {
   },
 
   loadLocal: function() {
-    var text = localStorage.getItem("map").trim();
+    var text = (localStorage.getItem("map") || "").trim();
+    if (!text) {
+      return false;
+    }
+
     var data = JSON.parse(text);
-    this.loadDocument(data)
+    this.loadDocument(data);
+
+    return true;
   },
 
   saveExportedDocument: function() {
@@ -556,9 +568,7 @@ var editor = {
     reader.addEventListener('load', function(e) {
       var text = reader.result;
       var data = JSON.parse(text);
-      this.loadDocument(data).then(function() {
-        this.saveLocal();
-      }.bind(this));
+      this.loadDocument(data);
     }.bind(this));
 
     var file = fileInput.files[0];
@@ -580,6 +590,14 @@ var editor = {
       }.bind(this));
     }.bind(this))).then(function() {
       this.hideLoading();
+      this.saveLocal();
+    }.bind(this));
+  },
+
+  loadRemote: function(url) {
+    this.showLoading();
+    xr.get(url).then(function(data) {
+      this.loadDocument(data);
     }.bind(this));
   },
 
@@ -592,6 +610,8 @@ var editor = {
     for (var i = children.length - 1; i >= 0; i--) {
       this.modelsGroup.remove(children[i]);
     }
+
+    this.saveLocal();
   }
 };
 
