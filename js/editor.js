@@ -44,6 +44,8 @@ var editor = {
     this.disableControls();
 
     this.bindEvents();
+
+    this.loadLocal();
   },
 
   populateTilesPanel: function() {
@@ -100,7 +102,7 @@ var editor = {
     }.bind(this));
 
     document.getElementById('tile-clear').addEventListener('click', this.clear.bind(this));
-    document.getElementById('tile-export').addEventListener('click', this.exportDocument.bind(this));
+    document.getElementById('tile-export').addEventListener('click', this.saveExportedDocument.bind(this));
     document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
     document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
   },
@@ -128,7 +130,7 @@ var editor = {
   selectionMoveUp: function() {
     if (this.selectedObject) {
       var object = this.selectedObject;
-      var action = HistoryQueue.createAction(function() {
+      var action = this.createAction(function() {
         object.position.y += HEIGHT_DELTA;
       }.bind(this), function() {
         object.position.y -= HEIGHT_DELTA;
@@ -141,7 +143,7 @@ var editor = {
   selectionMoveDown: function() {
     if (this.selectedObject) {
       var object = this.selectedObject;
-      var action = HistoryQueue.createAction(function() {
+      var action = this.createAction(function() {
         object.position.y -= HEIGHT_DELTA;
       }.bind(this), function() {
         object.position.y += HEIGHT_DELTA;
@@ -178,7 +180,7 @@ var editor = {
       var previousSelection = this.selectedObject;
       this.clearSelection();
 
-      var action = HistoryQueue.createAction(function() {
+      var action = this.createAction(function() {
         this.modelsGroup.remove(previousSelection);
       }.bind(this), function() {
         this.modelsGroup.add(previousSelection);
@@ -458,7 +460,7 @@ var editor = {
     var newPosition = object.position.clone();
     var oldPosition = start.clone();
 
-    var action = HistoryQueue.createAction(function() {
+    var action = this.createAction(function() {
       object.position.set(newPosition.x, newPosition.y, newPosition.z);
     }, function() {
       object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
@@ -467,7 +469,7 @@ var editor = {
   },
 
   createObject: function(object) {
-    var action = HistoryQueue.createAction(function() {
+    var action = this.createAction(function() {
       this.modelsGroup.add(object);
     }.bind(this), function() {
       this.modelsGroup.remove(object);
@@ -479,7 +481,7 @@ var editor = {
     var oldPosition = object.position.clone();
     var oldRotation = object.rotation.clone();
 
-    var action = HistoryQueue.createAction(function() {
+    var action = this.createAction(function() {
       object.position.set(position.x, position.y, position.z);
       object.rotation.set(rotation.x, rotation.y, rotation.z);
     }.bind(this), function() {
@@ -490,9 +492,44 @@ var editor = {
     this.pushAction(action);
   },
 
+  createAction: function(forward, backward) {
+    return HistoryQueue.createAction(function() {
+      forward();
+      
+      this.afterChange();
+    }.bind(this), function() {
+      backward();
+      
+      this.afterChange();
+    }.bind(this));
+  },
+
   pushAction: function(action) {
     this.history.pushAction(action);
     this.updateUndoRedoButtons();
+
+    this.afterChange();
+  },
+
+  afterChange: function() {
+    this.saveLocal();
+  },
+
+  saveLocal: function() {
+    localStorage.setItem("map", JSON.stringify(this.exportDocument()));
+  },
+
+  loadLocal: function() {
+    var text = localStorage.getItem("map").trim();
+    var data = JSON.parse(text);
+    this.loadDocument(data)
+  },
+
+  saveExportedDocument: function() {
+    var doc = this.exportDocument();
+    var content = JSON.stringify(doc, null, 2);
+    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
+    saveAs(blob, "map.json");
   },
 
   exportDocument: function() {
@@ -504,9 +541,7 @@ var editor = {
       }));
     });
 
-    var content = JSON.stringify(doc, null, 2);
-    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
-    saveAs(blob, "map.json");
+    return doc;
   },
 
   selectImportFile: function() {
@@ -521,7 +556,9 @@ var editor = {
     reader.addEventListener('load', function(e) {
       var text = reader.result;
       var data = JSON.parse(text);
-      this.loadDocument(data)
+      this.loadDocument(data).then(function() {
+        this.saveLocal();
+      }.bind(this));
     }.bind(this));
 
     var file = fileInput.files[0];
@@ -534,7 +571,7 @@ var editor = {
     this.clear();
 
     this.showLoading();
-    Promise.all(data.tiles.map(function(tile) {
+    return Promise.all(data.tiles.map(function(tile) {
       return this.load(tile.model).then(function(object) {
         object.position.fromArray(tile.position);
         object.rotation.fromArray(tile.rotation);
@@ -557,3 +594,4 @@ var editor = {
     }
   }
 };
+
