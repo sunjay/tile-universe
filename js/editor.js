@@ -101,7 +101,11 @@ var editor = {
       this.updateUndoRedoButtons();
     }.bind(this));
 
-    document.getElementById('tile-clear').addEventListener('click', this.clear.bind(this));
+    document.getElementById('tile-clear').addEventListener('click', function() {
+      if (confirm("Irreversibly clear everything?")) {
+        this.clear();
+      }
+    }.bind(this));
     document.getElementById('tile-export').addEventListener('click', this.saveExportedDocument.bind(this));
     document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
     document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
