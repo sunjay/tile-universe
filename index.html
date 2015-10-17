@@ -9,37 +9,38 @@
   <link href="css/index.css" rel="stylesheet" type="text/css">
 </head>
 <body>
+  <header>
+    <div class="right">
+      <div class="history-controls">
+        <button id="tile-undo" title="Undo" disabled><i class="fa fa-mail-reply fa-fw"></i></button>
+        <button id="tile-redo" title="Redo" disabled><i class="fa fa-mail-forward fa-fw"></i></button>
+      </div>
+      <div class="file-controls">
+        <button id="tile-clear" title="Clear">Clear</button>
+        <span class="header-space"></span>
+        <button id="tile-export" title="Export">Export</button>
+        <button id="tile-import" title="Import">Import</button>
+        <input type="file" id="imported-file" style="display:none">
+      </div>
+      <div class="help-container">
+        <a href="README.html" target="_blank" class="button" title="Help"><i class="fa fa-question-circle"></i></a>
+      </div>
+    </div>
+    <div class="left">
+      <span class="site-title">Driving</span>
+    </div>
+  </header>
   <aside id="tiles-container" class="panel panel-left">
     <h3><i id="loading" class="fa fa-spinner fa-spin"></i>Insert Tiles</h3>
     <ul class="tiles"></ul>
   </aside>
-  <aside id="controls-container" class="panel panel-right">
-    <h3>Help &amp; Controls</h3>
-    <p><small>
-        MOVE mouse &amp; press - LEFT: rotate,<br>
-        MIDDLE: zoom, RIGHT: pan
-    </small></p>
-    <p><small>Drag a tile onto the grid &amp; use<br>
-        the following controls to edit it</small></p>
+  <aside id="controls-container" class="panel panel-right panel-bottom">
     <div class="controls">
       <button id="tile-duplicate" title="Duplicate"><i class="fa fa-clone fa-fw"></i></button>
       <button id="tile-move-up" title="Move up"><i class="fa fa-arrow-up fa-fw"></i></button>
       <button id="tile-move-down" title="Move down"><i class="fa fa-arrow-down fa-fw"></i></button>
       <button id="tile-rotate" title="Rotate"><i class="fa fa-rotate-right fa-fw"></i></button>
       <button id="tile-delete" title="Delete"><i class="fa fa-trash-o fa-fw"></i></button>
-    </div>
-    <hr>
-    <div class="history-controls">
-      <button id="tile-undo" title="Undo" disabled><i class="fa fa-mail-reply fa-fw"></i></button>
-      <button id="tile-redo" title="Redo" disabled><i class="fa fa-mail-forward fa-fw"></i></button>
-    </div>
-  </aside>
-  <aside id="file-controls-container" class="panel panel-right panel-bottom">
-    <div class="file-controls">
-      <button id="tile-clear" title="Clear">Clear</button>
-      <button id="tile-export" title="Export">Export</button>
-      <button id="tile-import" title="Import">Import</button>
-      <input type="file" id="imported-file" style="display:none">
     </div>
   </aside>
 

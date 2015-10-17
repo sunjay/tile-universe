@@ -1,3 +1,7 @@
+---
+---
+$panel-background: #B8FFA1;
+
 html, body
 {
   margin: 0;
@@ -10,9 +14,9 @@ html, body
 {
   z-index: 2;
   position: absolute;
-  top: 20px;
+  top: 70px;
   padding: 10px;
-  background: #BBBBFF;
+  background: $panel-background;
   box-shadow: 0px 0px 5px gray;
 }
 
@@ -41,6 +45,53 @@ html, body
   margin: 0;
 }
 
+.site-title
+{
+  font-size: 24px;
+  font-weight: bold;
+}
+
+header
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 8px;
+  height: 50px;
+  background-color: $panel-background;
+  box-shadow: 0px 0px 5px gray;
+}
+
+header .left
+{
+  float: left;
+}
+
+header .right
+{
+  float: right;
+}
+
+header .left > *,
+header .right > *
+{
+  display: inline-block;
+  vertical-align: bottom;
+}
+
+header .right > div
+{
+  padding: 5px;
+}
+
+header .header-space
+{
+  display: inline-block;
+  width: 5px;
+}
+
 #loading
 {
   display: none;
@@ -53,7 +104,8 @@ html, body
   cursor: none;
 }
 
-.dragging .panel
+.dragging .panel,
+.dragging header
 {
   opacity: 0.2;
   pointer-events: none;
@@ -62,12 +114,13 @@ html, body
 #tiles-container
 {
   width: 240px;
-  height: 500px;
+  max-height: 600px;
+  height: 80%;
 }
 
 #tiles-container .tiles
 {
-  height: 440px;
+  height: calc(100% - 50px);
   overflow-y: scroll;
   padding: 0;
   padding-top: 5px;
@@ -104,45 +157,50 @@ html, body
   border-bottom-width: 0;
 }
 
+.button .fa,
 button .fa
 {
   font-size: 18px;
 }
 
+.button,
 button
 {
+  display: inline-block;
   text-transform: uppercase;
   background: darkgray;
   border: 1px solid #444444;
+  padding: 1px 6px;
+  box-sizing: border-box;
 }
 
+.button:focus,
 button:focus
 {
   outline: none;
 }
 
+.button:not(:disabled):hover,
 button:not(:disabled):hover
 {
   background: lightgray;
 }
 
+.button:not(:disabled):active,
 button:not(:disabled):active
 {
   background: white;
 }
 
+.button:disabled,
 button:disabled
 {
   color: #444;
 }
 
-.history-controls button
-{
-  width: 49%;
-}
-
 .file-controls button
 {
+  height: 26px;
   font-size: 14px;
 }
 
