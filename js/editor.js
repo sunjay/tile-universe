@@ -133,26 +133,26 @@ var editor = {
     }
   },
 
-  selectionMoveUp: function() {
-    if (this.selectedObject) {
-      var object = this.selectedObject;
-      var action = this.createAction(function() {
-        object.position.y += HEIGHT_DELTA;
-      }.bind(this), function() {
-        object.position.y -= HEIGHT_DELTA;
-      }.bind(this));
-      action.forward();
-      this.pushAction(action);
-    }
+  selectionMoveUp: function(event) {
+    this.selectionMove(event, HEIGHT_DELTA);
   },
 
-  selectionMoveDown: function() {
+  selectionMoveDown: function(event) {
+    this.selectionMove(event, -HEIGHT_DELTA);
+  },
+
+  selectionMove: function(event, amount) {
     if (this.selectedObject) {
+      var multiplier = 1;
+      if (event.shiftKey) {
+        multiplier = 4;
+      }
+
       var object = this.selectedObject;
       var action = this.createAction(function() {
-        object.position.y -= HEIGHT_DELTA;
+        object.position.y += multiplier * amount;
       }.bind(this), function() {
-        object.position.y += HEIGHT_DELTA;
+        object.position.y -= multiplier * amount;
       }.bind(this));
       action.forward();
       this.pushAction(action);
