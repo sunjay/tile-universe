@@ -10,9 +10,9 @@ html, body
 {
   z-index: 2;
   position: absolute;
-  top: 20px;
+  top: 70px;
   padding: 10px;
-  background: #BBBBFF;
+  background: #DAEEFF;
   box-shadow: 0px 0px 5px gray;
 }
 
@@ -41,6 +41,47 @@ html, body
   margin: 0;
 }
 
+.site-title
+{
+  font-size: 24px;
+  font-weight: bold;
+}
+
+header
+{
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  box-sizing: border-box;
+  padding: 8px;
+  height: 50px;
+  background-color: #DAEEFF;
+  box-shadow: 0px 0px 5px gray;
+}
+
+header .left
+{
+  float: left;
+}
+
+header .right
+{
+  float: right;
+}
+
+header .left > *,
+header .right > *
+{
+  display: inline-block;
+}
+
+header .header-space
+{
+  display: inline-block;
+  width: 5px;
+}
+
 #loading
 {
   display: none;
@@ -53,7 +94,8 @@ html, body
   cursor: none;
 }
 
-.dragging .panel
+.dragging .panel,
+.dragging header
 {
   opacity: 0.2;
   pointer-events: none;
@@ -62,12 +104,13 @@ html, body
 #tiles-container
 {
   width: 240px;
-  height: 500px;
+  max-height: 600px;
+  height: 80%;
 }
 
 #tiles-container .tiles
 {
-  height: 440px;
+  height: calc(100% - 50px);
   overflow-y: scroll;
   padding: 0;
   padding-top: 5px;
@@ -136,13 +179,15 @@ button:disabled
   color: #444;
 }
 
-.history-controls button
+.history-controls, .file-controls
 {
-  width: 49%;
+  vertical-align: bottom;
+  padding: 5px;
 }
 
 .file-controls button
 {
+  height: 26px;
   font-size: 14px;
 }
 
