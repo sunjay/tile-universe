@@ -78,6 +78,12 @@ header .left > *,
 header .right > *
 {
   display: inline-block;
+  vertical-align: bottom;
+}
+
+header .right > div
+{
+  padding: 5px;
 }
 
 header .header-space
@@ -151,42 +157,45 @@ header .header-space
   border-bottom-width: 0;
 }
 
+.button .fa,
 button .fa
 {
   font-size: 18px;
 }
 
+.button,
 button
 {
+  display: inline-block;
   text-transform: uppercase;
   background: darkgray;
   border: 1px solid #444444;
+  padding: 1px 6px;
+  box-sizing: border-box;
 }
 
+.button:focus,
 button:focus
 {
   outline: none;
 }
 
+.button:not(:disabled):hover,
 button:not(:disabled):hover
 {
   background: lightgray;
 }
 
+.button:not(:disabled):active,
 button:not(:disabled):active
 {
   background: white;
 }
 
+.button:disabled,
 button:disabled
 {
   color: #444;
-}
-
-.history-controls, .file-controls
-{
-  vertical-align: bottom;
-  padding: 5px;
 }
 
 .file-controls button
