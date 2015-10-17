@@ -1,6 +1,3 @@
----
----
-
 # Driving
 Use this editor to build and export a map composed of tiles. You can add roads, rivers, lakes and even mountains. Use these tiles to compose as many worlds as you can imagine!
 
