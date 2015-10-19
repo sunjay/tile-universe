@@ -26,6 +26,8 @@ var models = {
         'models/' + modelName + '.mtl',
         // Function when both resources are loaded
         function (object) {
+          object.rotation.order = 'YXZ';
+
           this.modelCache[modelName] = object;
           resolve(object.clone());
           delete this.requestedModels[modelName];
