@@ -23,6 +23,7 @@ var editor = {
   dragOrigin: null,
 
   mouseStart: null,
+  mousePosition: new THREE.Vector2(),
 
   // Methods
   setup: function(scene, renderer, camera) {
@@ -92,16 +93,8 @@ var editor = {
     document.getElementById('tile-rotate').addEventListener('click', this.selectionRotate.bind(this));
     document.getElementById('tile-delete').addEventListener('click', this.selectionDelete.bind(this));
 
-    document.getElementById('tile-undo').addEventListener('click', function() {
-      this.clearSelection();
-      this.history.undo();
-      this.updateUndoRedoButtons();
-    }.bind(this));
-    document.getElementById('tile-redo').addEventListener('click', function() {
-      this.clearSelection();
-      this.history.redo();
-      this.updateUndoRedoButtons();
-    }.bind(this));
+    document.getElementById('tile-undo').addEventListener('click', this.undo.bind(this));
+    document.getElementById('tile-redo').addEventListener('click', this.redo.bind(this));
 
     document.getElementById('tile-clear').addEventListener('click', function() {
       if (confirm("Irreversibly clear everything?")) {
@@ -118,7 +111,7 @@ var editor = {
     document.getElementById('tile-redo').disabled = !this.history.canRedo();
   },
 
-  selectionDuplicate: function(evt) {
+  selectionDuplicate: function() {
     if (this.selectedObject) {
       var selected = this.selectedObject;
       this.clearSelection();
@@ -128,7 +121,7 @@ var editor = {
 
       this.selectObject(copy);
 
-      this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
+      this.mouseStart = this.mousePosition.clone();
       this.beginDrag(this.selectedObject);
     }
   },
@@ -193,6 +186,22 @@ var editor = {
       }.bind(this));
       action.forward();
       this.pushAction(action);
+    }
+  },
+
+  undo: function() {
+    if (this.history.canUndo()) {
+      this.clearSelection();
+      this.history.undo();
+      this.updateUndoRedoButtons();
+    }
+  },
+
+  redo: function() {
+    if (this.history.canRedo()) {
+      this.clearSelection();
+      this.history.redo();
+      this.updateUndoRedoButtons();
     }
   },
 
@@ -353,12 +362,48 @@ var editor = {
       evt = evt || window.event;
       if (evt.keyCode == 27) {
         this.cancel();
+        return;
+      }
+      
+      if (this.dragTarget) {
+        return;
+      }
+
+      switch (evt.keyCode) {
+        case 90: // z
+          if (evt.ctrlKey && evt.shiftKey) {
+            this.redo();
+          }
+          else if (evt.ctrlKey) {
+            this.undo();
+          }
+          break;
+        case 68: // d
+          this.selectionDuplicate(evt);
+          break;
+        case 88: // x
+        case 46: // delete
+          this.selectionDelete();
+          break;
+        case 82: // r
+          this.selectionRotate();
+          break;
+        case 74: // j
+          this.selectionMoveDown(evt);
+          break;
+        case 75: // k
+          this.selectionMoveUp(evt);
+          break;
+        default:
+          break;
       }
     }.bind(this));
 
     document.addEventListener('mousemove', function(evt) {
       evt.preventDefault();
       evt.stopPropagation();
+
+      this.mousePosition.set(evt.clientX, evt.clientY);
 
       this.drag(evt.clientX, evt.clientY);
     }.bind(this));
