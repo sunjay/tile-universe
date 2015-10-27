@@ -1,6 +1,11 @@
 {
   "tiles": [
     {
+      "model": "car1",
+      "name": "car1",
+      "image": "thumbs/car1.png"
+    },
+    {
       "model": "roadTile_001", 
       "name": "roadTile_001", 
       "image": "thumbs/roadTile_001.png"
