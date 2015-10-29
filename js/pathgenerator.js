@@ -141,7 +141,7 @@ function select(tileElement) {
 
   return models.load(tileElement.dataset.model).then(function(object) {
     selected = object;
-    var info = tileInfo(object);
+    var info = tileInfo(object.clone());
 
     var verticesGeometry = new THREE.Geometry();
     traverseGeometries(object, function(o) {
