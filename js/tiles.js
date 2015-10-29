@@ -2,6 +2,8 @@ var models = {
   modelCache: {},
   requestedModels: {},
 
+  tilesList: null,
+
   // Custom behaviour for specific models - called once after loading
   loadedCallbacks: {
     car1: function(object) {
@@ -68,6 +70,25 @@ var models = {
     this.requestedModels[modelName] = loadingPromise;
 
     return loadingPromise;
+  },
+
+  tiles: function() {
+    if (this.tilesList) {
+      return Promise.resolve(this.tilesList);
+    }
+
+    this.tilesList = xr.get('models/index.json').then(function(index) {
+      var tiles = index.tiles;
+      this.tilesList = tiles;
+      this.tilesList.forEach(function(tile) {
+        var thumbnail = URI("models/").filename(tile.image).toString();
+        tile.image = thumbnail;
+      });
+
+      return this.tilesList;
+    }.bind(this));
+
+    return this.tilesList;
   }
 }
 
