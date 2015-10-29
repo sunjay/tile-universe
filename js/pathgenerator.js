@@ -1,10 +1,32 @@
 var WINDOW_WIDTH = windowWidth();
 var WINDOW_HEIGHT = windowHeight();
 
+var views = [
+  {
+    left: 0.5,
+    bottom: 0,
+    width: 0.5,
+    height: 1.0,
+    position: new THREE.Vector3(0, 12, 0)
+  },
+  {
+    left: 0,
+    bottom: 0,
+    width: 0.5,
+    height: 1.0,
+    position: new THREE.Vector3(10, 12, -10)
+  },
+];
+
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
-camera.position.set(0, 12, 0);
-camera.lookAt(scene.position);
+views.forEach(function(view) {
+  var width = WINDOW_WIDTH * view.width;
+  var height = WINDOW_HEIGHT * view.height;
+  var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 1, 1000);
+  camera.position.set(view.position.x, view.position.y, view.position.z);
+
+  view.camera = camera;
+});
 
 var light = new THREE.PointLight(0xffffff, 0.5, 1000);
 light.position.set(100, 500, -100);
@@ -22,7 +44,31 @@ document.getElementById("main-container").appendChild(renderer.domElement);
 setup();
 
 function render() {
-	renderer.render(scene, camera);
+  renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
+
+  views.forEach(function(view) {
+    var camera = view.camera;
+
+    var width = Math.floor(WINDOW_WIDTH * view.width);
+    var height = Math.floor(WINDOW_HEIGHT * view.height);
+
+    var left = Math.floor(WINDOW_WIDTH  * view.left);
+    var bottom = Math.floor(WINDOW_HEIGHT * view.bottom);
+
+    renderer.setViewport(left, bottom, width, height);
+    renderer.setScissor(left, bottom, width, height);
+    renderer.enableScissorTest(true);
+
+    camera.left = -width/2;
+    camera.right = width/2;
+    camera.top = height/2;
+    camera.bottom = -height/2;
+    camera.lookAt(scene.position);
+
+    camera.updateProjectionMatrix();
+
+    renderer.render(scene, camera);
+  });
 }
 
 function loop() {
@@ -40,13 +86,8 @@ function windowHeight() {
 }
 
 function onWindowResize(event) {
-  var width = windowWidth();
-  var height = windowHeight();
-
-  camera.aspect = width / height;
-  camera.updateProjectionMatrix();
-
-  renderer.setSize(width, height);
+  var WINDOW_WIDTH = windowWidth();
+  var WINDOW_WIDTH = windowHeight();
 }
 window.addEventListener('resize', onWindowResize, false);
 
@@ -63,10 +104,10 @@ function setup() {
           var child = children.item(i);
           child.classList.remove("selected");
 
-          select(tileData);
         }
 
         tile.classList.add("selected");
+        select(tile);
       });
 
       var thumb = document.createElement('img');
@@ -76,5 +117,18 @@ function setup() {
       tilesParent.appendChild(tile);
     }.bind(this));
   }.bind(this));
+}
+
+var selected = null;
+function select(tileElement) {
+  if (selected) {
+    scene.children.remove(selected);
+  }
+
+  return models.load(tileElement.dataset.model).then(function(object) {
+    scene.add(object);
+
+    selected = object;
+  });
 }
 
