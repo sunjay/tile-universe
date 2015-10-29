@@ -7,7 +7,7 @@ var views = [
     bottom: 0,
     width: 0.5,
     height: 1.0,
-    position: new THREE.Vector3(3, 2, -1),
+    position: new THREE.Vector3(3, 10, -1),
     target: function() {
       return this.position.clone().setY(0);
     }
@@ -140,11 +140,20 @@ function select(tileElement) {
   }
 
   return models.load(tileElement.dataset.model).then(function(object) {
-    scene.add(object);
-
     selected = object;
-
     var info = tileInfo(object);
+
+    var verticesGeometry = new THREE.Geometry();
+    traverseGeometries(object, function(o) {
+      o.geometry.vertices.forEach(function(v) {
+        verticesGeometry.vertices.push(v);
+      });
+    });
+    var verticesMaterial = new THREE.PointsMaterial({color: 0xffff00, size: 0.3});
+    var points = new THREE.Points(verticesGeometry, verticesMaterial);
+    object.add(points);
+
+    scene.add(object);
   });
 }
 
