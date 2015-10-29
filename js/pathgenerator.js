@@ -138,7 +138,7 @@ function setup() {
 var selected = {};
 function select(tileElement) {
   if (selected.object) {
-    scene.remove(selected);
+    scene.remove(selected.object);
     selected = {};
   }
 
