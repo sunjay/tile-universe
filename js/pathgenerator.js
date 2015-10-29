@@ -143,6 +143,31 @@ function select(tileElement) {
     scene.add(object);
 
     selected = object;
+
+    var info = tileInfo(object);
   });
+}
+
+function traverse(object, callback) {
+  callback(object);
+
+  object.children.forEach(function(child) {
+    traverse(child, callback);
+  });
+}
+
+function traverseGeometries(object, callback) {
+  return traverse(object, function(found) {
+    if (found.geometry) {
+      callback(found);
+    }
+  });
+}
+
+function tileInfo(target) {
+  traverseGeometries(target, function(object) {
+    console.log(object.material.name);
+  });
+  return {};
 }
 
