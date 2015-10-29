@@ -2,6 +2,24 @@ var models = {
   modelCache: {},
   requestedModels: {},
 
+  // Custom behaviour for specific models - called once after loading
+  loadedCallbacks: {
+    car1: function(object) {
+      var children = object.children[0].children.forEach(function(child) {
+        if (child.material) {
+          if (child.material.name === "Car_Body") {
+            child.material.emissive.r = 0.8;
+          }
+          else if (child.material.name === "Car_Glass") {
+            child.material.emissive.r = 0.8;
+            child.material.emissive.g = 0.8;
+            child.material.emissive.b = 0.8;
+          }
+        }
+      });
+    }
+  },
+
   /**
    * Loads a model and material from the given name and returns a promise
    */
@@ -27,6 +45,11 @@ var models = {
         // Function when both resources are loaded
         function (object) {
           object.rotation.order = 'YXZ';
+
+          // Apply custom transformations on a model-to-model basis
+          if (this.loadedCallbacks[modelName]) {
+            this.loadedCallbacks[modelName](object);
+          }
 
           this.modelCache[modelName] = object;
           resolve(object.clone());
