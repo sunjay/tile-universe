@@ -1,5 +1,5 @@
-#tiles-container
+#tiles-container, #tile-info
 {
-  width: 50%;
+  width: 40%;
   height: 180px;
 }

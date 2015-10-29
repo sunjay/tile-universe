@@ -7,7 +7,7 @@ var views = [
     bottom: 0,
     width: 0.5,
     height: 1.0,
-    position: new THREE.Vector3(1, 2, -1),
+    position: new THREE.Vector3(3, 2, -1),
     target: function() {
       return this.position.clone().setY(0);
     }
@@ -19,7 +19,7 @@ var views = [
     height: 1.0,
     position: new THREE.Vector3(10, 5, -10),
     target: function() {
-      return scene.position;
+      return scene.position.clone().setY(scene.position.y - 2);
     }
   },
 ];
