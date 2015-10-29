@@ -7,14 +7,20 @@ var views = [
     bottom: 0,
     width: 0.5,
     height: 1.0,
-    position: new THREE.Vector3(0, 12, 0)
+    position: new THREE.Vector3(1, 2, -1),
+    target: function() {
+      return this.position.clone().setY(0);
+    }
   },
   {
     left: 0,
     bottom: 0,
     width: 0.5,
     height: 1.0,
-    position: new THREE.Vector3(10, 12, -10)
+    position: new THREE.Vector3(10, 5, -10),
+    target: function() {
+      return scene.position;
+    }
   },
 ];
 
@@ -22,7 +28,8 @@ var scene = new THREE.Scene();
 views.forEach(function(view) {
   var width = WINDOW_WIDTH * view.width;
   var height = WINDOW_HEIGHT * view.height;
-  var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 1, 1000);
+  var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 0, 1000);
+  camera.zoom = 50;
   camera.position.set(view.position.x, view.position.y, view.position.z);
 
   view.camera = camera;
@@ -35,6 +42,13 @@ scene.add(light);
 var light2 = new THREE.PointLight(0xffffff, 0.5, 1000);
 light2.position.set(-100, 500, 100);
 scene.add(light2);
+
+var axisHelper = new THREE.AxisHelper(52);
+axisHelper.position.z = 0.02;
+scene.add(axisHelper);
+
+var gridHelper = new THREE.GridHelper(20 * 3, 3);
+scene.add(gridHelper);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
@@ -63,7 +77,7 @@ function render() {
     camera.right = width/2;
     camera.top = height/2;
     camera.bottom = -height/2;
-    camera.lookAt(scene.position);
+    camera.lookAt(view.target());
 
     camera.updateProjectionMatrix();
 
@@ -122,7 +136,7 @@ function setup() {
 var selected = null;
 function select(tileElement) {
   if (selected) {
-    scene.children.remove(selected);
+    scene.remove(selected);
   }
 
   return models.load(tileElement.dataset.model).then(function(object) {
