@@ -11,3 +11,9 @@
   white-space: nowrap;
 }
 
+.object-controls button
+{
+  height: 26px;
+  font-size: 14px;
+}
+

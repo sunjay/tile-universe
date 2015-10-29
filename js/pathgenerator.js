@@ -135,14 +135,16 @@ function setup() {
   }.bind(this));
 }
 
-var selected = null;
+var selected = {};
 function select(tileElement) {
-  if (selected) {
+  if (selected.object) {
     scene.remove(selected);
+    selected = {};
   }
 
   return models.load(tileElement.dataset.model).then(function(object) {
-    selected = object;
+    selected = {};
+    selected.object = object;
     var info = tileInfo(object.clone());
 
     var verticesGeometry = new THREE.Geometry();
@@ -167,17 +169,34 @@ function select(tileElement) {
     var verticesMaterial = new THREE.PointsMaterial({color: 0xffff00, size: 0.3});
     var facesMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000});
 
-    var points = new THREE.Points(verticesGeometry, verticesMaterial);
-    object.add(points);
+    var debugVertices = new THREE.Points(verticesGeometry, verticesMaterial);
+    object.add(debugVertices);
 
-    var faceCover = new THREE.Mesh(facesGeometry, facesMaterial);
-    var normals = new THREE.FaceNormalsHelper(faceCover, 2, 0x0000FF, 2);
-    faceCover.add(normals);
-    object.add(faceCover);
+    var debugFaces = new THREE.Mesh(facesGeometry, facesMaterial);
+    var normals = new THREE.FaceNormalsHelper(debugFaces, 2, 0x0000FF, 2);
+    debugFaces.add(normals);
+
+    debugFaces.visible = false;
+    object.add(debugFaces);
+
+    selected.debugVertices = debugVertices;
+    selected.debugFaces = debugFaces;
 
     scene.add(object);
   });
 }
+
+document.getElementById("debug-faces").addEventListener("click", function() {
+  if (selected.debugFaces) {
+    selected.debugFaces.visible = !selected.debugFaces.visible;
+  }
+});
+
+document.getElementById("debug-vertices").addEventListener("click", function() {
+  if (selected.debugVertices) {
+    selected.debugVertices.visible = !selected.debugVertices.visible;
+  }
+});
 
 function applicableFaces(faces) {
   return faces.filter(function(face) {
