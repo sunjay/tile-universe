@@ -140,7 +140,7 @@ header .header-space
   width: 100px;
 }
 
-#tiles-container .tiles li:not(.selected) img:hover
+#tiles-container .tiles li:hover:not(.selected) img
 {
   box-shadow: 0px 0px 10px #FFEA00;
 }
