@@ -1,6 +1,8 @@
 var WINDOW_WIDTH = windowWidth();
 var WINDOW_HEIGHT = windowHeight();
 
+var Y_AXIS = new THREE.Vector3(0, 1, 0);
+
 var views = [
   {
     left: 0.5,
@@ -144,16 +146,43 @@ function select(tileElement) {
     var info = tileInfo(object.clone());
 
     var verticesGeometry = new THREE.Geometry();
+    var facesGeometry = new THREE.Geometry();
     traverseGeometries(object, function(o) {
       o.geometry.vertices.forEach(function(v) {
         verticesGeometry.vertices.push(v);
       });
+
+      applicableFaces(o.geometry.faces).forEach(function(f) {
+        facesGeometry.vertices.push(o.geometry.vertices[f.a].clone());
+        var a = facesGeometry.vertices.length - 1;
+        facesGeometry.vertices.push(o.geometry.vertices[f.b].clone());
+        var b = facesGeometry.vertices.length - 1;
+        facesGeometry.vertices.push(o.geometry.vertices[f.c].clone());
+        var c = facesGeometry.vertices.length - 1;
+
+        var newFace = new THREE.Face3(a, b, c, f.normal.clone(), f.color.clone(), f.materialIndex);
+        facesGeometry.faces.push(newFace);
+      });
     });
     var verticesMaterial = new THREE.PointsMaterial({color: 0xffff00, size: 0.3});
+    var facesMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000});
+
     var points = new THREE.Points(verticesGeometry, verticesMaterial);
     object.add(points);
 
+    var faceCover = new THREE.Mesh(facesGeometry, facesMaterial);
+    var normals = new THREE.FaceNormalsHelper(faceCover, 2, 0x0000FF, 2);
+    faceCover.add(normals);
+    object.add(faceCover);
+
     scene.add(object);
+  });
+}
+
+function applicableFaces(faces) {
+  return faces.filter(function(face) {
+    // Returns if the face is in any way upright
+    return Math.abs(Y_AXIS.angleTo(face.normal)) < Math.PI/2;
   });
 }
 
