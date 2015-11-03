@@ -187,7 +187,6 @@ function setupDebugObjects(object, selected) {
     var edges = new THREE.WireframeHelper(debugFaces, 0xFFFF00);
     debugFaces.add(edges);
 
-    debugFaces.visible = false;
     object.add(debugFaces);
 
     selected.debugVertices = debugVertices;
@@ -196,8 +195,9 @@ function setupDebugObjects(object, selected) {
 
 function setupDebugPaths(object, selected, info) {
   var pathsGeometry = new THREE.Geometry();
-  info.nodes.forEach(function(n) {
-    pathsGeometry.vertices.push(n.position);
+  Object.keys(info.nodes).forEach(function(nid) {
+    var node = info.nodes[nid];
+    pathsGeometry.vertices.push(node.position);
   });
 
   var pathsMaterial = new THREE.PointsMaterial({color: 0x00FF00, size: 0.3});
@@ -250,20 +250,61 @@ function traverseGeometries(object, callback) {
 }
 
 function tileInfo(target) {
-  var info = {nodes: [], adjacents: {}};
+  var info = {nodes: {}};
 
   traverseGeometries(target, function(o) {
+    // edge hash : related node
+    var seenEdges = {};
     applicableFaces(o.geometry.faces).forEach(function(f) {
-      var midpoint = o.geometry.vertices[f.a].clone().add(o.geometry.vertices[f.b]).add(o.geometry.vertices[f.c]).divideScalar(3);
-      info.nodes.push(new Node(midpoint, o.material));
+      var v1 = o.geometry.vertices[f.a];
+      var v2 = o.geometry.vertices[f.b];
+      var v3 = o.geometry.vertices[f.c];
+      var midpoint = v1.clone().add(v2).add(v3).divideScalar(3);
+
+      var node = new Node(midpoint, o.material);
+      info.nodes[node.id] = node;
+
+      var faceVerts = [v1, v2, v3];
+      // This is a little wasteful because each hashedEdge is actually
+      // inserted twice
+      faceVerts.forEach(function(va) {
+        faceVerts.forEach(function(vb) {
+          if (va.equals(vb)) {
+            return;
+          }
+          var hashedEdge = hashEdge(va, vb);
+
+          if (seenEdges[hashedEdge] && seenEdges[hashedEdge] !== node) {
+            node.addAdjacent(seenEdges[hashedEdge]);
+            seenEdges[hashedEdge].addAdjacent(node);
+          }
+          seenEdges[hashedEdge] = node;
+        });
+      });
     });
   });
   return info;
 }
 
+function hashEdge(a, b) {
+  return [[a.x, b.x], [a.y, b.y], [a.z, b.z]].map(hashPair).join(":");
+}
 
+function hashPair(p) {
+  var a = p[0];
+  var b = p[1];
+  return ((a < b) ? [a, b] : [b, a]).join(",");
+}
+
+var idx = 1;
 function Node(position, material) {
+  this.id = idx++;
   this.position = position;
   this.material = material;
+  this.adjacents = [];
+}
+
+Node.prototype.addAdjacent = function(node) {
+  this.adjacents.push(node.id);
 }
 
