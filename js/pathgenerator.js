@@ -145,11 +145,13 @@ function select(tileElement) {
   return models.load(tileElement.dataset.model).then(function(object) {
     selected = {};
     selected.object = object;
-    var info = tileInfo(object.clone());
+    window.info = tileInfo(object.clone());
 
     setupDebugObjects(object, selected);
 
-    setupDebugPaths(object, selected, info);
+    setTimeout(function() {
+      setupDebugPaths(object, selected, info);
+    }, 100);
 
     scene.add(object);
   });
@@ -185,6 +187,7 @@ function setupDebugObjects(object, selected) {
     var normals = new THREE.FaceNormalsHelper(debugFaces, 2, 0x0000FF, 2);
     debugFaces.add(normals);
     var edges = new THREE.WireframeHelper(debugFaces, 0xFFFF00);
+    edges.position.y += 0.1;
     debugFaces.add(edges);
 
     object.add(debugFaces);
@@ -194,18 +197,67 @@ function setupDebugObjects(object, selected) {
 }
 
 function setupDebugPaths(object, selected, info) {
-  var pathsGeometry = new THREE.Geometry();
+  var graph = new THREE.Group();
+  graph.position.y += 0.1;
+
+  var nodesGeometry = new THREE.Geometry();
+
   Object.keys(info.nodes).forEach(function(nid) {
     var node = info.nodes[nid];
-    pathsGeometry.vertices.push(node.position);
+    nodesGeometry.vertices.push(node.position);
   });
 
-  var pathsMaterial = new THREE.PointsMaterial({color: 0x00FF00, size: 0.3});
+  var nodesMaterial = new THREE.PointsMaterial({color: 0x00FF00, size: 0.3});
 
-  var debugPaths = new THREE.Points(pathsGeometry, pathsMaterial);
-  object.add(debugPaths);
+  var nodes = new THREE.Points(nodesGeometry, nodesMaterial);
+  graph.add(nodes);
 
-  selected.debugPaths = debugPaths;
+  var seen = new Set();
+  Object.keys(info.nodes).forEach(function(nid) {
+    if (seen.has(nid)) {
+      return;
+    }
+
+    var node = info.nodes[nid];
+    var pathEdgeGeometries = graphPathEdges(info.nodes, node, seen);
+    var pathEdgeMaterial = new THREE.LineBasicMaterial({color: 0x00FF00});
+    pathEdgeGeometries.forEach(function(geo) {
+      graph.add(new THREE.Line(geo, pathEdgeMaterial));
+    });
+  });
+
+  object.add(graph);
+  selected.debugPaths = graph;
+}
+
+function graphPathEdges(nodes, start, seen) {
+  var geometry = new THREE.Geometry();
+  var geometries = [geometry];
+
+  var current = start;
+  while (current) {
+    geometry.vertices.push(current.position.clone());
+    seen.add(current.id);
+
+    var next = 0;
+    while (next < current.adjacents.length && seen.has(current.adjacents[next])) {
+      next += 1;
+    }
+
+    current.adjacents.slice(next + 1).forEach(function(aid) {
+      if (seen.has(aid)) {
+        return;
+      }
+      var node = nodes[aid];
+      var nodeGeometries = graphPathEdges(nodes, node, seen);
+      nodeGeometries[0].vertices.unshift(current);
+      geometries.push.apply(geometries, nodeGeometries);
+    });
+
+    current = nodes[current.adjacents[next]];
+  }
+
+  return geometries;
 }
 
 document.getElementById("debug-faces").addEventListener("click", function() {
