@@ -197,20 +197,30 @@ function setupDebugObjects(object, selected) {
 }
 
 function setupDebugPaths(object, selected, info) {
+  var color = 0x00FF00;
+  var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
   var graph = new THREE.Group();
   graph.position.y += 0.1;
 
   var nodesGeometry = new THREE.Geometry();
-
   Object.keys(info.nodes).forEach(function(nid) {
     var node = info.nodes[nid];
     nodesGeometry.vertices.push(node.position);
+
+    var text = new THREE.TextGeometry(nid.toString(), {size: 0.2, height: 0.05});
+    var textObj = new THREE.Mesh(text, textMaterial);
+    textObj.rotation.set(Math.PI/2, Math.PI, -Math.PI/2)
+    textObj.position.set(node.position.x + 0.1, node.position.y + 0.1, node.position.z + 0.1);
+    graph.add(textObj);
   });
 
-  var nodesMaterial = new THREE.PointsMaterial({color: 0x00FF00, size: 0.3});
+  var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
 
   var nodes = new THREE.Points(nodesGeometry, nodesMaterial);
   graph.add(nodes);
+
+  var pathEdgeMaterial = new THREE.LineBasicMaterial({color: color});
 
   var seen = new Set();
   Object.keys(info.nodes).forEach(function(nid) {
@@ -220,7 +230,6 @@ function setupDebugPaths(object, selected, info) {
 
     var node = info.nodes[nid];
     var pathEdgeGeometries = graphPathEdges(info.nodes, node, seen);
-    var pathEdgeMaterial = new THREE.LineBasicMaterial({color: 0x00FF00});
     pathEdgeGeometries.forEach(function(geo) {
       graph.add(new THREE.Line(geo, pathEdgeMaterial));
     });
