@@ -1,0 +1,19 @@
+#tiles-container, #tile-info
+{
+  width: 40%;
+  height: 180px;
+}
+
+#tiles-container .tiles
+{
+  overflow: hidden;
+  overflow-x: scroll;
+  white-space: nowrap;
+}
+
+.object-controls button
+{
+  height: 26px;
+  font-size: 14px;
+}
+
