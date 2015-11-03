@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Path Data Generator</title>
+
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css" rel="stylesheet" type="text/css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700" rel="stylesheet" type="text/css">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+  <link href="css/index.css" rel="stylesheet" type="text/css">
+  <link href="css/pathgenerator.css" rel="stylesheet" type="text/css">
+</head>
+<body>
+  <header>
+    <div class="right">
+      <div class="object-controls">
+        TOGGLE:
+        <button id="debug-faces">Faces</button>
+        <button id="debug-vertices">Vertices</button>
+        <button id="debug-paths">Paths</button>
+        <button id="debug-labels">Labels</button>
+      </div>
+      <div class="file-controls">
+        <button id="tile-export-paths" title="Export">Export All</button>
+      </div>
+    </div>
+    <div class="left">
+      <span class="site-title">Path Data Generator</span>
+    </div>
+  </header>
+  <aside id="tiles-container" class="panel panel-left panel-bottom">
+    <h3>Choose Tile</h3>
+    <ul class="tiles"></ul>
+  </aside>
+  <aside id="tile-info" class="panel panel-right panel-bottom">
+    <h3>Tile Path Information</h3>
+    <p>Select a tile to see information about it here</p>
+  </aside>
+
+  <main id="main-container"></main>
+
+  <script type="text/javascript" src="js/lib/xr/xr.js"></script>
+  <script type="text/javascript" src="js/lib/uri/URI.js"></script>
+  <script type="text/javascript" src="js/lib/filesaver/FileSaver.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/three.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/loaders/MTLLoader.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/loaders/OBJMTLLoader.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/geometries/TextGeometry.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/utils/FontUtils.js"></script>
+  <script type="text/javascript" src="js/lib/threejs/fonts/helvetiker_regular.typeface.js"></script>
+
+  <script type="text/javascript" src="js/history-queue.js"></script>
+  <script type="text/javascript" src="js/tiles.js"></script>
+  <script type="text/javascript" src="js/pathgenerator.js"></script>
+</body>
+</html>
