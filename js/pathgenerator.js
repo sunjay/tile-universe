@@ -203,6 +203,10 @@ function setupDebugPaths(object, selected, info) {
   var graph = new THREE.Group();
   graph.position.y += 0.1;
 
+  var debugLabels = new THREE.Group();
+  debugLabels.visible = false;
+  graph.add(debugLabels);
+
   var nodesGeometry = new THREE.Geometry();
   Object.keys(info.nodes).forEach(function(nid) {
     var node = info.nodes[nid];
@@ -212,7 +216,7 @@ function setupDebugPaths(object, selected, info) {
     var textObj = new THREE.Mesh(text, textMaterial);
     textObj.rotation.set(Math.PI/2, Math.PI, -Math.PI/2)
     textObj.position.set(node.position.x + 0.1, node.position.y + 0.1, node.position.z + 0.1);
-    graph.add(textObj);
+    debugLabels.add(textObj);
   });
 
   var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
@@ -237,6 +241,8 @@ function setupDebugPaths(object, selected, info) {
 
   object.add(graph);
   selected.debugPaths = graph;
+
+  selected.debugLabels = debugLabels;
 }
 
 function graphPathEdges(nodes, start, seen) {
@@ -259,7 +265,7 @@ function graphPathEdges(nodes, start, seen) {
       }
       var node = nodes[aid];
       var nodeGeometries = graphPathEdges(nodes, node, seen);
-      nodeGeometries[0].vertices.unshift(current);
+      nodeGeometries[0].vertices.unshift(current.position.clone());
       geometries.push.apply(geometries, nodeGeometries);
     });
 
@@ -284,6 +290,12 @@ document.getElementById("debug-vertices").addEventListener("click", function() {
 document.getElementById("debug-paths").addEventListener("click", function() {
   if (selected.debugPaths) {
     selected.debugPaths.visible = !selected.debugPaths.visible;
+  }
+});
+
+document.getElementById("debug-labels").addEventListener("click", function() {
+  if (selected.debugLabels) {
+    selected.debugLabels.visible = !selected.debugLabels.visible;
   }
 });
 
