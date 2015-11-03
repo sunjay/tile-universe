@@ -147,6 +147,15 @@ function select(tileElement) {
     selected.object = object;
     var info = tileInfo(object.clone());
 
+    setupDebugObjects(object, selected);
+
+    setupDebugPaths(object, selected, info);
+
+    scene.add(object);
+  });
+}
+
+function setupDebugObjects(object, selected) {
     var verticesGeometry = new THREE.Geometry();
     var facesGeometry = new THREE.Geometry();
     traverseGeometries(object, function(o) {
@@ -166,7 +175,7 @@ function select(tileElement) {
         facesGeometry.faces.push(newFace);
       });
     });
-    var verticesMaterial = new THREE.PointsMaterial({color: 0xffff00, size: 0.3});
+    var verticesMaterial = new THREE.PointsMaterial({color: 0xFFFF00, size: 0.3});
     var facesMaterial = new THREE.MeshBasicMaterial({color: 0xFF0000});
 
     var debugVertices = new THREE.Points(verticesGeometry, verticesMaterial);
@@ -175,15 +184,28 @@ function select(tileElement) {
     var debugFaces = new THREE.Mesh(facesGeometry, facesMaterial);
     var normals = new THREE.FaceNormalsHelper(debugFaces, 2, 0x0000FF, 2);
     debugFaces.add(normals);
+    var edges = new THREE.WireframeHelper(debugFaces, 0xFFFF00);
+    debugFaces.add(edges);
 
     debugFaces.visible = false;
     object.add(debugFaces);
 
     selected.debugVertices = debugVertices;
     selected.debugFaces = debugFaces;
+}
 
-    scene.add(object);
+function setupDebugPaths(object, selected, info) {
+  var pathsGeometry = new THREE.Geometry();
+  info.nodes.forEach(function(n) {
+    pathsGeometry.vertices.push(n.position);
   });
+
+  var pathsMaterial = new THREE.PointsMaterial({color: 0x00FF00, size: 0.3});
+
+  var debugPaths = new THREE.Points(pathsGeometry, pathsMaterial);
+  object.add(debugPaths);
+
+  selected.debugPaths = debugPaths;
 }
 
 document.getElementById("debug-faces").addEventListener("click", function() {
@@ -195,6 +217,12 @@ document.getElementById("debug-faces").addEventListener("click", function() {
 document.getElementById("debug-vertices").addEventListener("click", function() {
   if (selected.debugVertices) {
     selected.debugVertices.visible = !selected.debugVertices.visible;
+  }
+});
+
+document.getElementById("debug-paths").addEventListener("click", function() {
+  if (selected.debugPaths) {
+    selected.debugPaths.visible = !selected.debugPaths.visible;
   }
 });
 
@@ -222,9 +250,20 @@ function traverseGeometries(object, callback) {
 }
 
 function tileInfo(target) {
-  traverseGeometries(target, function(object) {
-    console.log(object.material.name);
+  var info = {nodes: [], adjacents: {}};
+
+  traverseGeometries(target, function(o) {
+    applicableFaces(o.geometry.faces).forEach(function(f) {
+      var midpoint = o.geometry.vertices[f.a].clone().add(o.geometry.vertices[f.b]).add(o.geometry.vertices[f.c]).divideScalar(3);
+      info.nodes.push(new Node(midpoint, o.material));
+    });
   });
-  return {};
+  return info;
+}
+
+
+function Node(position, material) {
+  this.position = position;
+  this.material = material;
 }
 
