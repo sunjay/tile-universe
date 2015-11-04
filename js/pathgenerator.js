@@ -337,7 +337,7 @@ function tileInfo(target) {
       var v3 = o.geometry.vertices[f.c];
       var midpoint = v1.clone().add(v2).add(v3).divideScalar(3);
 
-      var node = new Node(midpoint, o.material);
+      var node = new Node(midpoint, o.material, f.clone());
       info.nodes[node.id] = node;
 
       var faceVerts = [v1, v2, v3];
@@ -389,10 +389,11 @@ function isOuterEdge(box, a, b) {
 }
 
 var idx = 1;
-function Node(position, material) {
+function Node(position, material, face) {
   this.id = idx++;
   this.position = position;
   this.material = material;
+  this.face = face;
   this.adjacents = [];
 }
 
