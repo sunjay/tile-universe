@@ -324,6 +324,9 @@ function traverseGeometries(object, callback) {
 
 function tileInfo(target) {
   var info = {nodes: {}};
+  Node.reset_ids();
+
+  var boundingBox = new THREE.Box3().setFromObject(target);
 
   traverseGeometries(target, function(o) {
     // edge hash : related node
@@ -346,6 +349,15 @@ function tileInfo(target) {
             return;
           }
           var hashedEdge = hashEdge(va, vb);
+          if (!seenEdges[hashedEdge] && isOuterEdge(boundingBox, va, vb)) {
+            // create new outer node at the midpoint of this edge
+            var edgeMid = va.clone().add(vb).divideScalar(2);
+            var edgeNode = new Node(edgeMid, o.material);
+            info.nodes[edgeNode.id] = edgeNode;
+
+            node.addAdjacent(edgeNode);
+            edgeNode.addAdjacent(node);
+          }
 
           if (seenEdges[hashedEdge] && seenEdges[hashedEdge] !== node) {
             node.addAdjacent(seenEdges[hashedEdge]);
@@ -369,6 +381,13 @@ function hashPair(p) {
   return ((a < b) ? [a, b] : [b, a]).join(",");
 }
 
+function isOuterEdge(box, a, b) {
+  return (a.x === box.min.x && b.x === box.min.x)
+    || (a.x === box.max.x && b.x === box.max.x)
+    || (a.z === box.min.z && b.z === box.min.z)
+    || (a.z === box.max.z && b.z === box.max.z);
+}
+
 var idx = 1;
 function Node(position, material) {
   this.id = idx++;
@@ -377,7 +396,11 @@ function Node(position, material) {
   this.adjacents = [];
 }
 
+Node.reset_ids = function() {
+  idx = 1;
+};
+
 Node.prototype.addAdjacent = function(node) {
   this.adjacents.push(node.id);
-}
+};
 
