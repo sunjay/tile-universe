@@ -324,6 +324,7 @@ function traverseGeometries(object, callback) {
 
 function tileInfo(target) {
   var info = {nodes: {}};
+  Node.reset_ids();
 
   traverseGeometries(target, function(o) {
     // edge hash : related node
@@ -377,7 +378,11 @@ function Node(position, material) {
   this.adjacents = [];
 }
 
+Node.reset_ids = function() {
+  idx = 1;
+};
+
 Node.prototype.addAdjacent = function(node) {
   this.adjacents.push(node.id);
-}
+};
 
