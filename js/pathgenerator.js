@@ -115,13 +115,6 @@ function setup() {
       tile.dataset.name = tileData.name;
       tile.dataset.model = tileData.model;
       tile.addEventListener('click', function(evt) {
-        var children = tilesParent.getElementsByClassName("selected");
-        for (var i = 0; i < children.length; i++) {
-          var child = children.item(i);
-          child.classList.remove("selected");
-        }
-
-        tile.classList.add("selected");
         select(tile);
       });
 
@@ -135,17 +128,30 @@ function setup() {
 }
 
 var selected = {};
-function select(tileElement) {
+function select(tileElement, displayInfo) {
+  displayInfo = displayInfo === undefined ? true : displayInfo;
   if (selected.object) {
     scene.remove(selected.object);
     selected = {};
   }
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  var children = tilesParent.getElementsByClassName("selected");
+  for (var i = 0; i < children.length; i++) {
+    var child = children.item(i);
+    child.classList.remove("selected");
+  }
+  tileElement.classList.add("selected");
 
   return models.load(tileElement.dataset.model).then(function(object) {
+    scene.add(object);
+
     selected = {};
     selected.object = object;
-    window.info = tileInfo(object.clone());
+    var info = tileInfo(object.clone());
 
+    if (!displayInfo) {
+      return;
+    }
     setupDebugObjects(object, selected);
 
     setTimeout(function() {
@@ -153,13 +159,11 @@ function select(tileElement) {
 
       setTimeout(function() {
         var refinedNodes = refineGraph(info.nodes, info.boundingBox);
-        var refinedInfo = Object.assign(info, {nodes: refinedNodes});
+        var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
         object.remove(selected.debugPaths);
         setupDebugPaths(object, selected, refinedInfo);
       }, 1000);
     }, 100);
-
-    scene.add(object);
   });
 }
 
@@ -498,4 +502,97 @@ Node.prototype.remove = function(nodes) {
   }.bind(this));
   delete nodes[this.id];
 };
+
+Node.prototype.toJSON = function() {
+  return {
+    id: this.id,
+    position: this.position.toArray(),
+    material: this.material.name,
+    adjacents: this.adjacents
+  };
+};
+
+/**** Exporting ****/
+document.getElementById("export-paths").addEventListener("click", function() {
+  disableAll();
+
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  var tiles = tilesParent.children;
+
+  exportNext(tiles, 0).then(function(exported) {
+    console.log("Resulting data");
+    console.log(exported);
+    var content = JSON.stringify(exported, null, 2);
+    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
+    reenableAll();
+    saveAs(blob, "pathdata.json");
+  });
+
+});
+
+function exportNext(tiles, currentIndex, aggregate) {
+  aggregate = aggregate || {};
+  var tileElement = tiles[currentIndex];
+
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  tilesParent.scrollLeft = tileElement.offsetLeft;
+  return select(tileElement, false).then(function() {
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        resolve(processModel(tileElement.dataset.model).then(function(tileInfo) {
+          setupDebugPaths(selected.object, selected, tileInfo);
+          aggregate[tileElement.dataset.name] = {
+            boundingBox: {
+              min: tileInfo.boundingBox.min.toArray(),
+              max: tileInfo.boundingBox.max.toArray()
+            },
+            nodes: Object.keys(tileInfo.nodes).map(function(nid) {
+              return tileInfo.nodes[nid].toJSON();
+            })
+          };
+
+          currentIndex++;
+          if (currentIndex < tiles.length) {
+            return new Promise(function(resolve, reject) {
+              setTimeout(function() {
+                resolve(exportNext(tiles, currentIndex, aggregate));
+              }, 10);
+            });
+          }
+          else {
+            return Promise.resolve(aggregate);
+          }
+        }));
+      }, 0);
+    });
+  });
+}
+
+function processModel(model) {
+  return models.load(model).then(function(object) {
+    var info = tileInfo(object.clone());
+    var refinedNodes = refineGraph(info.nodes, info.boundingBox);
+    var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
+
+    return refinedInfo;
+  });
+}
+
+var disabled = [];
+function disableAll() {
+  var buttons = document.getElementsByTagName("button");
+  for (var i = 0; i < buttons.length; i++) {
+    var b = buttons[i];
+    if (!b.disabled) {
+      disabled.push(b);
+      b.disabled = true;
+    }
+  }
+}
+
+function reenableAll() {
+  disabled.forEach(function(b) {
+    b.disabled = false;
+  });
+}
 
