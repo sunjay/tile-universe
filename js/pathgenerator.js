@@ -31,7 +31,7 @@ views.forEach(function(view) {
   var width = WINDOW_WIDTH * view.width;
   var height = WINDOW_HEIGHT * view.height;
   var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 0, 1000);
-  camera.zoom = 50;
+  camera.zoom = 60;
   camera.position.set(view.position.x, view.position.y, view.position.z);
 
   view.camera = camera;
@@ -119,7 +119,6 @@ function setup() {
         for (var i = 0; i < children.length; i++) {
           var child = children.item(i);
           child.classList.remove("selected");
-
         }
 
         tile.classList.add("selected");
@@ -151,6 +150,13 @@ function select(tileElement) {
 
     setTimeout(function() {
       setupDebugPaths(object, selected, info);
+
+      setTimeout(function() {
+        var refinedNodes = refineGraph(info.nodes, info.boundingBox);
+        var refinedInfo = Object.assign(info, {nodes: refinedNodes});
+        object.remove(selected.debugPaths);
+        setupDebugPaths(object, selected, refinedInfo);
+      }, 1000);
     }, 100);
 
     scene.add(object);
@@ -323,10 +329,11 @@ function traverseGeometries(object, callback) {
 }
 
 function tileInfo(target) {
-  var info = {nodes: {}};
+  var info = {nodes: {}, boundingBox: null};
   Node.reset_ids();
 
   var boundingBox = new THREE.Box3().setFromObject(target);
+  info.boundingBox = boundingBox;
 
   traverseGeometries(target, function(o) {
     // edge hash : related node
@@ -371,6 +378,42 @@ function tileInfo(target) {
   return info;
 }
 
+function refineGraph(nodes, boundingBox) {
+  var seen = new Set();
+
+  var closenessThreshold = 0.4;
+
+  // Technically we should clone nodes here...but oh well!
+  Object.keys(nodes).forEach(function(nid) {
+    if (seen.has(nid) || !nodes[nid]) {
+      return;
+    }
+    var node = nodes[nid];
+    seen.add(nid);
+
+    if (isEdgeVertex(boundingBox, node.position)) {
+      return;
+    }
+
+    node.adjacents.forEach(function(aid) {
+      if (seen.has(aid) || !nodes[aid]) {
+        return;
+      }
+      var adj = nodes[aid];
+      if (isEdgeVertex(boundingBox, adj.position)) {
+        return;
+      }
+
+      if (node.position.distanceTo(adj.position) <= closenessThreshold) {
+        node.mergeWith(adj, nodes);
+        adj.remove(nodes);
+      }
+    });
+  });
+
+  return nodes;
+}
+
 function hashEdge(a, b) {
   return [[a.x, b.x], [a.y, b.y], [a.z, b.z]].map(hashPair).join(":");
 }
@@ -388,6 +431,13 @@ function isOuterEdge(box, a, b) {
     || (a.z === box.max.z && b.z === box.max.z);
 }
 
+function isEdgeVertex(box, a) {
+  return (a.x === box.min.x
+    || a.x === box.max.x
+    || a.z === box.min.z
+    || a.z === box.max.z);
+}
+
 var idx = 1;
 function Node(position, material, face) {
   this.id = idx++;
@@ -402,6 +452,50 @@ Node.reset_ids = function() {
 };
 
 Node.prototype.addAdjacent = function(node) {
+  if (!node.id) {
+    throw new Error("No node ID");
+  }
+  if (this.adjacents.indexOf(node.id) >= 0) {
+    return;
+  }
   this.adjacents.push(node.id);
+};
+
+Node.prototype.mergeWith = function(node, nodes) {
+  if (this.material !== node.material) {
+    throw new Error("Attempt to merge two different materials");
+  }
+  this.position.add(node.position).divideScalar(2);
+  //losing face information for other node
+
+  // merge adjacents
+  this.adjacents.push.apply(this.adjacents, node.adjacents);
+  this.adjacents = Array.from(new Set(this.adjacents));
+
+  Array.from(this.adjacents).forEach(function(aid) {
+    var adj = nodes[aid];
+    if (!adj) {
+      this.adjacents.splice(this.adjacents.indexOf(aid), 1);
+      return;
+    }
+    adj.addAdjacent(this);
+  }.bind(this));
+};
+
+Node.prototype.remove = function(nodes) {
+  var id = this.id;
+  this.adjacents.forEach(function(aid) {
+    var adj = nodes[aid];
+    if (!adj) {
+      this.adjacents.splice(this.adjacents.indexOf(aid), 1);
+      return;
+    }
+    var index = adj.adjacents.indexOf(id);
+    if (index < 0) {
+      throw new Error("Attempt to remove adjacent that doesn't exist");
+    }
+    adj.adjacents.splice(index, 1);
+  }.bind(this));
+  delete nodes[this.id];
 };
 
