@@ -311,6 +311,7 @@ var editor = {
     var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
     controls.dampingFactor = 5;
+    controls.zoomSpeed = 1.2;
 
     this.viewportControls = controls;
   },
