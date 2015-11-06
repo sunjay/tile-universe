@@ -56,6 +56,7 @@ var editor = {
       var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
       tiles.forEach(function(tileData) {
         var tile = document.createElement('li');
+        tile.title = tileData.name;
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
         tile.addEventListener('mousedown', function(evt) {
