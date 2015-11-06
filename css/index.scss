@@ -10,6 +10,10 @@ html, body
   overflow: hidden;
 }
 
+.hidden {
+  display: none !important;
+}
+
 .pulse {
   animation: pulsate 0.8s ease-out;
   animation-iteration-count: 3; 
@@ -196,6 +200,13 @@ button.btn-success
   border-color: #64dd17;
 }
 
+.button.btn-primary,
+button.btn-primary
+{
+  background: #FFD400;
+  border-color: #DCB700;
+}
+
 .button:focus,
 button:focus
 {
@@ -214,6 +225,13 @@ button.btn-success:not(:disabled):hover
 {
   background: #64dd17;
   border-color: #58BB18;
+}
+
+.button.btn-primary:not(:disabled):hover,
+button.btn-primary:not(:disabled):hover
+{
+  background: #D2AE00;
+  border-color: #B39500;
 }
 
 .button:not(:disabled):active,

@@ -3,6 +3,9 @@ var GRID_LINES = 20;
 var GRID_SIZE = TILE_SIZE * GRID_LINES;
 var HEIGHT_DELTA = 0.10;
 
+var MODE_EDIT = "edit-mode";
+var MODE_PLAY = "play-mode";
+
 var editor = {
   scene: null,
   renderer: null,
@@ -11,6 +14,8 @@ var editor = {
   raycaster: null,
   modelsGroup: null,
   groundPlane: null,
+
+  mode: null,
 
   history: null,
 
@@ -38,6 +43,8 @@ var editor = {
 
     this.history = new HistoryQueue();
 
+    this.enableEditMode();
+
     this.populateTilesPanel();
     this.addGridAndAxis();
 
@@ -48,6 +55,66 @@ var editor = {
 
     if (!this.loadLocal()) {
       this.loadRemote("examples/park.json");
+    }
+  },
+
+  enableEditMode: function() {
+    this.mode = MODE_EDIT;
+
+    var button = document.getElementById("switch-modes");
+    button.textContent = "Play";
+    button.classList.remove("btn-primary");
+
+    this.hideElements([
+      document.getElementsByClassName("view-controls")[0]
+    ]);
+    this.showElements([
+      document.getElementsByClassName("history-controls")[0],
+      document.getElementsByClassName("file-controls")[0],
+      document.getElementById("tiles-container"),
+      document.getElementById("controls-container")
+    ]);
+  },
+
+  enablePlayMode: function() {
+    this.mode = MODE_PLAY;
+
+    var button = document.getElementById("switch-modes");
+    button.textContent = "Edit";
+    button.classList.add("btn-primary");
+
+    this.showElements([
+      document.getElementsByClassName("view-controls")[0]
+    ]);
+    this.hideElements([
+      document.getElementsByClassName("history-controls")[0],
+      document.getElementsByClassName("file-controls")[0],
+      document.getElementById("tiles-container"),
+      document.getElementById("controls-container")
+    ]);
+  },
+
+  hideElements: function(elems) {
+    elems.forEach(function(e) {
+      e.classList.add('hidden');
+    });
+  },
+
+  showElements: function(elems) {
+    elems.forEach(function(e) {
+      e.classList.remove('hidden');
+    });
+  },
+
+  toggleMode: function() {
+    if (this.mode === MODE_EDIT) {
+      this.enablePlayMode();
+    }
+    else if (this.mode === MODE_PLAY) {
+      this.enableEditMode();
+    }
+    else {
+      throw new Error("You messed up...I don't know how to toggle mode: " + this.mode);
     }
   },
 
@@ -84,7 +151,12 @@ var editor = {
 
   setupControls: function() {
     this.setupViewportControls();
+    this.setupTileControls();
 
+    document.getElementById('switch-modes').addEventListener('click', this.toggleMode.bind(this));
+  },
+
+  setupTileControls: function() {
     document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
