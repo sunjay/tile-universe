@@ -29,17 +29,6 @@ Graph.prototype.reduce = function() {
   //TODO
 };
 
-/**
- * Returns an array of THREE.Geometry objects representing
- * the paths throughout the entire graph
- * Multiple geometries are required because THREE represents
- * one line per geometry. In other words, branching is only
- * possible with multiple geometries.
- */
-Graph.prototype.toGeometries = function() {
-  //TODO
-};
-
 function Node(id, position, material) {
   this.id = id;
   this.position = position;
