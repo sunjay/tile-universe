@@ -432,6 +432,40 @@ function refineByDistance(nodes, boundingBox) {
 
 function refineByAdjacentEdges(nodes, boundingBox) {
   // Merge adjacent non-edge nodes that both have adjacent edge nodes
+  var isEdge = function(v) {
+    return isEdgeVertex(boundingBox, v);
+  };
+  var hasEdgeAdjacents = function(n) {
+    return n.adjacents.some(function(aid) {
+      return nodes[aid] && isEdge(nodes[aid].position);
+    });
+  };
+
+  Object.keys(nodes).forEach(function(nid) {
+    if (!nodes[nid]) {
+      return;
+    }
+    var node = nodes[nid];
+    if (isEdge(node.position) || !hasEdgeAdjacents(node)) {
+      console.log(node.id, isEdge(node.position));
+      console.log(node.id, hasEdgeAdjacents(node));
+      return;
+    }
+
+    Array.from(node.adjacents).forEach(function(aid) {
+      if (!nodes[aid]) {
+        return;
+      }
+      var adj = nodes[aid];
+      if (isEdge(adj.position) || !hasEdgeAdjacents(adj)) {
+        console.log(2);
+        return;
+      }
+
+      node.mergeWith(adj, nodes);
+      adj.remove(nodes);
+    });
+  });
   return nodes;
 }
 
