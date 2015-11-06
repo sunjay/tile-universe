@@ -64,6 +64,14 @@ var editor = {
     }
   },
 
+  isPlayMode: function() {
+    return this.mode === MODE_PLAY;
+  },
+
+  isEditMode: function() {
+    return this.mode === MODE_EDIT;
+  },
+
   enableEditMode: function() {
     this.mode = MODE_EDIT;
 
@@ -140,6 +148,7 @@ var editor = {
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
         tile.addEventListener('mousedown', function(evt) {
+          if (!this.isEditMode()) return;
           this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
           this.selectTile(tile);
         }.bind(this));
@@ -442,6 +451,7 @@ var editor = {
 
   bindEvents: function() {
     document.addEventListener('keyup', function(evt) {
+      if (!this.isEditMode()) return;
       evt = evt || window.event;
       if (evt.keyCode == 27) {
         this.cancel();
@@ -483,6 +493,7 @@ var editor = {
     }.bind(this));
 
     document.addEventListener('mousemove', function(evt) {
+      if (!this.isEditMode()) return;
       evt.preventDefault();
       evt.stopPropagation();
 
@@ -496,6 +507,7 @@ var editor = {
   },
 
   onmousedown: function(evt) {
+    if (!this.isEditMode()) return;
     if (this.dragTarget) {
       return;
     }
@@ -514,6 +526,7 @@ var editor = {
   },
 
   onmouseup: function(evt) {
+    if (!this.isEditMode()) return;
     if (!this.mouseStart) {
       return;
     }
