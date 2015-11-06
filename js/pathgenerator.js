@@ -547,7 +547,14 @@ function exportNext(tiles, currentIndex, aggregate) {
               max: tileInfo.boundingBox.max.toArray()
             },
             nodes: Object.keys(tileInfo.nodes).map(function(nid) {
-              return tileInfo.nodes[nid].toJSON();
+              var node = tileInfo.nodes[nid];
+              // a little bit of important error checking
+              node.adjacents.forEach(function(aid) {
+                if (!tileInfo.nodes[aid]) {
+                  throw new Error("Attempt to export " + tileElement.dataset.name + " when adjacent of " + node.id + " with ID = " + aid + " does not exist.");
+                }
+              });
+              return node.toJSON();
             })
           };
 
