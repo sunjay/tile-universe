@@ -526,6 +526,10 @@ document.getElementById("export-paths").addEventListener("click", function() {
     var blob = new Blob([content], {type: "application/json;charset=utf-8"});
     reenableAll();
     saveAs(blob, "pathdata.json");
+  }).catch(function(e) {
+    console.error(e);
+    alert(e);
+    reenableAll();
   });
 
 });
@@ -551,7 +555,7 @@ function exportNext(tiles, currentIndex, aggregate) {
               // a little bit of important error checking
               node.adjacents.forEach(function(aid) {
                 if (!tileInfo.nodes[aid]) {
-                  throw new Error("Attempt to export " + tileElement.dataset.name + " when adjacent of " + node.id + " with ID = " + aid + " does not exist.");
+                  throw new Error("Attempt to export " + tileElement.dataset.name + " when node (ID = " + node.id + ") has an adjacent (ID = " + aid + ") that does not exist.");
                 }
               });
               return node.toJSON();
