@@ -388,7 +388,7 @@ function tileInfo(target) {
 }
 
 function refineGraph(nodes, boundingBox) {
-  var closenessThreshold = 0.4;
+  var closenessThreshold = 0.38;
 
   // Technically we should clone nodes here...but oh well!
   Object.keys(nodes).forEach(function(nid) {
@@ -397,22 +397,24 @@ function refineGraph(nodes, boundingBox) {
     }
     var node = nodes[nid];
 
-    if (isEdgeVertex(boundingBox, node.position)) {
-      return;
-    }
-
     Array.from(node.adjacents).forEach(function(aid) {
       if (!nodes[aid]) {
         return;
       }
       var adj = nodes[aid];
-      if (isEdgeVertex(boundingBox, adj.position)) {
-        return;
-      }
 
       if (node.position.distanceTo(adj.position) <= closenessThreshold) {
+        var originalNodePosition = node.position.clone();
+
         node.mergeWith(adj, nodes);
         adj.remove(nodes);
+
+        if (isEdgeVertex(boundingBox, originalNodePosition)) {
+          node.position = originalNodePosition;
+        }
+        else if (isEdgeVertex(boundingBox, adj.position)) {
+          node.position = adj.position.clone();
+        }
       }
     });
   });
