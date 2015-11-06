@@ -13,11 +13,12 @@ var editor = {
 
   raycaster: null,
   modelsGroup: null,
-  decorationsGroup: null,
+  graphGroup: null,
   groundPlane: null,
 
-  mode: null,
+  graph: null,
 
+  mode: null,
   history: null,
 
   viewportControls: null,
@@ -38,9 +39,13 @@ var editor = {
     this.camera = camera;
 
     this.raycaster = new THREE.Raycaster();
+    this.groundPlane = new THREE.Plane(this.scene.up);
+
     this.modelsGroup = new THREE.Group();
     this.scene.add(this.modelsGroup);
-    this.groundPlane = new THREE.Plane(this.scene.up);
+    this.graphGroup = new THREE.Group();
+    this.graphGroup.position.y += 0.1;
+    this.scene.add(this.graphGroup);
 
     this.history = new HistoryQueue();
 
@@ -94,7 +99,12 @@ var editor = {
       document.getElementById("controls-container")
     ]);
 
-    this.generateGraph();
+    this.generateGraph().then(function(graph) {
+      this.graph = graph;
+
+      this.clearGraph();
+      this.displayGraph();
+    }.bind(this));
   },
 
   hideElements: function(elems) {
@@ -766,8 +776,83 @@ var editor = {
         });
       });
 
+      graph.reduce();
       return graph;
     }.bind(this));
+  },
+
+  clearGraph: function() {
+    var children = this.graphGroup.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      this.graphGroup.remove(children[i]);
+    }
+  },
+  
+  displayGraph: function() {
+    var color = 0xFFFF00;
+
+    var nodesGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+
+      nodesGeometry.vertices.push(node.position);
+    }.bind(this));
+
+    var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
+    var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
+    this.graphGroup.add(nodesPoints);
+
+    var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
+
+    var seen = new Set();
+    this.graph.nodeIds().forEach(function(nid) {
+      if (seen.has(nid)) {
+        return;
+      }
+
+      var node = this.graph.getNode(nid);
+      var edgesGeometries = this.graphPathEdgeGeometries(node, seen);
+      edgesGeometries.forEach(function(geo) {
+        this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
+      }.bind(this));
+    }.bind(this));
+  },
+
+  graphPathEdgeGeometries: function(start, seen) {
+    var geometry = new THREE.Geometry();
+    var geometries = [geometry];
+
+    var current = start;
+    while (current) {
+      geometry.vertices.push(current.position.clone());
+      seen.add(current.id);
+
+      var next = 0;
+      while (next < current.adjacents.length && seen.has(current.adjacents[next])) {
+        next += 1;
+      }
+
+      current.adjacents.forEach(function(aid, index) {
+        if (index === next) {
+          return;
+        }
+        var node = this.graph.getNode(aid);
+        if (seen.has(aid)) {
+          var single = new THREE.Geometry();
+          single.vertices.push(current.position.clone());
+          single.vertices.push(node.position.clone());
+          geometries.push(single);
+          return;
+        }
+        var nodeGeometries = this.graphPathEdgeGeometries(node, seen);
+        nodeGeometries[0].vertices.unshift(current.position.clone());
+        geometries.push.apply(geometries, nodeGeometries);
+      }.bind(this));
+
+      current = this.graph.getNode(current.adjacents[next]);
+    }
+
+    return geometries;
   }
 };
 
