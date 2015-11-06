@@ -88,6 +88,9 @@ var editor = {
       document.getElementById("tiles-container"),
       document.getElementById("controls-container")
     ]);
+
+    this.clearGraph();
+    this.clearSelection();
   },
 
   enablePlayMode: function() {
@@ -106,6 +109,8 @@ var editor = {
       document.getElementById("tiles-container"),
       document.getElementById("controls-container")
     ]);
+
+    this.clearSelection();
 
     this.generateGraph().then(function(graph) {
       this.graph = graph;
@@ -174,6 +179,7 @@ var editor = {
   setupControls: function() {
     this.setupViewportControls();
     this.setupTileControls();
+    this.setupPlayControls();
 
     document.getElementById('switch-modes').addEventListener('click', this.toggleMode.bind(this));
   },
@@ -196,6 +202,10 @@ var editor = {
     document.getElementById('tile-export').addEventListener('click', this.saveExportedDocument.bind(this));
     document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
     document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
+  },
+
+  setupPlayControls: function() {
+    document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -756,6 +766,10 @@ var editor = {
     }
 
     this.saveLocal();
+  },
+
+  toggleGraphVisiblity: function() {
+    this.graphGroup.visible = !this.graphGroup.visible;
   },
 
   generateGraph: function() {
