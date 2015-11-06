@@ -388,6 +388,14 @@ function tileInfo(target) {
 }
 
 function refineGraph(nodes, boundingBox) {
+  nodes = refineByDistance(nodes, boundingBox);
+  nodes = refineByAdjacentEdges(nodes, boundingBox);
+  nodes = refineByAngle(nodes, boundingBox);
+
+  return nodes;
+}
+
+function refineByDistance(nodes, boundingBox) {
   var closenessThreshold = 0.38;
 
   // Technically we should clone nodes here...but oh well!
@@ -419,6 +427,16 @@ function refineGraph(nodes, boundingBox) {
     });
   });
 
+  return nodes;
+}
+
+function refineByAdjacentEdges(nodes, boundingBox) {
+  // Merge adjacent non-edge nodes that both have adjacent edge nodes
+  return nodes;
+}
+
+function refineByAngle(nodes, boundingBox) {
+  // Merge adjacent node triples that form an angle less than TODO
   return nodes;
 }
 
