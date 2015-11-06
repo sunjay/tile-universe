@@ -237,7 +237,8 @@ button.btn-primary:not(:disabled):hover
 .button:not(:disabled):active,
 button:not(:disabled):active
 {
-  background: white;
+  border-color: transparent;
+  box-shadow: 0 0 0;
 }
 
 .button:disabled,
