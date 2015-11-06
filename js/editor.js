@@ -736,7 +736,7 @@ var editor = {
   },
 
   generateGraph: function() {
-    return tiles.paths().then(function(pathData) {
+    return models.paths().then(function(pathData) {
       var graph = new Graph();
       this.modelsGroup.children.forEach(function(tile) {
         var pathNodes = pathData[tile.userData.model].nodes;
@@ -761,7 +761,7 @@ var editor = {
           var originalNode = originalNodes[originalId];
           var graphNode = graph.getNode(idMapping[originalId]);
           originalNode.adjacents.forEach(function(aid) {
-            graphNode.addAdjacent(graph.get(idMapping[aid]));
+            graphNode.addAdjacent(graph.getNode(idMapping[aid]));
           });
         });
       });

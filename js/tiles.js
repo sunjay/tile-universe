@@ -102,7 +102,11 @@ var models = {
 
       Object.keys(this.pathData).forEach(function(name) {
         var data = this.pathData[name];
-        var makeVec = THREE.Vector3.fromArray;
+        var makeVec = function(arr) {
+          var vec = new THREE.Vector3();
+          return vec.fromArray(arr);
+        };
+
         this.pathData[name] = {
           boundingBox: new THREE.Box3(
             makeVec(data.boundingBox.min),
@@ -114,7 +118,7 @@ var models = {
             })
           })
         };
-      });
+      }.bind(this));
 
       return this.pathData;
     }.bind(this));
