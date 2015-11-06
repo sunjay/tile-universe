@@ -13,6 +13,7 @@ var editor = {
 
   raycaster: null,
   modelsGroup: null,
+  decorationsGroup: null,
   groundPlane: null,
 
   mode: null,
@@ -92,6 +93,8 @@ var editor = {
       document.getElementById("tiles-container"),
       document.getElementById("controls-container")
     ]);
+
+    this.generateGraph();
   },
 
   hideElements: function(elems) {
@@ -730,6 +733,41 @@ var editor = {
     }
 
     this.saveLocal();
+  },
+
+  generateGraph: function() {
+    return tiles.paths().then(function(pathData) {
+      var graph = new Graph();
+      this.modelsGroup.children.forEach(function(tile) {
+        var pathNodes = pathData[tile.userData.model].nodes;
+
+        var originalNodes = {};
+        var idMapping = {};
+        pathNodes.forEach(function(node) {
+          originalNodes[node.id] = node;
+
+          var position = node.position.clone();
+          // It is important to apply the rotation first while the position
+          // is still relative to the origin
+          position.applyEuler(tile.rotation);
+          position.add(tile.position);
+
+          var graphNode = graph.createNode(position, node.material);
+
+          idMapping[node.id] = graphNode.id;
+        });
+
+        Object.keys(idMapping).forEach(function(originalId) {
+          var originalNode = originalNodes[originalId];
+          var graphNode = graph.getNode(idMapping[originalId]);
+          originalNode.adjacents.forEach(function(aid) {
+            graphNode.addAdjacent(graph.get(idMapping[aid]));
+          });
+        });
+      });
+
+      return graph;
+    }.bind(this));
   }
 };
 
