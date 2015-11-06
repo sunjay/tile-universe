@@ -10,6 +10,18 @@ html, body
   overflow: hidden;
 }
 
+.pulse {
+  animation: pulsate 0.8s ease-out;
+  animation-iteration-count: 3; 
+  animation-delay: 3s;
+}
+
+@keyframes pulsate {
+  0% {transform: scale(1, 1);}
+  50% {transform: scale(0.8, 0.8);}
+  100% {transform: scale(1, 1);}
+}
+
 .panel
 {
   z-index: 2;
