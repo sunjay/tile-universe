@@ -114,6 +114,7 @@ function setup() {
       var tile = document.createElement('li');
       tile.dataset.name = tileData.name;
       tile.dataset.model = tileData.model;
+      tile.title = tileData.name;
       tile.addEventListener('click', function(evt) {
         select(tile);
       });
@@ -383,24 +384,22 @@ function tileInfo(target) {
 }
 
 function refineGraph(nodes, boundingBox) {
-  var seen = new Set();
-
   var closenessThreshold = 0.4;
 
   // Technically we should clone nodes here...but oh well!
   Object.keys(nodes).forEach(function(nid) {
-    if (seen.has(nid) || !nodes[nid]) {
+    if (!nodes[nid]) {
       return;
     }
+    console.log("Processing node", nid);
     var node = nodes[nid];
-    seen.add(nid);
 
     if (isEdgeVertex(boundingBox, node.position)) {
       return;
     }
 
-    node.adjacents.forEach(function(aid) {
-      if (seen.has(aid) || !nodes[aid]) {
+    Array.from(node.adjacents).forEach(function(aid) {
+      if (!nodes[aid]) {
         return;
       }
       var adj = nodes[aid];
@@ -409,8 +408,11 @@ function refineGraph(nodes, boundingBox) {
       }
 
       if (node.position.distanceTo(adj.position) <= closenessThreshold) {
+        console.log("Merged", node.id, "with", adj.id);
         node.mergeWith(adj, nodes);
+        console.log("Node", node.id, "has adjacents", node.adjacents);
         adj.remove(nodes);
+        console.log("Node", node.id, "has adjacents", node.adjacents, "after removal");
       }
     });
   });
@@ -459,6 +461,9 @@ Node.prototype.addAdjacent = function(node) {
   if (!node.id) {
     throw new Error("No node ID");
   }
+  if (node.id === this.id) {
+    throw new Error("Attempt to add self as adjacent");
+  }
   if (this.adjacents.indexOf(node.id) >= 0) {
     return;
   }
@@ -474,12 +479,14 @@ Node.prototype.mergeWith = function(node, nodes) {
 
   // merge adjacents
   this.adjacents.push.apply(this.adjacents, node.adjacents);
-  this.adjacents = Array.from(new Set(this.adjacents));
+  var adjacentsSet = new Set(this.adjacents);
+  adjacentsSet.delete(this.id);
+  this.adjacents = Array.from(adjacentsSet);
 
   Array.from(this.adjacents).forEach(function(aid) {
     var adj = nodes[aid];
     if (!adj) {
-      this.adjacents.splice(this.adjacents.indexOf(aid), 1);
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
       return;
     }
     adj.addAdjacent(this);
@@ -491,7 +498,7 @@ Node.prototype.remove = function(nodes) {
   this.adjacents.forEach(function(aid) {
     var adj = nodes[aid];
     if (!adj) {
-      this.adjacents.splice(this.adjacents.indexOf(aid), 1);
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
       return;
     }
     var index = adj.adjacents.indexOf(id);
