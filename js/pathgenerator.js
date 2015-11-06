@@ -31,7 +31,7 @@ views.forEach(function(view) {
   var width = WINDOW_WIDTH * view.width;
   var height = WINDOW_HEIGHT * view.height;
   var camera = new THREE.OrthographicCamera(-width/2, width/2, height/2, -height/2, 0, 1000);
-  camera.zoom = 50;
+  camera.zoom = 60;
   camera.position.set(view.position.x, view.position.y, view.position.z);
 
   view.camera = camera;
@@ -114,15 +114,8 @@ function setup() {
       var tile = document.createElement('li');
       tile.dataset.name = tileData.name;
       tile.dataset.model = tileData.model;
+      tile.title = tileData.name;
       tile.addEventListener('click', function(evt) {
-        var children = tilesParent.getElementsByClassName("selected");
-        for (var i = 0; i < children.length; i++) {
-          var child = children.item(i);
-          child.classList.remove("selected");
-
-        }
-
-        tile.classList.add("selected");
         select(tile);
       });
 
@@ -136,24 +129,42 @@ function setup() {
 }
 
 var selected = {};
-function select(tileElement) {
+function select(tileElement, displayInfo) {
+  displayInfo = displayInfo === undefined ? true : displayInfo;
   if (selected.object) {
     scene.remove(selected.object);
     selected = {};
   }
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  var children = tilesParent.getElementsByClassName("selected");
+  for (var i = 0; i < children.length; i++) {
+    var child = children.item(i);
+    child.classList.remove("selected");
+  }
+  tileElement.classList.add("selected");
 
   return models.load(tileElement.dataset.model).then(function(object) {
+    scene.add(object);
+
     selected = {};
     selected.object = object;
+    if (!displayInfo) {
+      return;
+    }
     window.info = tileInfo(object.clone());
 
     setupDebugObjects(object, selected);
 
     setTimeout(function() {
       setupDebugPaths(object, selected, info);
-    }, 100);
 
-    scene.add(object);
+      setTimeout(function() {
+        var refinedNodes = refineGraph(info.nodes, info.boundingBox);
+        var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
+        object.remove(selected.debugPaths);
+        setupDebugPaths(object, selected, refinedInfo);
+      }, 1000);
+    }, 100);
   });
 }
 
@@ -260,10 +271,14 @@ function graphPathEdges(nodes, start, seen) {
     }
 
     current.adjacents.slice(next + 1).forEach(function(aid) {
+      var node = nodes[aid];
       if (seen.has(aid)) {
+        var single = new THREE.Geometry();
+        single.vertices.push(current.position.clone());
+        single.vertices.push(node.position.clone());
+        geometries.push(single);
         return;
       }
-      var node = nodes[aid];
       var nodeGeometries = graphPathEdges(nodes, node, seen);
       nodeGeometries[0].vertices.unshift(current.position.clone());
       geometries.push.apply(geometries, nodeGeometries);
@@ -323,10 +338,11 @@ function traverseGeometries(object, callback) {
 }
 
 function tileInfo(target) {
-  var info = {nodes: {}};
+  var info = {nodes: {}, boundingBox: null};
   Node.reset_ids();
 
   var boundingBox = new THREE.Box3().setFromObject(target);
+  info.boundingBox = boundingBox;
 
   traverseGeometries(target, function(o) {
     // edge hash : related node
@@ -371,6 +387,41 @@ function tileInfo(target) {
   return info;
 }
 
+function refineGraph(nodes, boundingBox) {
+  var closenessThreshold = 0.38;
+
+  // Technically we should clone nodes here...but oh well!
+  Object.keys(nodes).forEach(function(nid) {
+    if (!nodes[nid]) {
+      return;
+    }
+    var node = nodes[nid];
+
+    Array.from(node.adjacents).forEach(function(aid) {
+      if (!nodes[aid]) {
+        return;
+      }
+      var adj = nodes[aid];
+
+      if (node.position.distanceTo(adj.position) <= closenessThreshold) {
+        var originalNodePosition = node.position.clone();
+
+        node.mergeWith(adj, nodes);
+        adj.remove(nodes);
+
+        if (isEdgeVertex(boundingBox, originalNodePosition)) {
+          node.position = originalNodePosition;
+        }
+        else if (isEdgeVertex(boundingBox, adj.position)) {
+          node.position = adj.position.clone();
+        }
+      }
+    });
+  });
+
+  return nodes;
+}
+
 function hashEdge(a, b) {
   return [[a.x, b.x], [a.y, b.y], [a.z, b.z]].map(hashPair).join(":");
 }
@@ -388,6 +439,13 @@ function isOuterEdge(box, a, b) {
     || (a.z === box.max.z && b.z === box.max.z);
 }
 
+function isEdgeVertex(box, a) {
+  return (a.x === box.min.x
+    || a.x === box.max.x
+    || a.z === box.min.z
+    || a.z === box.max.z);
+}
+
 var idx = 1;
 function Node(position, material, face) {
   this.id = idx++;
@@ -402,6 +460,159 @@ Node.reset_ids = function() {
 };
 
 Node.prototype.addAdjacent = function(node) {
+  if (!node.id) {
+    throw new Error("No node ID");
+  }
+  if (node.id === this.id) {
+    throw new Error("Attempt to add self as adjacent");
+  }
+  if (this.adjacents.indexOf(node.id) >= 0) {
+    return;
+  }
   this.adjacents.push(node.id);
 };
+
+Node.prototype.mergeWith = function(node, nodes) {
+  if (this.material !== node.material) {
+    throw new Error("Attempt to merge two different materials");
+  }
+  this.position.add(node.position).divideScalar(2);
+  //losing face information for other node
+
+  // merge adjacents
+  this.adjacents.push.apply(this.adjacents, node.adjacents);
+  var adjacentsSet = new Set(this.adjacents);
+  adjacentsSet.delete(this.id);
+  this.adjacents = Array.from(adjacentsSet);
+
+  Array.from(this.adjacents).forEach(function(aid) {
+    var adj = nodes[aid];
+    if (!adj) {
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
+      return;
+    }
+    adj.addAdjacent(this);
+  }.bind(this));
+};
+
+Node.prototype.remove = function(nodes) {
+  var id = this.id;
+  this.adjacents.forEach(function(aid) {
+    var adj = nodes[aid];
+    if (!adj) {
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
+      return;
+    }
+    var index = adj.adjacents.indexOf(id);
+    if (index < 0) {
+      throw new Error("Attempt to remove adjacent that doesn't exist");
+    }
+    adj.adjacents.splice(index, 1);
+  }.bind(this));
+  delete nodes[this.id];
+};
+
+Node.prototype.toJSON = function() {
+  return {
+    id: this.id,
+    position: this.position.toArray(),
+    material: this.material.name,
+    adjacents: this.adjacents
+  };
+};
+
+/**** Exporting ****/
+document.getElementById("export-paths").addEventListener("click", function() {
+  disableAll();
+
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  var tiles = tilesParent.children;
+
+  exportNext(tiles, 0).then(function(exported) {
+    console.log("Resulting data");
+    console.log(exported);
+    var content = JSON.stringify(exported, null, 2);
+    var blob = new Blob([content], {type: "application/json;charset=utf-8"});
+    reenableAll();
+    saveAs(blob, "pathdata.json");
+  }).catch(function(e) {
+    console.error(e);
+    alert(e);
+    reenableAll();
+  });
+
+});
+
+function exportNext(tiles, currentIndex, aggregate) {
+  aggregate = aggregate || {};
+  var tileElement = tiles[currentIndex];
+
+  var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+  tilesParent.scrollLeft = tileElement.offsetLeft;
+  return select(tileElement, false).then(function() {
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        resolve(processModel(tileElement.dataset.model).then(function(tileInfo) {
+          setupDebugPaths(selected.object, selected, tileInfo);
+          aggregate[tileElement.dataset.name] = {
+            boundingBox: {
+              min: tileInfo.boundingBox.min.toArray(),
+              max: tileInfo.boundingBox.max.toArray()
+            },
+            nodes: Object.keys(tileInfo.nodes).map(function(nid) {
+              var node = tileInfo.nodes[nid];
+              // a little bit of important error checking
+              node.adjacents.forEach(function(aid) {
+                if (!tileInfo.nodes[aid]) {
+                  throw new Error("Attempt to export " + tileElement.dataset.name + " when node (ID = " + node.id + ") has an adjacent (ID = " + aid + ") that does not exist.");
+                }
+              });
+              return node.toJSON();
+            })
+          };
+
+          currentIndex++;
+          if (currentIndex < tiles.length) {
+            return new Promise(function(resolve, reject) {
+              setTimeout(function() {
+                resolve(exportNext(tiles, currentIndex, aggregate));
+              }, 10);
+            });
+          }
+          else {
+            return Promise.resolve(aggregate);
+          }
+        }));
+      }, 0);
+    });
+  });
+}
+
+function processModel(model) {
+  return models.load(model).then(function(object) {
+    var info = tileInfo(object.clone());
+    var refinedNodes = refineGraph(info.nodes, info.boundingBox);
+    var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
+
+    return refinedInfo;
+  });
+}
+
+var disabled = [];
+function disableAll() {
+  var buttons = document.getElementsByTagName("button");
+  for (var i = 0; i < buttons.length; i++) {
+    var b = buttons[i];
+    if (!b.disabled) {
+      disabled.push(b);
+      b.disabled = true;
+    }
+  }
+}
+
+function reenableAll() {
+  disabled.forEach(function(b) {
+    b.disabled = false;
+  });
+}
 

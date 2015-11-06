@@ -10,6 +10,22 @@ html, body
   overflow: hidden;
 }
 
+.hidden {
+  display: none !important;
+}
+
+.pulse {
+  animation: pulsate 0.8s ease-out;
+  animation-iteration-count: 3; 
+  animation-delay: 3s;
+}
+
+@keyframes pulsate {
+  0% {transform: scale(1, 1);}
+  50% {transform: scale(0.8, 0.8);}
+  100% {transform: scale(1, 1);}
+}
+
 .panel
 {
   z-index: 2;
@@ -169,10 +185,26 @@ button
   color: black;
   display: inline-block;
   text-transform: uppercase;
-  background: darkgray;
-  border: 1px solid #444444;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E4;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px gray;
   padding: 1px 6px;
   box-sizing: border-box;
+}
+
+.button.btn-success,
+button.btn-success
+{
+  background: #76ff03;
+  border-color: #64dd17;
+}
+
+.button.btn-primary,
+button.btn-primary
+{
+  background: #FFD400;
+  border-color: #DCB700;
 }
 
 .button:focus,
@@ -185,18 +217,37 @@ button:focus
 button:not(:disabled):hover
 {
   background: lightgray;
+  border-color: #9E9E9E;
+}
+
+.button.btn-success:not(:disabled):hover,
+button.btn-success:not(:disabled):hover
+{
+  background: #64dd17;
+  border-color: #58BB18;
+}
+
+.button.btn-primary:not(:disabled):hover,
+button.btn-primary:not(:disabled):hover
+{
+  background: #D2AE00;
+  border-color: #B39500;
 }
 
 .button:not(:disabled):active,
 button:not(:disabled):active
 {
-  background: white;
+  border-color: transparent;
+  box-shadow: 0 0 0;
 }
 
 .button:disabled,
 button:disabled
 {
   color: #444;
+  background: #DDDDDD;
+  box-shadow: 0px 0px 1px #DDDDDD;
+  border-color: #C1C1C1;
 }
 
 .file-controls button

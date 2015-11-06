@@ -11,6 +11,11 @@
 <body>
   <header>
     <div class="right">
+      <!-- Play Controls -->
+      <div class="view-controls">
+        <button id="play-toggle-graph">Toggle graph</button>
+      </div>
+      <!-- Editor Controls -->
       <div class="history-controls">
         <button id="tile-undo" title="Undo (Ctrl-z)" disabled><i class="fa fa-mail-reply fa-fw"></i></button>
         <button id="tile-redo" title="Redo (Ctrl-Shift-z)" disabled><i class="fa fa-mail-forward fa-fw"></i></button>
@@ -21,6 +26,10 @@
         <button id="tile-export" title="Export">Export</button>
         <button id="tile-import" title="Import">Import</button>
         <input type="file" id="imported-file" style="display:none">
+      </div>
+      <!-- General Controls -->
+      <div class="mode-controls">
+        <button id="switch-modes" class="btn-success pulse">Play</button>
       </div>
       <div class="help-container">
         <a href="https://github.com/sunjay/driving/blob/master/README.md" target="_blank" class="button" title="Help"><i class="fa fa-question-circle"></i></a>
@@ -56,6 +65,7 @@
   <script type="text/javascript" src="js/lib/threejs/geometries/TextGeometry.js"></script>
 
   <script type="text/javascript" src="js/history-queue.js"></script>
+  <script type="text/javascript" src="js/graph.js"></script>
   <script type="text/javascript" src="js/tiles.js"></script>
   <script type="text/javascript" src="js/editor.js"></script>
   <script type="text/javascript" src="js/index.js"></script>

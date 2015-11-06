@@ -3,6 +3,9 @@ var GRID_LINES = 20;
 var GRID_SIZE = TILE_SIZE * GRID_LINES;
 var HEIGHT_DELTA = 0.10;
 
+var MODE_EDIT = "edit-mode";
+var MODE_PLAY = "play-mode";
+
 var editor = {
   scene: null,
   renderer: null,
@@ -10,8 +13,12 @@ var editor = {
 
   raycaster: null,
   modelsGroup: null,
+  graphGroup: null,
   groundPlane: null,
 
+  graph: null,
+
+  mode: null,
   history: null,
 
   viewportControls: null,
@@ -32,11 +39,17 @@ var editor = {
     this.camera = camera;
 
     this.raycaster = new THREE.Raycaster();
-    this.modelsGroup = new THREE.Group();
-    this.scene.add(this.modelsGroup);
     this.groundPlane = new THREE.Plane(this.scene.up);
 
+    this.modelsGroup = new THREE.Group();
+    this.scene.add(this.modelsGroup);
+    this.graphGroup = new THREE.Group();
+    this.graphGroup.position.y += 0.1;
+    this.scene.add(this.graphGroup);
+
     this.history = new HistoryQueue();
+
+    this.enableEditMode();
 
     this.populateTilesPanel();
     this.addGridAndAxis();
@@ -51,14 +64,96 @@ var editor = {
     }
   },
 
+  isPlayMode: function() {
+    return this.mode === MODE_PLAY;
+  },
+
+  isEditMode: function() {
+    return this.mode === MODE_EDIT;
+  },
+
+  enableEditMode: function() {
+    this.mode = MODE_EDIT;
+
+    var button = document.getElementById("switch-modes");
+    button.textContent = "Play";
+    button.classList.remove("btn-primary");
+
+    this.hideElements([
+      document.getElementsByClassName("view-controls")[0]
+    ]);
+    this.showElements([
+      document.getElementsByClassName("history-controls")[0],
+      document.getElementsByClassName("file-controls")[0],
+      document.getElementById("tiles-container"),
+      document.getElementById("controls-container")
+    ]);
+
+    this.clearGraph();
+    this.clearSelection();
+  },
+
+  enablePlayMode: function() {
+    this.mode = MODE_PLAY;
+
+    var button = document.getElementById("switch-modes");
+    button.textContent = "Edit";
+    button.classList.add("btn-primary");
+
+    this.showElements([
+      document.getElementsByClassName("view-controls")[0]
+    ]);
+    this.hideElements([
+      document.getElementsByClassName("history-controls")[0],
+      document.getElementsByClassName("file-controls")[0],
+      document.getElementById("tiles-container"),
+      document.getElementById("controls-container")
+    ]);
+
+    this.clearSelection();
+
+    this.generateGraph().then(function(graph) {
+      this.graph = graph;
+
+      this.clearGraph();
+      this.displayGraph();
+    }.bind(this));
+  },
+
+  hideElements: function(elems) {
+    elems.forEach(function(e) {
+      e.classList.add('hidden');
+    });
+  },
+
+  showElements: function(elems) {
+    elems.forEach(function(e) {
+      e.classList.remove('hidden');
+    });
+  },
+
+  toggleMode: function() {
+    if (this.mode === MODE_EDIT) {
+      this.enablePlayMode();
+    }
+    else if (this.mode === MODE_PLAY) {
+      this.enableEditMode();
+    }
+    else {
+      throw new Error("You messed up...I don't know how to toggle mode: " + this.mode);
+    }
+  },
+
   populateTilesPanel: function() {
     models.tiles().then(function(tiles) {
       var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
       tiles.forEach(function(tileData) {
         var tile = document.createElement('li');
+        tile.title = tileData.name;
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
         tile.addEventListener('mousedown', function(evt) {
+          if (!this.isEditMode()) return;
           this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
           this.selectTile(tile);
         }.bind(this));
@@ -83,7 +178,13 @@ var editor = {
 
   setupControls: function() {
     this.setupViewportControls();
+    this.setupTileControls();
+    this.setupPlayControls();
 
+    document.getElementById('switch-modes').addEventListener('click', this.toggleMode.bind(this));
+  },
+
+  setupTileControls: function() {
     document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
@@ -101,6 +202,10 @@ var editor = {
     document.getElementById('tile-export').addEventListener('click', this.saveExportedDocument.bind(this));
     document.getElementById('tile-import').addEventListener('click', this.selectImportFile.bind(this));
     document.getElementById('imported-file').addEventListener('change', this.loadImportFile.bind(this));
+  },
+
+  setupPlayControls: function() {
+    document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -356,6 +461,7 @@ var editor = {
 
   bindEvents: function() {
     document.addEventListener('keyup', function(evt) {
+      if (!this.isEditMode()) return;
       evt = evt || window.event;
       if (evt.keyCode == 27) {
         this.cancel();
@@ -397,6 +503,7 @@ var editor = {
     }.bind(this));
 
     document.addEventListener('mousemove', function(evt) {
+      if (!this.isEditMode()) return;
       evt.preventDefault();
       evt.stopPropagation();
 
@@ -410,6 +517,7 @@ var editor = {
   },
 
   onmousedown: function(evt) {
+    if (!this.isEditMode()) return;
     if (this.dragTarget) {
       return;
     }
@@ -428,6 +536,10 @@ var editor = {
   },
 
   onmouseup: function(evt) {
+    if (!this.isEditMode()) return;
+    if (!this.mouseStart) {
+      return;
+    }
     // Click selection if this is a click and not a drag
     var distance = this.mouseStart.distanceTo(new THREE.Vector2(evt.clientX, evt.clientY));
     if (distance <= 10) {
@@ -654,6 +766,120 @@ var editor = {
     }
 
     this.saveLocal();
+  },
+
+  toggleGraphVisiblity: function() {
+    this.graphGroup.visible = !this.graphGroup.visible;
+  },
+
+  generateGraph: function() {
+    return models.paths().then(function(pathData) {
+      var graph = new Graph();
+      this.modelsGroup.children.forEach(function(tile) {
+        var pathNodes = pathData[tile.userData.model].nodes;
+
+        var originalNodes = {};
+        var idMapping = {};
+        pathNodes.forEach(function(node) {
+          originalNodes[node.id] = node;
+
+          var position = node.position.clone();
+          // It is important to apply the rotation first while the position
+          // is still relative to the origin
+          position.applyEuler(tile.rotation);
+          position.add(tile.position);
+
+          var graphNode = graph.createNode(position, node.material);
+
+          idMapping[node.id] = graphNode.id;
+        });
+
+        Object.keys(idMapping).forEach(function(originalId) {
+          var originalNode = originalNodes[originalId];
+          var graphNode = graph.getNode(idMapping[originalId]);
+          originalNode.adjacents.forEach(function(aid) {
+            graphNode.addAdjacent(graph.getNode(idMapping[aid]));
+          });
+        });
+      });
+
+      graph.reduce();
+      return graph;
+    }.bind(this));
+  },
+
+  clearGraph: function() {
+    var children = this.graphGroup.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      this.graphGroup.remove(children[i]);
+    }
+  },
+  
+  displayGraph: function() {
+    var color = 0xFFFF00;
+
+    var nodesGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+
+      nodesGeometry.vertices.push(node.position);
+    }.bind(this));
+
+    var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
+    var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
+    this.graphGroup.add(nodesPoints);
+
+    var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
+
+    var seen = new Set();
+    this.graph.nodeIds().forEach(function(nid) {
+      if (seen.has(nid)) {
+        return;
+      }
+
+      var node = this.graph.getNode(nid);
+      var edgesGeometries = this.graphPathEdgeGeometries(node, seen);
+      edgesGeometries.forEach(function(geo) {
+        this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
+      }.bind(this));
+    }.bind(this));
+  },
+
+  graphPathEdgeGeometries: function(start, seen) {
+    var geometry = new THREE.Geometry();
+    var geometries = [geometry];
+
+    var current = start;
+    while (current) {
+      geometry.vertices.push(current.position.clone());
+      seen.add(current.id);
+
+      var next = 0;
+      while (next < current.adjacents.length && seen.has(current.adjacents[next])) {
+        next += 1;
+      }
+
+      current.adjacents.forEach(function(aid, index) {
+        if (index === next) {
+          return;
+        }
+        var node = this.graph.getNode(aid);
+        if (seen.has(aid)) {
+          var single = new THREE.Geometry();
+          single.vertices.push(current.position.clone());
+          single.vertices.push(node.position.clone());
+          geometries.push(single);
+          return;
+        }
+        var nodeGeometries = this.graphPathEdgeGeometries(node, seen);
+        nodeGeometries[0].vertices.unshift(current.position.clone());
+        geometries.push.apply(geometries, nodeGeometries);
+      }.bind(this));
+
+      current = this.graph.getNode(current.adjacents[next]);
+    }
+
+    return geometries;
   }
 };
 

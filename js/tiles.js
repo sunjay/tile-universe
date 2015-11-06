@@ -3,6 +3,7 @@ var models = {
   requestedModels: {},
 
   tilesList: null,
+  pathData: null,
 
   // Custom behaviour for specific models - called once after loading
   loadedCallbacks: {
@@ -89,6 +90,40 @@ var models = {
     }.bind(this));
 
     return this.tilesList;
+  },
+
+  paths: function() {
+    if (this.pathData) {
+      return Promise.resolve(this.pathData);
+    }
+
+    this.pathData = xr.get('models/pathdata.json').then(function(pathData) {
+      this.pathData = pathData;
+
+      Object.keys(this.pathData).forEach(function(name) {
+        var data = this.pathData[name];
+        var makeVec = function(arr) {
+          var vec = new THREE.Vector3();
+          return vec.fromArray(arr);
+        };
+
+        this.pathData[name] = {
+          boundingBox: new THREE.Box3(
+            makeVec(data.boundingBox.min),
+            makeVec(data.boundingBox.max)
+          ),
+          nodes: data.nodes.map(function(nodeData) {
+            return Object.assign({}, nodeData, {
+              position: makeVec(nodeData.position),
+            })
+          })
+        };
+      }.bind(this));
+
+      return this.pathData;
+    }.bind(this));
+
+    return this.pathData;
   }
 }
 
