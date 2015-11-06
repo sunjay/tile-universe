@@ -308,17 +308,9 @@ var editor = {
   },
 
   setupViewportControls: function() {
-    controls = new THREE.TrackballControls(this.camera, this.renderer.domElement);
+    var controls = new THREE.OrbitControls(this.camera, this.renderer.domElement);
 
-    controls.rotateSpeed = 1.4;
-    controls.zoomSpeed = 2;
-    controls.panSpeed = 0.8;
-
-    controls.noZoom = false;
-    controls.noPan = false;
-
-    controls.staticMoving = true;
-    controls.dynamicDampingFactor = 0.3;
+    controls.dampingFactor = 5;
 
     this.viewportControls = controls;
   },
