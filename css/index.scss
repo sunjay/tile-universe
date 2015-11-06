@@ -169,10 +169,19 @@ button
   color: black;
   display: inline-block;
   text-transform: uppercase;
-  background: darkgray;
-  border: 1px solid #444444;
+  background: #FFFFFF;
+  border: 1px solid #E4E4E4;
+  border-radius: 2px;
+  box-shadow: 1px 1px 1px gray;
   padding: 1px 6px;
   box-sizing: border-box;
+}
+
+.button.btn-success,
+button.btn-success
+{
+  background: #76ff03;
+  border-color: #64dd17;
 }
 
 .button:focus,
@@ -185,6 +194,14 @@ button:focus
 button:not(:disabled):hover
 {
   background: lightgray;
+  border-color: #9E9E9E;
+}
+
+.button.btn-success:not(:disabled):hover,
+button.btn-success:not(:disabled):hover
+{
+  background: #64dd17;
+  border-color: #58BB18;
 }
 
 .button:not(:disabled):active,
@@ -197,6 +214,9 @@ button:not(:disabled):active
 button:disabled
 {
   color: #444;
+  background: #DDDDDD;
+  box-shadow: 0px 0px 1px #DDDDDD;
+  border-color: #C1C1C1;
 }
 
 .file-controls button

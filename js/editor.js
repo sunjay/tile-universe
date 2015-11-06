@@ -429,6 +429,9 @@ var editor = {
   },
 
   onmouseup: function(evt) {
+    if (!this.mouseStart) {
+      return;
+    }
     // Click selection if this is a click and not a drag
     var distance = this.mouseStart.distanceTo(new THREE.Vector2(evt.clientX, evt.clientY));
     if (distance <= 10) {
