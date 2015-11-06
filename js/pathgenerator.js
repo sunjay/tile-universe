@@ -271,10 +271,14 @@ function graphPathEdges(nodes, start, seen) {
     }
 
     current.adjacents.slice(next + 1).forEach(function(aid) {
+      var node = nodes[aid];
       if (seen.has(aid)) {
+        var single = new THREE.Geometry();
+        single.vertices.push(current.position.clone());
+        single.vertices.push(node.position.clone());
+        geometries.push(single);
         return;
       }
-      var node = nodes[aid];
       var nodeGeometries = graphPathEdges(nodes, node, seen);
       nodeGeometries[0].vertices.unshift(current.position.clone());
       geometries.push.apply(geometries, nodeGeometries);
