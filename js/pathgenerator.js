@@ -148,11 +148,11 @@ function select(tileElement, displayInfo) {
 
     selected = {};
     selected.object = object;
-    var info = tileInfo(object.clone());
-
     if (!displayInfo) {
       return;
     }
+    window.info = tileInfo(object.clone());
+
     setupDebugObjects(object, selected);
 
     setTimeout(function() {
@@ -391,7 +391,6 @@ function refineGraph(nodes, boundingBox) {
     if (!nodes[nid]) {
       return;
     }
-    console.log("Processing node", nid);
     var node = nodes[nid];
 
     if (isEdgeVertex(boundingBox, node.position)) {
@@ -408,11 +407,8 @@ function refineGraph(nodes, boundingBox) {
       }
 
       if (node.position.distanceTo(adj.position) <= closenessThreshold) {
-        console.log("Merged", node.id, "with", adj.id);
         node.mergeWith(adj, nodes);
-        console.log("Node", node.id, "has adjacents", node.adjacents);
         adj.remove(nodes);
-        console.log("Node", node.id, "has adjacents", node.adjacents, "after removal");
       }
     });
   });
