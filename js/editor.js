@@ -14,6 +14,7 @@ var editor = {
   raycaster: null,
   modelsGroup: null,
   graphGroup: null,
+  labelsGroup: null,
   groundPlane: null,
 
   graph: null,
@@ -208,6 +209,7 @@ var editor = {
 
   setupPlayControls: function() {
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
+    document.getElementById('play-toggle-labels').addEventListener('click', this.toggleGraphLabelsVisiblity.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -318,13 +320,22 @@ var editor = {
     this.viewportControls = controls;
   },
 
-  load: function(model) {
-    return models.load(model).then(function(object) {
-      object.userData = {
-        model: model
-      };
-      return object;
-    });
+  loadTile: function(model) {
+    return models.load({
+      objName: model,
+      mtlName: "roadTile"
+    }).then(this.afterLoad.bind(this, model));
+  },
+
+  loadModel: function(model) {
+    return models.loadModel(model).then(this.afterLoad.bind(this, model));
+  },
+
+  afterLoad: function(model, object) {
+    object.userData = {
+      model: model
+    };
+    return object;
   },
 
   selectTile: function(tileElement) {
@@ -337,7 +348,7 @@ var editor = {
       tileElement.classList.add("selected");
 
       this.showLoading();
-      this.load(tileElement.dataset.model).then(function(object) {
+      this.loadTile(tileElement.dataset.model).then(function(object) {
         if (this.selectedObject) {
           return;
         }
@@ -731,7 +742,7 @@ var editor = {
 
     this.showLoading();
     return Promise.all(data.tiles.map(function(tile) {
-      return this.load(tile.model).then(function(object) {
+      return this.loadTile(tile.model).then(function(object) {
         object.position.fromArray(tile.position);
         object.rotation.fromArray(tile.rotation);
 
@@ -765,6 +776,10 @@ var editor = {
 
   toggleGraphVisiblity: function() {
     this.graphGroup.visible = !this.graphGroup.visible;
+  },
+
+  toggleGraphLabelsVisiblity: function() {
+    this.labelsGroup.visible = !this.labelsGroup.visible;
   },
 
   generateGraph: function() {
@@ -812,17 +827,34 @@ var editor = {
   
   displayGraph: function() {
     var color = 0xFFFF00;
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
     var nodesGeometry = new THREE.Geometry();
+    var textGeometry = new THREE.Geometry();
     this.graph.nodeIds().forEach(function(nid) {
       var node = this.graph.getNode(nid);
-
       nodesGeometry.vertices.push(node.position);
+
+      // Add a label
+      var textObj = this.createTextLabel(nid.toString(), textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
+
+      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
+
+      textGeometry.mergeMesh(textObj);
     }.bind(this));
 
     var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
     var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
     this.graphGroup.add(nodesPoints);
+
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
+    this.labelsGroup = new THREE.Group();
+    this.labelsGroup.visible = false;
+    this.labelsGroup.add(textMesh);
+    this.graphGroup.add(this.labelsGroup);
 
     var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
 
@@ -838,6 +870,18 @@ var editor = {
         this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
       }.bind(this));
     }.bind(this));
+  },
+
+  bufferGeometry: function(geometry) {
+    return (new THREE.BufferGeometry()).fromGeometry(geometry);
+  },
+
+  createTextLabel: function(content, textMaterial) {
+    var text = new THREE.TextGeometry(content, {size: 0.2, height: 0.05, curveSegments: 2});
+    var textObj = new THREE.Mesh(text, textMaterial);
+    textObj.rotation.set(Math.PI/2, Math.PI, -Math.PI/2)
+
+    return textObj;
   },
 
   graphPathEdgeGeometries: function(start, seen) {
@@ -878,7 +922,7 @@ var editor = {
   },
 
   setupCar: function() {
-    return this.load("car1").then(function() {
+    return this.loadModel("car1").then(function() {
 
     });
   }
