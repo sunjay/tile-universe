@@ -117,6 +117,8 @@ var editor = {
 
       this.clearGraph();
       this.displayGraph();
+
+      this.setupCar();
     }.bind(this));
   },
 
@@ -873,6 +875,12 @@ var editor = {
     }
 
     return geometries;
+  },
+
+  setupCar: function() {
+    return this.load("car1").then(function() {
+
+    });
   }
 };
 

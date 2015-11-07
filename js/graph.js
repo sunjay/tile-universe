@@ -2,9 +2,9 @@ function Graph() {
   this.nodes = {};
 }
 
-var idx = Math.floor(Math.random() * 203);
+Graph.idx = Math.floor(Math.random() * 203);
 Graph.uniqueId = function() {
-  return ++idx;
+  return ++Graph.idx;
 };
 
 Graph.prototype.nodeIds = function() {
@@ -24,6 +24,12 @@ Graph.prototype.createNode = function(position, material) {
 Graph.prototype.connect = function(node1, node2) {
   node1.addAdjacent(node2);
   node2.addAdjacent(node1);
+};
+
+Graph.prototype.nodesWithMaterial = function(materialName) {
+  return Object.keys(this.nodes).filter(function(nid) {
+    return this.getNode(nid).material === materialName;
+  }.bind(this));
 };
 
 /**
