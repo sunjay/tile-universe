@@ -209,6 +209,7 @@ var editor = {
 
   setupPlayControls: function() {
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
+    document.getElementById('play-toggle-labels').addEventListener('click', this.toggleGraphLabelsVisiblity.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -777,6 +778,10 @@ var editor = {
     this.graphGroup.visible = !this.graphGroup.visible;
   },
 
+  toggleGraphLabelsVisiblity: function() {
+    this.labelsGroup.visible = !this.labelsGroup.visible;
+  },
+
   generateGraph: function() {
     return models.paths().then(function(pathData) {
       var graph = new Graph();
@@ -847,6 +852,7 @@ var editor = {
 
     var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
     this.labelsGroup = new THREE.Group();
+    this.labelsGroup.visible = false;
     this.labelsGroup.add(textMesh);
     this.graphGroup.add(this.labelsGroup);
 
