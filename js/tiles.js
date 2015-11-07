@@ -1,6 +1,7 @@
 var models = {
   modelCache: {},
   requestedModels: {},
+  materialsCache: {},
 
   tilesList: null,
   pathData: null,
@@ -59,38 +60,85 @@ var models = {
       }.bind(this));
     }
 
-    var loader = new THREE.OBJMTLLoader();
+    var objURL = URI(settings.baseUrl).filename(settings.objName + '.obj').toString();
+    var mtlURL = URI(settings.baseUrl).filename(settings.mtlName + '.mtl').toString();
 
     var loadingPromise = new Promise(function(resolve, reject) {
-      loader.load(
-        URI(settings.baseUrl).filename(settings.objName + '.obj').toString(),
-        URI(settings.baseUrl).filename(settings.mtlName + '.mtl').toString(),
-        // Function when both resources are loaded
-        function (object) {
-          object.rotation.order = 'YXZ';
+      this.loadMaterial(mtlURL).then(function(materials) {
+        var loader = new THREE.XHRLoader();
+        loader.load(objURL, 
+          // Function called on success
+          function (text) {
+            var objloader = new THREE.OBJMTLLoader();
+            var object = objloader.parse(text);
 
-          // Apply custom transformations on a model-to-model basis
-          if (this.loadedCallbacks[modelName]) {
-            this.loadedCallbacks[modelName](object);
-          }
+            this.applyMaterials(object, materials);
 
-          this.modelCache[modelName] = object;
-          resolve(object.clone());
-          delete this.requestedModels[modelName];
-        }.bind(this),
-        // Function called when downloads progress
-        function (xhr) {
-          //console.log((xhr.loaded / xhr.total * 100) + '% loaded');
-        }.bind(this),
-        // Function called when downloads error
-        function (xhr) {
-          reject('An error occurred while attempting to load ' + modelName);
-        }.bind(this)
-     );
+            object.rotation.order = 'YXZ';
+
+            // Apply custom transformations on a model-to-model basis
+            if (this.loadedCallbacks[modelName]) {
+              this.loadedCallbacks[modelName](object);
+            }
+
+            this.modelCache[modelName] = object;
+            resolve(object.clone());
+            delete this.requestedModels[modelName];
+          }.bind(this),
+          // Function called when downloads progress
+          function (xhr) {
+            //console.log((xhr.loaded / xhr.total * 100) + '% loaded');
+          }.bind(this),
+          // Function called when downloads error
+          function (xhr) {
+            reject('An error occurred while attempting to load ' + modelName);
+          }.bind(this)
+         );
+      }.bind(this));
     }.bind(this));
     this.requestedModels[modelName] = loadingPromise;
 
     return loadingPromise;
+  },
+
+  /**
+   * Loads a .mtl file and returns a promise that resolves into
+   * an object that maps material name to a THREE.Material instance
+   */
+  loadMaterial: function(url) {
+    if (this.materialsCache[url]) {
+      return this.materialsCache[url];
+    }
+
+    this.materialsCache[url] = new Promise(function(resolve, reject) {
+      var loader = new THREE.MTLLoader();
+      console.log("Loading...", url);
+      loader.load(url, function(materialsCreator) {
+        materialsCreator.preload();
+
+        var materials = {};
+        Object.keys(materialsCreator.materialsInfo).forEach(function(materialName) {
+          materials[materialName] = materialsCreator.create(materialName);
+        });
+
+        this.materialsCache[url] = Promise.resolve(materials);
+
+        resolve(materials);
+      }.bind(this));
+    }.bind(this));
+
+    return this.materialsCache[url];
+  },
+
+  applyMaterials: function(object, materials) {
+    object.traverse(function(object) {
+      if (object instanceof THREE.Mesh) {
+        if (object.material.name) {
+          var material = materials[object.material.name];
+          if (material) object.material = material;
+        }
+      }
+    });
   },
 
   tiles: function() {
