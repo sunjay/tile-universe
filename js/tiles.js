@@ -72,6 +72,7 @@ var models = {
             var objloader = new THREE.OBJMTLLoader();
             var object = objloader.parse(text);
 
+            this.optimizeObject(object);
             this.applyMaterials(object, materials);
 
             object.rotation.order = 'YXZ';
@@ -128,6 +129,14 @@ var models = {
     }.bind(this));
 
     return this.materialsCache[url];
+  },
+
+  optimizeObject: function(object) {
+    object.traverse(function(object) {
+      if (object instanceof THREE.Mesh && object.geometry instanceof THREE.Geometry) {
+        object.geometry = (new THREE.BufferGeometry()).fromGeometry(object.geometry);
+      }
+    });
   },
 
   applyMaterials: function(object, materials) {
