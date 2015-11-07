@@ -833,10 +833,10 @@ var editor = {
       // Add a label
       var textObj = this.createTextLabel(nid.toString(), textMaterial);
       var textBox = new THREE.Box3().setFromObject(textObj);
-      var width = Math.abs(textBox.max.x - textBox.min.x);
-      var height = Math.abs(textBox.max.z - textBox.min.z);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
 
-      textObj.position.set(node.position.x + width/2, node.position.y + 0.1, node.position.z + height/2);
+      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
 
       textGeometry.mergeMesh(textObj);
     }.bind(this));
@@ -845,7 +845,7 @@ var editor = {
     var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
     this.graphGroup.add(nodesPoints);
 
-    var textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
     this.labelsGroup = new THREE.Group();
     this.labelsGroup.add(textMesh);
     this.graphGroup.add(this.labelsGroup);
@@ -866,8 +866,12 @@ var editor = {
     }.bind(this));
   },
 
+  bufferGeometry: function(geometry) {
+    return (new THREE.BufferGeometry()).fromGeometry(geometry);
+  },
+
   createTextLabel: function(content, textMaterial) {
-    var text = new THREE.TextGeometry(content, {size: 0.2, height: 0.05});
+    var text = new THREE.TextGeometry(content, {size: 0.2, height: 0.05, curveSegments: 2});
     var textObj = new THREE.Mesh(text, textMaterial);
     textObj.rotation.set(Math.PI/2, Math.PI, -Math.PI/2)
 
