@@ -402,7 +402,7 @@ var editor = {
   },
 
   beginDrag: function(object, origin) {
-    this.viewportControls.noRotate = true;
+    this.viewportControls.enableRotate = false;
     document.body.classList.add("dragging");
     this.dragTarget = object;
     this.dragOrigin = origin || null;
@@ -429,7 +429,7 @@ var editor = {
     this.dragTarget = null;
     this.dragOrigin = null;
     document.body.classList.remove("dragging");
-    this.viewportControls.noRotate = false;
+    this.viewportControls.enableRotate = true;
     this.deselectAllTiles();
   },
 
