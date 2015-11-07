@@ -1,0 +1,4 @@
+--ignore-dir
+_site/
+--ignore-dir
+lib/
