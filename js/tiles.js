@@ -113,7 +113,6 @@ var models = {
 
     this.materialsCache[url] = new Promise(function(resolve, reject) {
       var loader = new THREE.MTLLoader();
-      console.log("Loading...", url);
       loader.load(url, function(materialsCreator) {
         materialsCreator.preload();
 
