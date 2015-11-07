@@ -14,6 +14,7 @@ var editor = {
   raycaster: null,
   modelsGroup: null,
   graphGroup: null,
+  labelsGroup: null,
   groundPlane: null,
 
   graph: null,
@@ -812,17 +813,33 @@ var editor = {
   
   displayGraph: function() {
     var color = 0xFFFF00;
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
     var nodesGeometry = new THREE.Geometry();
+    var textGeometry = new THREE.Geometry();
     this.graph.nodeIds().forEach(function(nid) {
       var node = this.graph.getNode(nid);
-
       nodesGeometry.vertices.push(node.position);
+
+      // Add a label
+      var textObj = this.createTextLabel(nid.toString(), textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.x - textBox.min.x);
+      var height = Math.abs(textBox.max.z - textBox.min.z);
+
+      textObj.position.set(node.position.x + width/2, node.position.y + 0.1, node.position.z + height/2);
+
+      textGeometry.mergeMesh(textObj);
     }.bind(this));
 
     var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
     var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
     this.graphGroup.add(nodesPoints);
+
+    var textMesh = new THREE.Mesh(textGeometry, textMaterial);
+    this.labelsGroup = new THREE.Group();
+    this.labelsGroup.add(textMesh);
+    this.graphGroup.add(this.labelsGroup);
 
     var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
 
@@ -838,6 +855,14 @@ var editor = {
         this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
       }.bind(this));
     }.bind(this));
+  },
+
+  createTextLabel: function(content, textMaterial) {
+    var text = new THREE.TextGeometry(content, {size: 0.2, height: 0.05});
+    var textObj = new THREE.Mesh(text, textMaterial);
+    textObj.rotation.set(Math.PI/2, Math.PI, -Math.PI/2)
+
+    return textObj;
   },
 
   graphPathEdgeGeometries: function(start, seen) {
