@@ -1,7 +1,7 @@
 # Blender MTL File: 'None'
 # Material Count: 3
 
-newmtl Grey_Asphalt.003
+newmtl Grey_Asphalt
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.448627 0.454902 0.480000
@@ -11,6 +11,7 @@ d 1.000000
 illum 2
 
 newmtl Light_Asphalt
+
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.730980 0.727843 0.721569
@@ -19,7 +20,7 @@ Ni 1.000000
 d 1.000000
 illum 2
 
-newmtl Stone.058
+newmtl Stone
 Ns 96.078431
 Ka 0.000000 0.000000 0.000000
 Kd 0.677647 0.661961 0.599216
