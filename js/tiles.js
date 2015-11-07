@@ -25,8 +25,28 @@ var models = {
 
   /**
    * Loads a model and material from the given name and returns a promise
+   * Shortcut when both obj and mtl have same name
+   * Options are any additional options of load that you want to override
    */
-  load: function(modelName) {
+  loadModel: function(modelName, options) {
+    return this.load(Object.assign({
+      objName: modelName,
+      mtlName: modelName
+    }, options || {}));
+  },
+
+  load: function(options) {
+    var settings = Object.assign({
+      objName: null, // Name of .obj file without extension
+      mtlName: null, // Name of .mtl file without extension
+      baseUrl: 'models/' // base URL common to both obj and mtl
+    }, options);
+
+    if (!settings.objName || !settings.mtlName) {
+      throw new Error("Please specify both an obj and mtl name to be loaded");
+    }
+
+    var modelName = settings.objName;
     if (this.modelCache.hasOwnProperty(modelName)) {
       return Promise.resolve(this.modelCache[modelName].clone());
     }
@@ -34,7 +54,7 @@ var models = {
     if (this.requestedModels.hasOwnProperty(modelName)) {
       return new Promise(function(resolve, reject) {
         this.requestedModels[modelName].then(function() {
-          resolve(this.load(modelName));
+          resolve(this.modelCache[modelName].clone());
         }.bind(this)).catch(reject);
       }.bind(this));
     }
@@ -43,8 +63,8 @@ var models = {
 
     var loadingPromise = new Promise(function(resolve, reject) {
       loader.load(
-        'models/' + modelName + '.obj',
-        'models/' + modelName + '.mtl',
+        URI(settings.baseUrl).filename(settings.objName + '.obj').toString(),
+        URI(settings.baseUrl).filename(settings.mtlName + '.mtl').toString(),
         // Function when both resources are loaded
         function (object) {
           object.rotation.order = 'YXZ';

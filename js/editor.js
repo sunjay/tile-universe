@@ -319,13 +319,22 @@ var editor = {
     this.viewportControls = controls;
   },
 
-  load: function(model) {
-    return models.load(model).then(function(object) {
-      object.userData = {
-        model: model
-      };
-      return object;
-    });
+  loadTile: function(model) {
+    return models.load({
+      objName: model,
+      mtlName: "roadTile"
+    }).then(this.afterLoad.bind(this, model));
+  },
+
+  loadModel: function(model) {
+    return models.loadModel(model).then(this.afterLoad.bind(this, model));
+  },
+
+  afterLoad: function(model, object) {
+    object.userData = {
+      model: model
+    };
+    return object;
   },
 
   selectTile: function(tileElement) {
@@ -338,7 +347,7 @@ var editor = {
       tileElement.classList.add("selected");
 
       this.showLoading();
-      this.load(tileElement.dataset.model).then(function(object) {
+      this.loadTile(tileElement.dataset.model).then(function(object) {
         if (this.selectedObject) {
           return;
         }
@@ -732,7 +741,7 @@ var editor = {
 
     this.showLoading();
     return Promise.all(data.tiles.map(function(tile) {
-      return this.load(tile.model).then(function(object) {
+      return this.loadTile(tile.model).then(function(object) {
         object.position.fromArray(tile.position);
         object.rotation.fromArray(tile.rotation);
 
@@ -903,7 +912,7 @@ var editor = {
   },
 
   setupCar: function() {
-    return this.load("car1").then(function() {
+    return this.loadModel("car1").then(function() {
 
     });
   }
