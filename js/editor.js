@@ -90,8 +90,14 @@ var editor = {
       document.getElementById("controls-container")
     ]);
 
-    this.clearGraph();
-    this.clearSelection();
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        this.clearGraph();
+        this.clearSelection();
+
+        resolve();
+      }.bind(this), 1);
+    }.bind(this));
   },
 
   enablePlayMode: function() {
@@ -113,13 +119,19 @@ var editor = {
 
     this.clearSelection();
 
-    this.generateGraph().then(function(graph) {
-      this.graph = graph;
+    return new Promise(function(resolve, reject) {
+      setTimeout(function() {
+        this.generateGraph().then(function(graph) {
+          this.graph = graph;
 
-      this.clearGraph();
-      this.displayGraph();
+          this.clearGraph();
+          this.displayGraph();
 
-      this.setupCar();
+          this.setupCar().then(function() {
+            resolve();
+          });
+        }.bind(this));
+      }.bind(this), 1);
     }.bind(this));
   },
 
@@ -136,15 +148,20 @@ var editor = {
   },
 
   toggleMode: function() {
+    this.showLoading();
+    var promise;
     if (this.mode === MODE_EDIT) {
-      this.enablePlayMode();
+      promise = this.enablePlayMode();
     }
     else if (this.mode === MODE_PLAY) {
-      this.enableEditMode();
+      promise = this.enableEditMode();
     }
     else {
       throw new Error("You messed up...I don't know how to toggle mode: " + this.mode);
     }
+    promise.then(function() {
+      this.hideLoading();
+    }.bind(this));
   },
 
   populateTilesPanel: function() {
