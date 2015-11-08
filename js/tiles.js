@@ -40,7 +40,8 @@ var models = {
     var settings = Object.assign({
       objName: null, // Name of .obj file without extension
       mtlName: null, // Name of .mtl file without extension
-      baseUrl: 'models/' // base URL common to both obj and mtl
+      baseUrl: 'models/', // base URL common to both obj and mtl
+      optimize: true // optimize into buffer geometry
     }, options);
 
     if (!settings.objName || !settings.mtlName) {
@@ -72,7 +73,7 @@ var models = {
             var objloader = new THREE.OBJMTLLoader();
             var object = objloader.parse(text);
 
-            this.optimizeObject(object);
+            if (settings.optimize) this.optimizeObject(object);
             this.applyMaterials(object, materials);
 
             object.rotation.order = 'YXZ';

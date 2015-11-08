@@ -15,6 +15,7 @@ var editor = {
   modelsGroup: null,
   graphGroup: null,
   labelsGroup: null,
+  pathGroup: null,
   groundPlane: null,
 
   graph: null,
@@ -44,9 +45,15 @@ var editor = {
 
     this.modelsGroup = new THREE.Group();
     this.scene.add(this.modelsGroup);
+
     this.graphGroup = new THREE.Group();
     this.graphGroup.position.y += 0.1;
     this.scene.add(this.graphGroup);
+
+    this.pathGroup = new THREE.Group();
+    this.pathGroup.visible = false;
+    this.pathGroup.position.y += 0.25;
+    this.scene.add(this.pathGroup);
 
     this.history = new HistoryQueue();
 
@@ -81,6 +88,7 @@ var editor = {
     button.classList.remove("btn-primary");
 
     this.hideElements([
+      document.getElementsByClassName("actor-controls")[0],
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.showElements([
@@ -93,7 +101,9 @@ var editor = {
     return new Promise(function(resolve, reject) {
       setTimeout(function() {
         this.clearGraph();
+        this.clearPath();
         this.clearSelection();
+        this.removeCar();
 
         resolve();
       }.bind(this), 1);
@@ -108,6 +118,7 @@ var editor = {
     button.classList.add("btn-primary");
 
     this.showElements([
+      document.getElementsByClassName("actor-controls")[0],
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.hideElements([
@@ -125,11 +136,16 @@ var editor = {
           this.graph = graph;
 
           this.clearGraph();
-          this.displayGraph();
+          this.clearPath();
 
-          this.setupCar().then(function() {
-            resolve();
-          });
+          this.executeStepsAsync([
+            this.displayGraph.bind(this),
+            this.displayGraphLabels.bind(this),
+            this.displayGraphMaterialLabels.bind(this),
+            this.setupCar.bind(this),
+            this.toggleGraphVisiblity.bind(this),
+            resolve
+          ]);
         }.bind(this));
       }.bind(this), 1);
     }.bind(this));
@@ -145,6 +161,27 @@ var editor = {
     elems.forEach(function(e) {
       e.classList.remove('hidden');
     });
+  },
+
+  executeStepsAsync: function(steps) {
+    var step = function(i) {
+      setTimeout(function() {
+        var stepFunc = steps[i];
+        var returnValue = stepFunc();
+
+        if (!(returnValue instanceof Promise)) {
+          returnValue = Promise.resolve(returnValue);
+        }
+
+        returnValue.then(function() {
+          i += 1;
+          if (i < steps.length) {
+            step(i);
+          }
+        });
+      }, 1);
+    };
+    step(0);
   },
 
   toggleMode: function() {
@@ -225,8 +262,10 @@ var editor = {
   },
 
   setupPlayControls: function() {
+    document.getElementById('play-random-position').addEventListener('click', this.placeCar.bind(this));
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
     document.getElementById('play-toggle-labels').addEventListener('click', this.toggleGraphLabelsVisiblity.bind(this));
+    document.getElementById('play-toggle-path').addEventListener('click', this.toggleGraphPathVisiblity.bind(this));
   },
 
   updateUndoRedoButtons: function() {
@@ -480,6 +519,12 @@ var editor = {
 
   update: function() {
     this.viewportControls.update();
+    if (this.car) {
+      this.car.update();
+
+      this.clearPath();
+      this.displayPath();
+    }
   },
 
   bindEvents: function() {
@@ -799,6 +844,10 @@ var editor = {
     this.labelsGroup.visible = !this.labelsGroup.visible;
   },
 
+  toggleGraphPathVisiblity: function() {
+    this.pathGroup.visible = !this.pathGroup.visible;
+  },
+
   generateGraph: function() {
     return models.paths().then(function(pathData) {
       var graph = new Graph();
@@ -844,35 +893,19 @@ var editor = {
   
   displayGraph: function() {
     var color = 0xFFFF00;
-    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
+    // Graph nodes
     var nodesGeometry = new THREE.Geometry();
-    var textGeometry = new THREE.Geometry();
     this.graph.nodeIds().forEach(function(nid) {
       var node = this.graph.getNode(nid);
       nodesGeometry.vertices.push(node.position);
-
-      // Add a label
-      var textObj = this.createTextLabel(nid.toString(), textMaterial);
-      var textBox = new THREE.Box3().setFromObject(textObj);
-      var width = Math.abs(textBox.max.z - textBox.min.z);
-      var height = Math.abs(textBox.max.x - textBox.min.x);
-
-      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
-
-      textGeometry.mergeMesh(textObj);
     }.bind(this));
 
     var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
     var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
     this.graphGroup.add(nodesPoints);
 
-    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
-    this.labelsGroup = new THREE.Group();
-    this.labelsGroup.visible = false;
-    this.labelsGroup.add(textMesh);
-    this.graphGroup.add(this.labelsGroup);
-
+    // Graph edges
     var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
 
     var seen = new Set();
@@ -887,6 +920,51 @@ var editor = {
         this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
       }.bind(this));
     }.bind(this));
+  },
+
+  displayGraphLabels: function() {
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
+    var textGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+      // Add a label
+      var textObj = this.createTextLabel(nid.toString(), textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
+
+      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
+
+      textGeometry.mergeMesh(textObj);
+    }.bind(this));
+
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
+    this.labelsGroup = new THREE.Group();
+    this.labelsGroup.visible = false;
+    this.labelsGroup.add(textMesh);
+    this.graphGroup.add(this.labelsGroup);
+  },
+
+  displayGraphMaterialLabels: function() {
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
+    var textGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+      // Add a label
+      var textObj = this.createTextLabel(node.material, textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
+
+      textObj.position.set(node.position.x + height, node.position.y + 0.1, node.position.z + width/2);
+
+      textGeometry.mergeMesh(textObj);
+    }.bind(this));
+
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
+    this.labelsGroup.add(textMesh);
   },
 
   bufferGeometry: function(geometry) {
@@ -938,10 +1016,80 @@ var editor = {
     return geometries;
   },
 
-  setupCar: function() {
-    return this.loadModel("car1").then(function() {
+  displayPath: function() {
+    if (!this.car) {
+      return;
+    }
 
-    });
+    var path = this.car.behaviourData && this.car.behaviourData.path;
+    if (!path || !path.length) {
+      return;
+    }
+
+    var color = 0xFFAE00;
+
+    var geometry = new THREE.Geometry();
+    path.forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+      geometry.vertices.push(node.position.clone());
+    }.bind(this));
+
+    var pathMaterial = new THREE.LineBasicMaterial({color: color});
+    var path = new THREE.Line(geometry, pathMaterial);
+    this.pathGroup.add(path);
+
+    var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
+    var nodesPoints = new THREE.Points(geometry.clone(), nodesMaterial);
+    this.pathGroup.add(nodesPoints);
+  },
+
+  clearPath: function() {
+    var children = this.pathGroup.children;
+    for (var i = children.length - 1; i >= 0; i--) {
+      this.pathGroup.remove(children[i]);
+    }
+  },
+
+  setupCar: function() {
+    if (this.car) {
+      this.placeCar();
+      return Promise.resolve(this.car);
+    }
+
+    return this.loadModel("car1").then(function(car) {
+      this.car = new CarActor(car, this.graph);
+      this.placeCar();
+    }.bind(this));
+  },
+
+  placeCar: function() {
+    if (!this.car) {
+      return;
+    }
+
+    var asphaltNodes = this.graph.nodesWithMaterial("Asphalt");
+    if (asphaltNodes.length <= 2) {
+      return;
+    }
+    var randomIndex = Math.floor(Math.random() * (asphaltNodes.length - 1));
+    var randomNode = this.graph.getNode(asphaltNodes[randomIndex]);
+    this.car.position.set(randomNode.position.x, randomNode.position.y, randomNode.position.z);
+    // Set direction towards an adjacent
+    if (randomNode.adjacents) {
+      var adjacent = this.graph.getNode(randomNode.adjacents[0])
+      this.car.lookAt(adjacent.position);
+    }
+
+    this.car.wander();
+
+    this.scene.add(this.car.object);
+  },
+
+  removeCar: function() {
+    if (this.car) {
+      this.car.stop();
+      this.scene.remove(this.car.object);
+    }
   }
 };
 

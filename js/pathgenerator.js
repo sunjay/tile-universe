@@ -143,7 +143,11 @@ function select(tileElement, displayInfo) {
   }
   tileElement.classList.add("selected");
 
-  return models.load(tileElement.dataset.model).then(function(object) {
+  return models.load({
+    objName: tileElement.dataset.model,
+    mtlName: "roadTile",
+    optimize: false
+  }).then(function(object) {
     scene.add(object);
 
     selected = {};
@@ -693,7 +697,11 @@ function exportNext(tiles, currentIndex, aggregate) {
 }
 
 function processModel(model) {
-  return models.load(model).then(function(object) {
+  return models.load({
+    objName: model,
+    mtlName: "roadTile",
+    optimize: false,
+  }).then(function(object) {
     var info = tileInfo(object.clone());
     var refinedNodes = refineGraph(info.nodes, info.boundingBox);
     var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
