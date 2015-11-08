@@ -125,11 +125,17 @@ var editor = {
           this.graph = graph;
 
           this.clearGraph();
-          this.displayGraph();
 
-          this.setupCar().then(function() {
-            resolve();
-          });
+          this.executeStepsAsync([
+            this.displayGraph.bind(this),
+            this.displayGraphLabels.bind(this),
+            this.displayGraphMaterialLabels.bind(this),
+            function() {
+              this.setupCar().then(function() {
+                resolve();
+              });
+            }.bind(this)
+          ]);
         }.bind(this));
       }.bind(this), 1);
     }.bind(this));
@@ -145,6 +151,21 @@ var editor = {
     elems.forEach(function(e) {
       e.classList.remove('hidden');
     });
+  },
+
+  executeStepsAsync: function(steps) {
+    var step = function(i) {
+      setTimeout(function() {
+        var stepFunc = steps[i];
+        stepFunc();
+
+        i += 1;
+        if (i < steps.length) {
+          step(i);
+        }
+      }, 1);
+    };
+    step(0);
   },
 
   toggleMode: function() {
@@ -844,35 +865,19 @@ var editor = {
   
   displayGraph: function() {
     var color = 0xFFFF00;
-    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
 
+    // Graph nodes
     var nodesGeometry = new THREE.Geometry();
-    var textGeometry = new THREE.Geometry();
     this.graph.nodeIds().forEach(function(nid) {
       var node = this.graph.getNode(nid);
       nodesGeometry.vertices.push(node.position);
-
-      // Add a label
-      var textObj = this.createTextLabel(nid.toString(), textMaterial);
-      var textBox = new THREE.Box3().setFromObject(textObj);
-      var width = Math.abs(textBox.max.z - textBox.min.z);
-      var height = Math.abs(textBox.max.x - textBox.min.x);
-
-      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
-
-      textGeometry.mergeMesh(textObj);
     }.bind(this));
 
     var nodesMaterial = new THREE.PointsMaterial({color: color, size: 0.3});
     var nodesPoints = new THREE.Points(nodesGeometry, nodesMaterial);
     this.graphGroup.add(nodesPoints);
 
-    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
-    this.labelsGroup = new THREE.Group();
-    this.labelsGroup.visible = false;
-    this.labelsGroup.add(textMesh);
-    this.graphGroup.add(this.labelsGroup);
-
+    // Graph edges
     var graphEdgesMaterial = new THREE.LineBasicMaterial({color: color});
 
     var seen = new Set();
@@ -887,6 +892,51 @@ var editor = {
         this.graphGroup.add(new THREE.Line(geo, graphEdgesMaterial));
       }.bind(this));
     }.bind(this));
+  },
+
+  displayGraphLabels: function() {
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
+    var textGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+      // Add a label
+      var textObj = this.createTextLabel(nid.toString(), textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
+
+      textObj.position.set(node.position.x - height/2, node.position.y + 0.1, node.position.z + width/2);
+
+      textGeometry.mergeMesh(textObj);
+    }.bind(this));
+
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
+    this.labelsGroup = new THREE.Group();
+    this.labelsGroup.visible = false;
+    this.labelsGroup.add(textMesh);
+    this.graphGroup.add(this.labelsGroup);
+  },
+
+  displayGraphMaterialLabels: function() {
+    var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+
+    var textGeometry = new THREE.Geometry();
+    this.graph.nodeIds().forEach(function(nid) {
+      var node = this.graph.getNode(nid);
+      // Add a label
+      var textObj = this.createTextLabel(node.material, textMaterial);
+      var textBox = new THREE.Box3().setFromObject(textObj);
+      var width = Math.abs(textBox.max.z - textBox.min.z);
+      var height = Math.abs(textBox.max.x - textBox.min.x);
+
+      textObj.position.set(node.position.x + height, node.position.y + 0.1, node.position.z + width/2);
+
+      textGeometry.mergeMesh(textObj);
+    }.bind(this));
+
+    var textMesh = new THREE.Mesh(this.bufferGeometry(textGeometry), textMaterial);
+    this.labelsGroup.add(textMesh);
   },
 
   bufferGeometry: function(geometry) {
