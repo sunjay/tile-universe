@@ -4,7 +4,8 @@ function CarActor(object, graph) {
 
   this.behaviour = null;
   this.behaviourData = {};
-  this.speed = 0.25;
+  this.speed = 0.1; // units/frame
+  this.rotationFactor = 0.1; // spherical linear interpolation factor
 
   this.targetPosition = null;
 
@@ -26,6 +27,18 @@ function CarActor(object, graph) {
       return this.object.rotation;
     }.bind(this)
   });
+  Object.defineProperty(this, "quaternion", {
+    enumerable: true,
+    get: function() {
+      return this.object.quaternion;
+    }.bind(this)
+  });
+
+  this.forwardHelper = new THREE.ArrowHelper(this.forward, new THREE.Vector3(0, 1, 0), 1, 0xff0000);
+  this.object.add(this.forwardHelper);
+
+  this.targetPositionHelper = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, 1, 0), 2, 0x0000ff);
+  this.object.add(this.targetPositionHelper);
 }
 
 CarActor.prototype.update = function() {
@@ -33,10 +46,26 @@ CarActor.prototype.update = function() {
     this.behaviour();
   }
   if (this.targetPosition) {
-    var newPos = this.position.clone().lerp(this.targetPosition, this.speed);
-    this.lookAt(newPos);
-    this.position.set(newPos.x, newPos.y, newPos.z);
+    var vecTo = this.targetPosition.clone().sub(this.position).normalize();
+    var forward = this.forward;
+
+    var targetQuat = (new THREE.Quaternion()).setFromUnitVectors(forward, vecTo);
+
+    this.quaternion.slerp(targetQuat, this.rotationFactor);
+
+    forward = this.forward;
+    this.position.add(forward.setLength(this.speed));
+
+    // for debugging
+    var targetVector = this.targetPosition.clone().sub(this.position).normalize();
+    targetVector.applyQuaternion(this.quaternion.clone().conjugate());
+    this.targetPositionHelper.setDirection(targetVector);
   }
+  else {
+    this.targetPositionHelper.setDirection(new THREE.Vector3(0, 0, 0));
+  }
+
+  this.forwardHelper.setDirection(this.forward.applyQuaternion(this.quaternion.clone().conjugate()));
 };
 
 CarActor.prototype.lookAt = function() {
