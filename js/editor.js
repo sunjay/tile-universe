@@ -81,6 +81,7 @@ var editor = {
     button.classList.remove("btn-primary");
 
     this.hideElements([
+      document.getElementsByClassName("actor-controls")[0],
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.showElements([
@@ -109,6 +110,7 @@ var editor = {
     button.classList.add("btn-primary");
 
     this.showElements([
+      document.getElementsByClassName("actor-controls")[0],
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.hideElements([
@@ -251,6 +253,7 @@ var editor = {
   },
 
   setupPlayControls: function() {
+    document.getElementById('play-random-position').addEventListener('click', this.placeCar.bind(this));
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
     document.getElementById('play-toggle-labels').addEventListener('click', this.toggleGraphLabelsVisiblity.bind(this));
   },
@@ -1009,6 +1012,10 @@ var editor = {
   },
 
   placeCar: function() {
+    if (!this.car) {
+      return;
+    }
+
     var asphaltNodes = this.graph.nodesWithMaterial("Asphalt");
     if (asphaltNodes.length <= 2) {
       return;
@@ -1028,7 +1035,10 @@ var editor = {
   },
 
   removeCar: function() {
-    this.scene.remove(this.car);
+    if (this.car) {
+      this.car.stop();
+      this.scene.remove(this.car.object);
+    }
   }
 };
 
