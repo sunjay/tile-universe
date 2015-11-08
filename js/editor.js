@@ -94,6 +94,7 @@ var editor = {
       setTimeout(function() {
         this.clearGraph();
         this.clearSelection();
+        this.removeCar();
 
         resolve();
       }.bind(this), 1);
@@ -989,9 +990,36 @@ var editor = {
   },
 
   setupCar: function() {
-    return this.loadModel("car1").then(function() {
+    if (this.car) {
+      this.placeCar();
+      return Promise.resolve(this.car);
+    }
 
-    });
+    return this.loadModel("car1").then(function(car) {
+      this.car = car;
+      this.placeCar();
+    }.bind(this));
+  },
+
+  placeCar: function() {
+    var asphaltNodes = this.graph.nodesWithMaterial("Asphalt");
+    if (asphaltNodes.length <= 2) {
+      return;
+    }
+    var randomIndex = Math.floor(Math.random() * (asphaltNodes.length - 1));
+    var randomNode = this.graph.getNode(asphaltNodes[randomIndex]);
+    this.car.position.set(randomNode.position.x, randomNode.position.y, randomNode.position.z);
+    // Set direction towards an adjacent
+    if (randomNode.adjacents) {
+      var adjacent = this.graph.getNode(randomNode.adjacents[0])
+      this.car.lookAt(adjacent.position);
+    }
+
+    this.scene.add(this.car);
+  },
+
+  removeCar: function() {
+    this.scene.remove(this.car);
   }
 };
 
