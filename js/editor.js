@@ -502,6 +502,9 @@ var editor = {
 
   update: function() {
     this.viewportControls.update();
+    if (this.car) {
+      this.car.update();
+    }
   },
 
   bindEvents: function() {
@@ -996,7 +999,7 @@ var editor = {
     }
 
     return this.loadModel("car1").then(function(car) {
-      this.car = car;
+      this.car = new CarActor(car, this.graph);
       this.placeCar();
     }.bind(this));
   },
@@ -1015,7 +1018,9 @@ var editor = {
       this.car.lookAt(adjacent.position);
     }
 
-    this.scene.add(this.car);
+    this.car.wander();
+
+    this.scene.add(this.car.object);
   },
 
   removeCar: function() {
