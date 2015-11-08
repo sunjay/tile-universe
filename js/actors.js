@@ -63,7 +63,7 @@ CarActor.prototype.updateWander = function() {
   // This should be enough so that we don't run out if multiple path items are shifted at once (i.e. if nodes are very close to each other)
   var lookAhead = 5;
   // The maximum rotation this actor can make
-  var maximumTurn = Math.PI/3;
+  var maximumTurn = Math.PI/2;
 
   if (!this.targetPosition) {
     this.behaviourData.targetNode = this.graph.nearestTo(this.position, "Asphalt");
