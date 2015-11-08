@@ -98,7 +98,7 @@ CarActor.prototype.updateWander = function() {
     var options = [];
     lastNode.adjacents.forEach(function(aid) {
       var adj = this.graph.getNode(aid);
-      var vecTo = adj.position.clone().sub(this.position);
+      var vecTo = adj.position.clone().sub(lastNode.position);
       var angle = forward.angleTo(vecTo);
       if (angle < maximumTurn) {
         options.push(aid);
