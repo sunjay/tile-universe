@@ -114,7 +114,7 @@ CarActor.prototype.updateWander = function() {
         throw new Error(message);
       }
     }
-    var randomIndex = Math.random() * (options.length - 1);
+    var randomIndex = Math.floor(Math.random() * (options.length - 1));
     var nextId = options[randomIndex] || lastNode.adjacents[0];
 
     if (this.targetPosition) {
