@@ -33,6 +33,30 @@ Graph.prototype.nodesWithMaterial = function(materialName) {
 };
 
 /**
+ * Returns the node nearest to the given position
+ */
+Graph.prototype.nearestTo = function(position, material) {
+  var ids = this.nodeIds();
+
+  var nearest = null;
+  var nearestDistance = Infinity;
+  for (var i = 0; i < ids.length; i++) {
+    var node = this.getNode(ids[i]);
+    if (node.material !== material) {
+      continue;
+    }
+
+    var distance = node.position.distanceTo(position);
+    if (distance < nearestDistance) {
+      nearest = node;
+      nearestDistance = distance;
+    }
+  }
+
+  return nearest;
+};
+
+/**
  * Merges node 2 into node 1 and removes node 2
  */
 Graph.prototype.merge = function(node1, node2) {
