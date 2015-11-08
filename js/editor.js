@@ -1078,7 +1078,7 @@ var editor = {
     var randomNode = this.graph.getNode(asphaltNodes[randomIndex]);
     this.car.position.set(randomNode.position.x, randomNode.position.y, randomNode.position.z);
     // Set direction towards an adjacent
-    if (randomNode.adjacents) {
+    if (randomNode.adjacents.length) {
       var adjacent = this.graph.getNode(randomNode.adjacents[0])
       this.car.lookAt(adjacent.position);
     }
