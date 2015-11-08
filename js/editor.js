@@ -131,11 +131,9 @@ var editor = {
             this.displayGraph.bind(this),
             this.displayGraphLabels.bind(this),
             this.displayGraphMaterialLabels.bind(this),
-            function() {
-              this.setupCar().then(function() {
-                resolve();
-              });
-            }.bind(this)
+            this.setupCar.bind(this),
+            this.toggleGraphVisiblity.bind(this),
+            resolve
           ]);
         }.bind(this));
       }.bind(this), 1);
@@ -158,12 +156,18 @@ var editor = {
     var step = function(i) {
       setTimeout(function() {
         var stepFunc = steps[i];
-        stepFunc();
+        var returnValue = stepFunc();
 
-        i += 1;
-        if (i < steps.length) {
-          step(i);
+        if (!(returnValue instanceof Promise)) {
+          returnValue = Promise.resolve(returnValue);
         }
+
+        returnValue.then(function() {
+          i += 1;
+          if (i < steps.length) {
+            step(i);
+          }
+        });
       }, 1);
     };
     step(0);
