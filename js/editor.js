@@ -143,7 +143,9 @@ var editor = {
             this.displayGraphLabels.bind(this),
             this.displayGraphMaterialLabels.bind(this),
             this.setupCar.bind(this),
-            this.toggleGraphVisiblity.bind(this),
+            function() {
+              this.graphGroup.visible = false;
+            }.bind(this),
             resolve
           ]);
         }.bind(this));
@@ -1052,6 +1054,7 @@ var editor = {
 
   setupCar: function() {
     if (this.car) {
+      this.car.graph = this.graph;
       this.placeCar();
       return Promise.resolve(this.car);
     }

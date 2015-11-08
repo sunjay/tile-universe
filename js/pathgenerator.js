@@ -395,6 +395,7 @@ function refineGraph(nodes, boundingBox) {
   nodes = refineByDistance(nodes, boundingBox);
   nodes = refineByAdjacentEdges(nodes, boundingBox);
   nodes = refineByAngle(nodes, boundingBox);
+  nodes = refineByOrphans(nodes, boundingBox);
 
   return nodes;
 }
@@ -527,6 +528,33 @@ function refineByAngle(nodes, boundingBox) {
       }
     };
   });
+  return nodes;
+}
+
+function refineByOrphans(nodes, boundingBox) {
+  // An orphan is a non-edge node with one or less adjacents
+  Object.keys(nodes).forEach(function(nid) {
+    if (!nodes[nid]) {
+      return;
+    }
+    var node = nodes[nid];
+    var adjacents = node.adjacents.filter(function(aid) {
+      return !!nodes[aid];
+    });
+    if (isEdgeVertex(boundingBox, node.position) || adjacents.length > 1) {
+      return;
+    }
+    if (adjacents.length === 0) {
+      // useless node
+      node.remove(nodes);
+      return;
+    }
+
+    var adj = nodes[adjacents[0]];
+    node.mergeWith(adj, nodes);
+    adj.remove(nodes);
+  });
+
   return nodes;
 }
 
