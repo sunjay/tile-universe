@@ -5,7 +5,7 @@ function CarActor(object, graph) {
   this.behaviour = null;
   this.behaviourData = {};
   this.speed = 0.1; // units/frame
-  this.rotationFactor = 0.1; // spherical linear interpolation factor
+  this.rotationFactor = 0.15; // spherical linear interpolation factor
 
   this.targetPosition = null;
 
@@ -49,17 +49,17 @@ CarActor.prototype.update = function() {
     var vecTo = this.targetPosition.clone().sub(this.position).normalize();
     var forward = this.forward;
 
-    var targetQuat = (new THREE.Quaternion()).setFromUnitVectors(forward, vecTo);
+    var targetQuat = this.quaternion.clone().multiply((new THREE.Quaternion()).setFromUnitVectors(forward, vecTo));
+
+    // for debugging
+    var targetVector = (new THREE.Vector3(0, 0, 1)).applyQuaternion(targetQuat);
+    targetVector.applyQuaternion(this.quaternion.clone().conjugate());
+    this.targetPositionHelper.setDirection(targetVector);
 
     this.quaternion.slerp(targetQuat, this.rotationFactor);
 
     forward = this.forward;
     this.position.add(forward.setLength(this.speed));
-
-    // for debugging
-    var targetVector = this.targetPosition.clone().sub(this.position).normalize();
-    targetVector.applyQuaternion(this.quaternion.clone().conjugate());
-    this.targetPositionHelper.setDirection(targetVector);
   }
   else {
     this.targetPositionHelper.setDirection(new THREE.Vector3(0, 0, 0));
