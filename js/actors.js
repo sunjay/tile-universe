@@ -2,12 +2,13 @@ function CarActor(object, graph) {
   this.object = object;
   this.graph = graph;
 
+  this.targetPosition = null;
   this.behaviour = null;
   this.behaviourData = {};
+
   this.speed = 0.1; // units/frame
   this.rotationFactor = 0.15; // spherical linear interpolation factor
-
-  this.targetPosition = null;
+  this.maxTurn = Math.PI/3;
 
   Object.defineProperty(this, "forward", {
     enumerable: true,
@@ -48,18 +49,32 @@ CarActor.prototype.update = function() {
   if (this.targetPosition) {
     var vecTo = this.targetPosition.clone().sub(this.position).normalize();
     var forward = this.forward;
+    vecTo.y = this.forward.y;
 
-    var targetQuat = this.quaternion.clone().multiply((new THREE.Quaternion()).setFromUnitVectors(forward, vecTo));
+    var angle = forward.angleTo(vecTo);
+
+    // special case where 180 degree turn is required
+    var movement;
+    if (Math.abs(angle - Math.PI) < 0.05) {
+      movement = forward.clone().applyEuler(new THREE.Euler(0, Math.PI/180, 0));
+    }
+    else {
+      movement = forward.clone().lerp(vecTo, this.rotationFactor);
+    }
+    movement.setLength(this.speed);
+    movement.y = 0;
+
+    var newPos = this.position.clone().add(movement);
+    this.lookAt(newPos);
+
+    if (angle <= this.maxTurn) {
+      this.position.set(newPos.x, newPos.y, newPos.z);
+    }
 
     // for debugging
-    var targetVector = (new THREE.Vector3(0, 0, 1)).applyQuaternion(targetQuat);
+    var targetVector = vecTo.clone();
     targetVector.applyQuaternion(this.quaternion.clone().conjugate());
     this.targetPositionHelper.setDirection(targetVector);
-
-    this.quaternion.slerp(targetQuat, this.rotationFactor);
-
-    forward = this.forward;
-    this.position.add(forward.setLength(this.speed));
   }
   else {
     this.targetPositionHelper.setDirection(new THREE.Vector3(0, 0, 0));
@@ -87,12 +102,10 @@ CarActor.prototype.wander = function() {
 
 CarActor.prototype.updateWander = function() {
   // The distance to the target at which to move on to the next target
-  var moveOnDistance = 0.1;
+  var moveOnDistance = 0.15;
   // The number of nodes to plan ahead in the path
   // This should be enough so that we don't run out if multiple path items are shifted at once (i.e. if nodes are very close to each other)
   var lookAhead = 5;
-  // The maximum rotation this actor can make
-  var maximumTurn = Math.PI/2;
 
   if (!this.targetPosition) {
     this.behaviourData.targetNode = this.graph.nearestTo(this.position, "Asphalt");
@@ -129,7 +142,7 @@ CarActor.prototype.updateWander = function() {
       var adj = this.graph.getNode(aid);
       var vecTo = adj.position.clone().sub(lastNode.position);
       var angle = forward.angleTo(vecTo);
-      if (angle <= maximumTurn) {
+      if (angle <= this.maxTurn) {
         options.push(aid);
       }
     }.bind(this));
