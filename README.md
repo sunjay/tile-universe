@@ -3,6 +3,11 @@ Use this editor to build and create worlds! You can add roads, rivers, lakes and
 
 Press **PLAY** to explore your world! If you have some road tiles, a car will appear and drive around!
 
+[See below for help with the view and editting controls](#view-controls)
+
+## Examples
+There are already several examples of maps that you can import and start playing with right away. Visit the **[examples directory](examples/)** in the source code to download them and get started.
+
 ![A big map made of tiles](http://i.imgur.com/6I7djqZ.png)
 
 ![The car going through a tunnel](http://i.imgur.com/boPXdSJ.png)
