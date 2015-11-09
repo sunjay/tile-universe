@@ -1,4 +1,4 @@
-# Driving
+# Tile Universe Creator
 Use this editor to build and create worlds! You can add roads, rivers, lakes and even mountains. Everything you create is saved automatically and you can import and export your worlds to create as many as you like!
 
 Press **PLAY** to explore your world! If you have some road tiles, a car will appear and drive around!
