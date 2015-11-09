@@ -318,21 +318,17 @@ var editor = {
 
   selectionRotate: function() {
     if (this.selectedObject) {
-      var rotation = this.selectedObject.rotation.y % (2*Math.PI);
-      var cos = Math.round(Math.cos(rotation));
-      var sin = Math.round(Math.sin(rotation));
+      var turn = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), -Math.PI/2);
+      var rotation = this.selectedObject.quaternion.clone().multiply(turn);
 
-      var offsetToCenter = new THREE.Vector3(TILE_SIZE/2, 0, -TILE_SIZE/2);
-      offsetToCenter.x *= cos - sin;
-      offsetToCenter.z *= cos + sin;
+      // tiles have their center in the top left corner
+      var defaultCenter = new THREE.Vector3(TILE_SIZE/2, 0, -TILE_SIZE/2);
+      var centerBefore = defaultCenter.clone().applyQuaternion(this.selectedObject.quaternion)
+      var centerAfter = defaultCenter.clone().applyQuaternion(rotation);
 
-      var origin = this.selectedObject.position.clone().add(offsetToCenter);
-      var relativePosition = this.selectedObject.position.clone().sub(origin);
-      relativePosition.set(-relativePosition.z, relativePosition.y, relativePosition.x);
-      var position = relativePosition.add(origin);
+      var offsetToCenter = centerBefore.sub(centerAfter);
 
-      var rotation = this.selectedObject.rotation.clone();
-      rotation.y -= Math.PI / 2;
+      var position = this.selectedObject.position.clone().add(offsetToCenter);
 
       this.moveAndRotate(this.selectedObject, position, rotation);
     }
@@ -713,7 +709,12 @@ var editor = {
 
     var action = this.createAction(function() {
       object.position.set(position.x, position.y, position.z);
-      object.rotation.set(rotation.x, rotation.y, rotation.z);
+      if (rotation instanceof THREE.Euler) {
+        object.rotation.set(rotation.x, rotation.y, rotation.z);
+      }
+      else {
+        object.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+      }
     }.bind(this), function() {
       object.position.set(oldPosition.x, oldPosition.y, oldPosition.z);
       object.rotation.set(oldRotation.x, oldRotation.y, oldRotation.z);
