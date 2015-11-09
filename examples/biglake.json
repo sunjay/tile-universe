@@ -3905,6 +3905,2946 @@
         0,
         "XYZ"
       ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        12
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        12
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        12
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        18
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        18
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        18
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        21
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        21
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -21,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        0,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        0,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        9,
+        0,
+        33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        9,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        9,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        9,
+        0,
+        36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        0,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -3,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -6,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -9,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -4,
+        0.5000000000000001,
+        -6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -6,
+        0.5000000000000001,
+        -10
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -2,
+        0.5000000000000001,
+        -6.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        2,
+        0.5000000000000001,
+        -6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        1,
+        0.5000000000000001,
+        -8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        6.5,
+        0.5000000000000001,
+        -20
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -5,
+        0.5000000000000001,
+        -19
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -0.5,
+        0.5000000000000001,
+        -18.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        6.5,
+        0.5000000000000001,
+        -10.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        3,
+        0.5000000000000001,
+        -26
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        8,
+        0.5000000000000001,
+        -16.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        7.5,
+        0.5000000000000001,
+        -31.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -9,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -16,
+        0.5000000000000001,
+        9.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        3,
+        0.5000000000000001,
+        25.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -6,
+        0.5000000000000001,
+        34
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -19.5,
+        0.5000000000000001,
+        27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        7.5,
+        0.5000000000000001,
+        4.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -16,
+        0.5000000000000001,
+        15.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -19.5,
+        0.5000000000000001,
+        32.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        2.5,
+        0.5000000000000001,
+        30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -19.5,
+        0.5000000000000001,
+        23.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -29,
+        0.5000000000000001,
+        8
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -12,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -28.5,
+        0.5000000000000001,
+        22
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_175",
+      "position": [
+        -9,
+        3.6739403974420594e-16,
+        -45
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -15,
+        0,
+        -42
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_185",
+      "position": [
+        -9,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -27,
+        3.6739403974420594e-16,
+        -39
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_185",
+      "position": [
+        -30,
+        0,
+        -42
+      ],
+      "rotation": [
+        0,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -21,
+        0,
+        -42
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -15,
+        3.6739403974420594e-16,
+        -39
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -27,
+        3.6739403974420594e-16,
+        -36
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -27,
+        3.6739403974420594e-16,
+        -33
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_190",
+      "position": [
+        -27,
+        3.6739403974420594e-16,
+        -30
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -18,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -21,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -21,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -21,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -9,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -12,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -15,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -18,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -18,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -15,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_153",
+      "position": [
+        -21,
+        2.465190328815662e-31,
+        -33
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        5.551115123125783e-16,
+        1.2246468525851679e-16,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -15,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -12,
+        -1.60313445174413e-23,
+        -36
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -18,
+        3.673940237128614e-16,
+        -36
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_153",
+      "position": [
+        -21.000000000000004,
+        -3.673940557755501e-16,
+        -45
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -18,
+        3.673940237128614e-16,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -15,
+        3.673940237128614e-16,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -9,
+        3.673940237128614e-16,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -6,
+        3.673940237128614e-16,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -3,
+        3.673940237128614e-16,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_150",
+      "position": [
+        -2.220446049250313e-16,
+        -3.6739403974420574e-16,
+        -45
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        -4.440892098500626e-16,
+        -3.206268893627499e-23,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        0,
+        -3.206268893627499e-23,
+        -39
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        9,
+        -3.206268893627499e-23,
+        -39
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        9,
+        -3.206268893627499e-23,
+        -42
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_153",
+      "position": [
+        12,
+        -3.673940557755502e-16,
+        -45
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        6,
+        -3.20626890348826e-23,
+        -45
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_162",
+      "position": [
+        9,
+        -3.20626890348826e-23,
+        -45
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_187",
+      "position": [
+        -12.000000000000005,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        -1.5707963267948966,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_187",
+      "position": [
+        -18,
+        0,
+        -42
+      ],
+      "rotation": [
+        3.141592653589793,
+        -4.440892098500626e-16,
+        3.141592653589793,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        -42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -30,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -27,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -24,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -21,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -18,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -18,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -15,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -12,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -9,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -9,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -15,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -9,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -6,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        -3,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        0,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        3,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        6,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        9,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_175",
+      "position": [
+        12,
+        3.6739403974420594e-16,
+        -3.0000000000000004
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_175",
+      "position": [
+        12,
+        3.6739403974420594e-16,
+        3
+      ],
+      "rotation": [
+        -1.2246468525851679e-16,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        0
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        6
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -12
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -18
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -21
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        9
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        12
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        15
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        18
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        21
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        24
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        27
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        30
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        33
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        36
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_163",
+      "position": [
+        12,
+        0,
+        42
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -11.5,
+        0.5000000000000001,
+        -30.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -22.5,
+        0.5000000000000001,
+        -37
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -7.5,
+        0.5000000000000001,
+        -40.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -18,
+        0.5000000000000001,
+        -31.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -25,
+        0.5000000000000001,
+        -24.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        7,
+        0.5000000000000001,
+        35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        12.5,
+        0.5000000000000001,
+        -39
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        4.5,
+        0.5000000000000001,
+        -40.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -3.5,
+        0.5000000000000001,
+        -45
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        0,
+        0.5000000000000001,
+        38
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -23.5,
+        0.5000000000000001,
+        13
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_020",
+      "position": [
+        -26,
+        0.5000000000000001,
+        35
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -1,
+        0.5000000000000001,
+        -25
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        7,
+        0.5000000000000001,
+        24.5
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        10,
+        0.5000000000000001,
+        31
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
+    },
+    {
+      "model": "roadTile_019",
+      "position": [
+        -23.5,
+        0.5000000000000001,
+        19
+      ],
+      "rotation": [
+        0,
+        0,
+        0,
+        "XYZ"
+      ]
     }
   ]
 }
