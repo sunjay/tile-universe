@@ -140,8 +140,6 @@ var editor = {
 
           this.executeStepsAsync([
             this.displayGraph.bind(this),
-            this.displayGraphLabels.bind(this),
-            this.displayGraphMaterialLabels.bind(this),
             this.setupCar.bind(this),
             function() {
               this.graphGroup.visible = false;
@@ -266,7 +264,6 @@ var editor = {
   setupPlayControls: function() {
     document.getElementById('play-random-position').addEventListener('click', this.placeCar.bind(this));
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
-    document.getElementById('play-toggle-labels').addEventListener('click', this.toggleGraphLabelsVisiblity.bind(this));
     document.getElementById('play-toggle-path').addEventListener('click', this.toggleGraphPathVisiblity.bind(this));
   },
 
@@ -841,10 +838,6 @@ var editor = {
 
   toggleGraphVisiblity: function() {
     this.graphGroup.visible = !this.graphGroup.visible;
-  },
-
-  toggleGraphLabelsVisiblity: function() {
-    this.labelsGroup.visible = !this.labelsGroup.visible;
   },
 
   toggleGraphPathVisiblity: function() {
