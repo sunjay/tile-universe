@@ -89,8 +89,10 @@ var editor = {
     this.mode = MODE_EDIT;
 
     var button = document.getElementById("switch-modes");
-    button.textContent = "Play";
+    button.getElementsByTagName("span")[0].textContent = "Play";
     button.classList.remove("btn-primary");
+    button.getElementsByClassName("fa")[0].classList.add("fa-play-circle");
+    button.getElementsByClassName("fa")[0].classList.remove("fa-pencil");
 
     this.hideElements([
       document.getElementsByClassName("actor-controls")[0],
@@ -119,8 +121,10 @@ var editor = {
     this.mode = MODE_PLAY;
 
     var button = document.getElementById("switch-modes");
-    button.textContent = "Edit";
+    button.getElementsByTagName("span")[0].textContent = "Edit";
     button.classList.add("btn-primary");
+    button.getElementsByClassName("fa")[0].classList.remove("fa-play-circle");
+    button.getElementsByClassName("fa")[0].classList.add("fa-pencil");
 
     this.showElements([
       document.getElementsByClassName("actor-controls")[0],
