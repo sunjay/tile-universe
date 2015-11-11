@@ -31,9 +31,9 @@ Here are a few common ones for your convenience:
 * **Ctrl-z** - undo
 * **Ctrl-Shift-z** - redo
 * **d** - duplicate selected tile
-* **k** - move up (press **shift** to move up more) selected tile
-* **j** - move down (press **shift** to move down more) selected tile
+* **k** - move up (hold **shift** to move up faster) selected tile
+* **j** - move down (hold **shift** to move down faster) selected tile
 * **r** - rotate selected tile
 * **d**/**Del** - delete selected tile
-
+* **arrow keys** - move the selected tile horizontally (hold **shift** and **ctrl** for broader and finer control)
 
