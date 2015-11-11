@@ -20,6 +20,8 @@ Click and drag your mouse while clicking the
 * **right button** to pan the view
 
 ## Editting Controls
+Click on tiles to select them. Selected tiles can be dragged. Hold **ctrl** for a finer grain of control.
+
 Use the buttons in the bottom right corner of the screen to modify the **selected** tile.
 
 You can hover over each button in the interface to see its corresponding keyboard shortcut.
