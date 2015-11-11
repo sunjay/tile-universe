@@ -7,6 +7,9 @@ var HORIZONTAL_DELTA = TILE_SIZE/6;
 var MODE_EDIT = "edit-mode";
 var MODE_PLAY = "play-mode";
 
+var FILTER_ANY = "some";
+var FILTER_ALL = "every";
+
 var editor = {
   scene: null,
   renderer: null,
@@ -21,6 +24,7 @@ var editor = {
 
   graph: null,
 
+  tilesFilterMode: FILTER_ANY,
   mode: null,
   history: null,
 
@@ -252,6 +256,8 @@ var editor = {
     for (var i = 0; i < filters.length; i++) {
       filters[i].addEventListener('change', this.updateFiltering.bind(this));
     }
+    document.getElementById("filter-any").addEventListener('click', this.toggleFilterMode.bind(this));
+    document.getElementById("filter-all").addEventListener('click', this.toggleFilterMode.bind(this));
 
     document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
@@ -278,17 +284,47 @@ var editor = {
     document.getElementById('play-toggle-path').addEventListener('click', this.toggleGraphPathVisiblity.bind(this));
   },
 
+  toggleFilterMode: function() {
+    var filterAnyButton = document.getElementById('filter-any');
+    var filterAllButton = document.getElementById('filter-all');
+    if (filterAnyButton.classList.contains('active')) {
+      filterAnyButton.classList.remove('active');
+      filterAllButton.classList.add('active');
+      this.tilesFilterMode = FILTER_ALL;
+    }
+    else {
+      filterAnyButton.classList.add('active');
+      filterAllButton.classList.remove('active');
+      this.tilesFilterMode = FILTER_ANY;
+    }
+    this.updateFiltering();
+  },
+
   updateFiltering: function() {
     var visibleMaterials = this.visibleMaterials();
+    var visibleMaterialsArray = Array.from(visibleMaterials);
 
     var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
     var tiles = tilesParent.children;
     for (var i = 0; i < tiles.length; i++) {
       var tile = tiles[i];
+      var materials = tile.dataset.materials.split(",");
 
-      var isVisible = tile.dataset.materials.split(",").some(function(m) {
-        return visibleMaterials.has(m);
-      });
+      var isVisible;
+      if (this.tilesFilterMode === FILTER_ANY) {
+        isVisible = materials.some(function(m) {
+          return visibleMaterials.has(m);
+        });
+      }
+      else { // FILTER_ALL
+        // materials must contain all visibleMaterials but not the other way around
+        var materials = new Set(materials);
+        isVisible = visibleMaterialsArray.every(function(m) {
+          return materials.has(m);
+        });
+
+      }
+
       if (isVisible) {
         tile.classList.remove("hidden");
       }

@@ -46,38 +46,47 @@
   <aside id="tiles-container" class="panel panel-left">
     <div id="filter-container" class="pull-right">
       <button id="tiles-filter-toggle"><i class="fa fa-search"></i> Filters</button>
-      <ul id="tile-filters">
-        <label>
-          <input type="checkbox" value="Asphalt" checked> Asphalt
-        </label>
-        <label>
-          <input type="checkbox" value="Light_Asphalt" checked> Light Asphalt
-        </label>
-        <label>
-          <input type="checkbox" value="Grey_Asphalt" checked> Grey Asphalt
-        </label>
-        <label>
-          <input type="checkbox" value="Stone" checked> Stone
-        </label>
-        <label>
-          <input type="checkbox" value="Alternate_Dirt" checked> Dirt
-        </label>
-        <label>
-          <input type="checkbox" value="Grass" checked> Grass
-        </label>
-        <label>
-          <input type="checkbox" value="Water" checked> Water
-        </label>
-        <label>
-          <input type="checkbox" value="Sand" checked> Sand
-        </label>
-        <label>
-          <input type="checkbox" value="White" checked> White
-        </label>
-        <label>
-          <input type="checkbox" value="FrontColor" checked> Front Color
-        </label>
-      </ul>
+      <div class="filter-content">
+        <ul id="tile-filters">
+          <label>
+            <input type="checkbox" value="Asphalt" checked> Asphalt
+          </label>
+          <label>
+            <input type="checkbox" value="Light_Asphalt" checked> Light Asphalt
+          </label>
+          <label>
+            <input type="checkbox" value="Grey_Asphalt" checked> Grey Asphalt
+          </label>
+          <label>
+            <input type="checkbox" value="Stone" checked> Stone
+          </label>
+          <label>
+            <input type="checkbox" value="Alternate_Dirt" checked> Dirt
+          </label>
+          <label>
+            <input type="checkbox" value="Grass" checked> Grass
+          </label>
+          <label>
+            <input type="checkbox" value="Water" checked> Water
+          </label>
+          <label>
+            <input type="checkbox" value="Sand" checked> Sand
+          </label>
+          <label>
+            <input type="checkbox" value="White" checked> White
+          </label>
+          <label>
+            <input type="checkbox" value="FrontColor" checked> Front Color
+          </label>
+        </ul>
+        <div id="tiles-filter-mode" class="btn-group">
+          <button id="filter-any" class="active">
+            <small>any</small>
+          </button><button id="filter-all">
+            <small>all</small>
+          </button>
+        </div>
+      </div>
     </div>
     <h3>Insert Tiles</h3>
     <ul class="tiles"></ul>

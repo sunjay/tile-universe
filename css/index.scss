@@ -195,6 +195,25 @@ button
   box-sizing: border-box;
 }
 
+.btn-group
+{
+  button, .button
+  {
+    &:not(:first-child)
+    {
+      margin-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &:not(:last-child)
+    {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
+}
+
 .button.btn-success,
 button.btn-success
 {
@@ -299,16 +318,24 @@ button:disabled
   right: 10px;
   text-align: right;
 
-  #tile-filters
+  .filter-content
   {
     display: none;
+  }
+
+  #tiles-filter-mode
+  {
+    text-align: center;
+    padding-bottom: 5px;
+  }
+
+  #tile-filters
+  {
     margin: 5px;
-    padding: 0;
-    padding-top: 5px;
-    padding-left: 5px;
-    padding-right: 5px;
+    padding: 5px;
     text-align: left;
     border-top: 1px solid black;
+    border-bottom: 1px solid black;
 
     label
     {
@@ -332,7 +359,7 @@ button:disabled
     background: $background;
   }
 
-  #tile-filters
+  .filter-content
   {
     display: block;
   }
