@@ -318,6 +318,52 @@ document.getElementById("debug-labels").addEventListener("click", function() {
   }
 });
 
+document.addEventListener("keyup", function(evt) {
+  if (!selected.object) {
+    return;
+  }
+  switch (evt.keyCode) {
+    case 38: // up arrow
+      break;
+    case 37: // left arrow
+      rotateSelection(+1);
+      break;
+    case 39: // right arrow
+      rotateSelection(-1);
+      break
+      break;
+    case 40: // down arrow
+      break;
+    default:
+      break;
+  }
+});
+
+function rotateSelection(direction) {
+  var turn = (new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), 15*Math.PI/180);
+  if (direction < 0) {
+    turn.inverse();
+  }
+  var rotation = selected.object.quaternion.clone().multiply(turn);
+  var TILE_SIZE = 3;
+
+  // tiles have their center in the top left corner
+  var defaultCenter = new THREE.Vector3(TILE_SIZE/2, 0, -TILE_SIZE/2);
+  var centerBefore = defaultCenter.clone().applyQuaternion(selected.object.quaternion)
+  var centerAfter = defaultCenter.clone().applyQuaternion(rotation);
+
+  var offsetToCenter = centerBefore.sub(centerAfter);
+
+  selected.object.position.add(offsetToCenter);
+  selected.object.quaternion.set(rotation.x, rotation.y, rotation.z, rotation.w);
+  //selected.debugFaces.traverse(function(o) {
+  //  if (o instanceof THREE.WireframeHelper) {
+  //    var quat = rotation.clone().inverse();
+  //    o.quaternion.set(quat.x, quat.y, quat.z, quat.w);
+  //  }
+  //});
+}
+
 function applicableFaces(faces) {
   return faces.filter(function(face) {
     // Returns if the face is in any way upright
