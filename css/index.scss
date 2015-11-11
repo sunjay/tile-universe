@@ -1,6 +1,8 @@
 ---
 ---
 $panel-background: #2196f3;
+$panel-box-shadow: 0px 0px 5px gray;
+$border-radius: 2px;
 
 html, body
 {
@@ -33,7 +35,7 @@ html, body
   top: 70px;
   padding: 10px;
   background: $panel-background;
-  box-shadow: 0px 0px 5px gray;
+  box-shadow: $panel-box-shadow;
 }
 
 .panel-left
@@ -187,10 +189,29 @@ button
   text-transform: uppercase;
   background: #FFFFFF;
   border: 1px solid #E4E4E4;
-  border-radius: 2px;
+  border-radius: $border-radius;
   box-shadow: 1px 1px 1px gray;
   padding: 1px 6px;
   box-sizing: border-box;
+}
+
+.btn-group
+{
+  button, .button
+  {
+    &:not(:first-child)
+    {
+      margin-left: 0;
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+    }
+
+    &:not(:last-child)
+    {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+    }
+  }
 }
 
 .button.btn-success,
@@ -267,7 +288,9 @@ button.btn-rainbow:not(:disabled):hover
 }
 
 .button:not(:disabled):active,
-button:not(:disabled):active
+button:not(:disabled):active,
+.button:not(:disabled).active,
+button:not(:disabled).active
 {
   border-color: transparent;
   box-shadow: 0 0 0;
@@ -286,5 +309,59 @@ button:disabled
 {
   height: 26px;
   font-size: 14px;
+}
+
+#filter-container
+{
+  z-index: 5;
+  position: absolute;
+  right: 10px;
+  text-align: right;
+
+  .filter-content
+  {
+    display: none;
+  }
+
+  #tiles-filter-mode
+  {
+    text-align: center;
+    padding-bottom: 5px;
+  }
+
+  #tile-filters
+  {
+    margin: 5px;
+    padding: 5px;
+    text-align: left;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+
+    label
+    {
+      cursor: pointer;
+      display: block;
+    }
+  }
+}
+
+#filter-container.open
+{
+  $background: white;
+
+  background: $background;
+  border: 1px solid white;
+  border-radius: $border-radius;
+  box-shadow: $panel-box-shadow;
+
+  #tiles-filter-toggle
+  {
+    background: $background;
+  }
+
+  .filter-content
+  {
+    display: block;
+  }
 }
 
