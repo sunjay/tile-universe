@@ -5,6 +5,8 @@ function CarActor(object, graph) {
   this.behaviour = null;
   this.behaviourData = {};
   this.speed = 0.25;
+  // The maximum amount of turn allowed per frame
+  this.maxFrameTurn = Math.PI/12;
 
   this.targetPosition = null;
 
@@ -26,6 +28,12 @@ function CarActor(object, graph) {
       return this.object.rotation;
     }.bind(this)
   });
+  Object.defineProperty(this, "quaternion", {
+    enumerable: true,
+    get: function() {
+      return this.object.quaternion;
+    }.bind(this)
+  });
 }
 
 CarActor.prototype.update = function() {
@@ -34,8 +42,10 @@ CarActor.prototype.update = function() {
   }
   if (this.targetPosition) {
     var newPos = this.position.clone().lerp(this.targetPosition, this.speed);
-    this.lookAt(newPos);
     this.position.set(newPos.x, newPos.y, newPos.z);
+
+    var quaternion = this.quaternion.clone();
+    this.lookAt(newPos);
   }
 };
 
