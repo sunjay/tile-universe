@@ -7,24 +7,30 @@
   <link href="https://fonts.googleapis.com/css?family=Open+Sans:400,300,700" rel="stylesheet" type="text/css">
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
   <link href="css/index.css" rel="stylesheet" type="text/css">
+  <link href="css/thumbnailgenerator.css" rel="stylesheet" type="text/css">
 </head>
 <body>
   <header>
     <div class="right">
       <div class="file-controls">
-        <button id="thumbnails-export" title="Export All">Export All</button>
+        <button id="thumbnails-generate" title="Generate">Generate</button>
+        <span class="header-space"></span>
+        <button id="thumbnails-export" title="Export">Export</button>
       </div>
     </div>
     <div class="left">
-      <span class="site-title">Tile Universe Creator <i id="loading" class="fa fa-spinner fa-spin fa-fw"></i></span>
+      <span class="site-title">Thumbnail Generator <i id="loading" class="fa fa-spinner fa-spin fa-fw"></i></span>
     </div>
   </header>
 
   <main id="main-container"></main>
 
+  <div id="tiles"></div>
+
   <script type="text/javascript" src="js/lib/xr/xr.js"></script>
   <script type="text/javascript" src="js/lib/uri/URI.js"></script>
   <script type="text/javascript" src="js/lib/filesaver/FileSaver.js"></script>
+  <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jszip/2.5.0/jszip.js"></script>
   <script type="text/javascript" src="js/lib/threejs/three.js"></script>
   <script type="text/javascript" src="js/lib/threejs/loaders/MTLLoader.js"></script>
   <script type="text/javascript" src="js/lib/threejs/loaders/OBJMTLLoader.js"></script>

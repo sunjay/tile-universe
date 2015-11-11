@@ -171,6 +171,10 @@ var models = {
     });
   },
 
+  clearModelsCache: function() {
+    this.modelCache = {};
+  },
+
   tiles: function() {
     if (this.tilesList) {
       return Promise.resolve(this.tilesList);
