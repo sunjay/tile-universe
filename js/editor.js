@@ -248,6 +248,7 @@ var editor = {
   },
 
   setupTileControls: function() {
+    document.getElementById("tile-filters-toggle-all").addEventListener('change', this.toggleAllTileFilters.bind(this)); 
     document.getElementById('tiles-filter-toggle').addEventListener('click', function() {
       document.getElementById('filter-container').classList.toggle("open");
       this.classList.toggle("active");
@@ -301,6 +302,8 @@ var editor = {
   },
 
   updateFiltering: function() {
+    this.updateFilterToggleAll();
+
     var visibleMaterials = this.visibleMaterials();
     var visibleMaterialsArray = Array.from(visibleMaterials);
 
@@ -346,6 +349,30 @@ var editor = {
     }
 
     return visibleMaterials;
+  },
+
+  updateFilterToggleAll: function() {
+    var materialFilterInputs = document.getElementById("tile-filters").getElementsByTagName("input");
+
+    var checked = 0;
+    for (var i = 0; i < materialFilterInputs.length; i++) {
+      if (materialFilterInputs[i].checked) {
+        checked += 1;
+      }
+    }
+
+    document.getElementById("tile-filters-toggle-all").checked = checked === materialFilterInputs.length;
+  },
+
+  toggleAllTileFilters: function() {
+    var materialFilterInputs = document.getElementById("tile-filters").getElementsByTagName("input");
+
+    var isChecked = document.getElementById("tile-filters-toggle-all").checked;
+    for (var i = 0; i < materialFilterInputs.length; i++) {
+      materialFilterInputs[i].checked = isChecked;
+    }
+
+    this.updateFiltering();
   },
 
   updateUndoRedoButtons: function() {

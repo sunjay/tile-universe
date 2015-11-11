@@ -315,9 +315,14 @@ button:disabled
   right: 10px;
   text-align: right;
 
-  .filter-content
+  .filter-content, #tile-filters-toggle-all
   {
     display: none;
+  }
+
+  #tile-filters-toggle-all
+  {
+    margin: 10px;
   }
 
   #tiles-filter-mode
@@ -356,7 +361,7 @@ button:disabled
     background: $background;
   }
 
-  .filter-content
+  .filter-content, #tile-filters-toggle-all
   {
     display: block;
   }
