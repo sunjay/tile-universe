@@ -12,7 +12,7 @@ scene.add(light);
 
 var renderer = new THREE.WebGLRenderer();
 renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
-renderer.setClearColor(0xEEEEEE, 1);
+renderer.setClearColor(0x555555, 1);
 //document.getElementById("main-container").appendChild(renderer.domElement);
 
 // Setup scene
