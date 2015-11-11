@@ -9,7 +9,7 @@ var models = {
   // Custom behaviour for specific models - called once after loading
   loadedCallbacks: {
     car1: function(object) {
-      var children = object.children[0].children.forEach(function(child) {
+      object.traverse(function(child) {
         if (child.material) {
           if (child.material.name === "Car_Body") {
             child.material.emissive.r = 0.8;
@@ -21,7 +21,30 @@ var models = {
           }
         }
       });
+    },
+    roadTile: function(object) {
+      object.traverse(function(child) {
+        if (child.material) {
+          child.material.emissive.r = child.material.color.r;
+          child.material.emissive.g = child.material.color.g;
+          child.material.emissive.b = child.material.color.b;
+        }
+      });
     }
+  },
+
+  applyLoadedCallback: function(model, object) {
+    if (this.loadedCallbacks[model]) {
+      this.loadedCallbacks[model](object);
+      return;
+    }
+
+    Object.keys(this.loadedCallbacks).forEach(function(key) {
+      var modelRegex = new RegExp(key);
+      if (modelRegex.test(model)) {
+        this.loadedCallbacks[key](object);
+      }
+    }.bind(this));
   },
 
   /**
@@ -79,9 +102,7 @@ var models = {
             object.rotation.order = 'YXZ';
 
             // Apply custom transformations on a model-to-model basis
-            if (this.loadedCallbacks[modelName]) {
-              this.loadedCallbacks[modelName](object);
-            }
+            this.applyLoadedCallback(modelName, object);
 
             this.modelCache[modelName] = object;
             resolve(object.clone());
