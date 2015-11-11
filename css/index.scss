@@ -179,6 +179,7 @@ header .header-space
 button .fa
 {
   font-size: 18px;
+  vertical-align: middle;
 }
 
 .button,
@@ -186,6 +187,7 @@ button
 {
   color: black;
   display: inline-block;
+  min-height: 26px;
   text-transform: uppercase;
   background: #FFFFFF;
   border: 1px solid #E4E4E4;
@@ -193,6 +195,7 @@ button
   box-shadow: 1px 1px 1px gray;
   padding: 1px 6px;
   box-sizing: border-box;
+  font-size: 14px;
 }
 
 .btn-group
@@ -303,12 +306,6 @@ button:disabled
   background: #DDDDDD;
   box-shadow: 0px 0px 1px #DDDDDD;
   border-color: #C1C1C1;
-}
-
-.file-controls button
-{
-  height: 26px;
-  font-size: 14px;
 }
 
 #filter-container
