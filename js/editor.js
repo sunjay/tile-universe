@@ -210,6 +210,7 @@ var editor = {
         tile.title = tileData.name;
         tile.dataset.name = tileData.name;
         tile.dataset.model = tileData.model;
+        tile.dataset.materials = tileData.materials.join(",");
         tile.addEventListener('mousedown', function(evt) {
           if (!this.isEditMode()) return;
           this.mouseStart = new THREE.Vector2(evt.clientX, evt.clientY);
@@ -247,6 +248,11 @@ var editor = {
       document.getElementById('filter-container').classList.toggle("open");
       this.classList.toggle("active");
     });
+    var filters = document.getElementById('tile-filters').getElementsByTagName('input');
+    for (var i = 0; i < filters.length; i++) {
+      filters[i].addEventListener('change', this.updateFiltering.bind(this));
+    }
+
     document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
@@ -270,6 +276,40 @@ var editor = {
     document.getElementById('play-random-position').addEventListener('click', this.placeCar.bind(this));
     document.getElementById('play-toggle-graph').addEventListener('click', this.toggleGraphVisiblity.bind(this));
     document.getElementById('play-toggle-path').addEventListener('click', this.toggleGraphPathVisiblity.bind(this));
+  },
+
+  updateFiltering: function() {
+    var visibleMaterials = this.visibleMaterials();
+
+    var tilesParent = document.getElementById("tiles-container").getElementsByClassName("tiles")[0];
+    var tiles = tilesParent.children;
+    for (var i = 0; i < tiles.length; i++) {
+      var tile = tiles[i];
+
+      var isVisible = tile.dataset.materials.split(",").some(function(m) {
+        return visibleMaterials.has(m);
+      });
+      if (isVisible) {
+        tile.classList.remove("hidden");
+      }
+      else {
+        tile.classList.add("hidden");
+      }
+    }
+  },
+
+  visibleMaterials: function() {
+    var materialFilterInputs = document.getElementById("tile-filters").getElementsByTagName("input");
+
+    var visibleMaterials = new Set();
+    for (var i = 0; i < materialFilterInputs.length; i++) {
+      var filter = materialFilterInputs[i];
+      if (filter.checked) {
+        visibleMaterials.add(filter.value);
+      }
+    }
+
+    return visibleMaterials;
   },
 
   updateUndoRedoButtons: function() {
