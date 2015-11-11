@@ -677,7 +677,7 @@ var editor = {
     this.deselectAllTiles();
   },
 
-  drag: function(x, y) {
+  drag: function(x, y, event) {
     if (!this.dragTarget) {
       return;
     }
@@ -690,6 +690,9 @@ var editor = {
     }
 
     var snapStep = HORIZONTAL_DELTA;
+    if (event.ctrlKey && !event.shiftKey) {
+      snapStep *= 0.5;
+    }
     intersection.divideScalar(snapStep).floor().multiplyScalar(snapStep);
     this.dragTarget.position.set(intersection.x, this.dragTarget.position.y, intersection.z);
   },
@@ -766,7 +769,7 @@ var editor = {
 
       this.mousePosition.set(evt.clientX, evt.clientY);
 
-      this.drag(evt.clientX, evt.clientY);
+      this.drag(evt.clientX, evt.clientY, evt);
     }.bind(this));
 
     renderer.domElement.addEventListener('mousedown', this.onmousedown.bind(this));
