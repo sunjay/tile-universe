@@ -2,6 +2,7 @@ var TILE_SIZE = 3;
 var GRID_LINES = 20;
 var GRID_SIZE = TILE_SIZE * GRID_LINES;
 var HEIGHT_DELTA = 0.10;
+var HORIZONTAL_DELTA = TILE_SIZE/6;
 
 var MODE_EDIT = "edit-mode";
 var MODE_PLAY = "play-mode";
@@ -288,14 +289,30 @@ var editor = {
   },
 
   selectionMoveUp: function(event) {
-    this.selectionMove(event, HEIGHT_DELTA);
+    this.selectionMoveVertical(event, HEIGHT_DELTA);
   },
 
   selectionMoveDown: function(event) {
-    this.selectionMove(event, -HEIGHT_DELTA);
+    this.selectionMoveVertical(event, -HEIGHT_DELTA);
   },
 
-  selectionMove: function(event, amount) {
+  selectionMoveForward: function(event) {
+    this.selectionMoveHorizontal(event, 0, HORIZONTAL_DELTA);
+  },
+
+  selectionMoveBackward: function(event) {
+    this.selectionMoveHorizontal(event, 0, -HORIZONTAL_DELTA);
+  },
+
+  selectionMoveLeft: function(event) {
+    this.selectionMoveHorizontal(event, HORIZONTAL_DELTA, 0);
+  },
+
+  selectionMoveRight: function(event) {
+    this.selectionMoveHorizontal(event, -HORIZONTAL_DELTA, 0);
+  },
+
+  selectionMoveVertical: function(event, amount) {
     if (this.selectedObject) {
       var multiplier = 1;
       if (event.shiftKey) {
@@ -311,6 +328,59 @@ var editor = {
       action.forward();
       this.pushAction(action);
     }
+  },
+
+  selectionMoveHorizontal: function(event, right, forward) {
+    if (this.selectedObject) {
+      // create forward and right from the current camera orientation
+      var forwardVector = this.roundedViewportDirection();
+      var rightVector = forwardVector.clone().cross(new THREE.Vector3(0, 1, 0)).negate();
+      
+      var multiplier = 1;
+      if (event.shiftKey && !event.ctrlKey) {
+        multiplier = 4;
+      }
+      else if (!event.shiftKey && event.ctrlKey) {
+        multiplier = 0.5;
+      }
+      forwardVector.multiplyScalar(multiplier * forward);
+      rightVector.multiplyScalar(multiplier * right);
+
+      var translation = forwardVector.add(rightVector);
+
+      var object = this.selectedObject;
+      var action = this.createAction(function() {
+        object.position.add(translation);
+      }.bind(this), function() {
+        object.position.sub(translation);
+      }.bind(this));
+      action.forward();
+      this.pushAction(action);
+    }
+  },
+
+  roundedViewportDirection: function() {
+    var direction = this.viewportDirection();
+    // Round to the largest component since that is the primary
+    // direction which the user's viewport is facing
+    if (Math.abs(direction.x) > Math.abs(direction.z)) {
+      direction = new THREE.Vector3(Math.sign(direction.x), 0, 0);
+    }
+    else {
+      direction = new THREE.Vector3(0, 0, Math.sign(direction.z));
+    }
+
+    if (direction.x === 0 && direction.z === 0) {
+      // I don't think a case should exist where this happens,
+      // but just in case it ever comes up
+      console.warn("Could not properly work out viewport direction");
+    }
+
+    return direction;
+  },
+
+  viewportDirection: function() {
+    return this.viewportControls.target.clone().sub(this.camera.position).setY(0).normalize();
   },
 
   selectionRotate: function() {
@@ -367,6 +437,7 @@ var editor = {
 
     controls.dampingFactor = 5;
     controls.zoomSpeed = 1.2;
+    controls.enableKeys = false;
 
     this.viewportControls = controls;
   },
@@ -507,7 +578,7 @@ var editor = {
       return;
     }
 
-    var snapStep = TILE_SIZE/6;
+    var snapStep = HORIZONTAL_DELTA;
     intersection.divideScalar(snapStep).floor().multiplyScalar(snapStep);
     this.dragTarget.position.set(intersection.x, this.dragTarget.position.y, intersection.z);
   },
@@ -559,6 +630,18 @@ var editor = {
           break;
         case 75: // k
           this.selectionMoveUp(evt);
+          break;
+        case 38: // up arrow
+          this.selectionMoveForward(evt);
+          break;
+        case 37: // left arrow
+          this.selectionMoveLeft(evt);
+          break;
+        case 39: // right arrow
+          this.selectionMoveRight(evt);
+          break;
+        case 40: // down arrow
+          this.selectionMoveBackward(evt);
           break;
         default:
           break;
