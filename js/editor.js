@@ -243,6 +243,10 @@ var editor = {
   },
 
   setupTileControls: function() {
+    document.getElementById('tiles-filter-toggle').addEventListener('click', function() {
+      document.getElementById('filter-container').classList.toggle("open");
+      this.classList.toggle("active");
+    });
     document.getElementById('tile-duplicate').addEventListener('click', this.selectionDuplicate.bind(this));
     document.getElementById('tile-move-up').addEventListener('click', this.selectionMoveUp.bind(this));
     document.getElementById('tile-move-down').addEventListener('click', this.selectionMoveDown.bind(this));
