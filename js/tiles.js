@@ -9,7 +9,7 @@ var models = {
   // Custom behaviour for specific models - called once after loading
   loadedCallbacks: {
     car1: function(object) {
-      var children = object.children[0].children.forEach(function(child) {
+      var children = object.traverse(function(child) {
         if (child.material) {
           if (child.material.name === "Car_Body") {
             child.material.emissive.r = 0.8;
