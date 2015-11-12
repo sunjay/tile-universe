@@ -4,9 +4,9 @@ function CarActor(object, graph) {
 
   this.behaviour = null;
   this.behaviourData = {};
-  this.speed = 0.25;
+  this.speed = 0.1;
   // The maximum amount of turn allowed per frame
-  this.maxFrameTurn = Math.PI/12;
+  this.maxFrameTurn = Math.PI/180;
 
   this.targetPosition = null;
 
@@ -42,10 +42,23 @@ CarActor.prototype.update = function() {
   }
   if (this.targetPosition) {
     var newPos = this.position.clone().lerp(this.targetPosition, this.speed);
-    this.position.set(newPos.x, newPos.y, newPos.z);
 
-    var quaternion = this.quaternion.clone();
-    this.lookAt(newPos);
+    // only clamp the rotation about the y axis
+    var vecTo = newPos.clone().sub(this.position);
+    // save this to be reset later
+    var y = vecTo.y;
+
+    var forward = this.forward.setY(0);
+    vecTo.setY(0);
+
+    var angle = forward.angleTo(vecTo);
+    if (Math.abs(angle) > this.maxFrameTurn) {
+      vecTo = forward.applyQuaternion((new THREE.Quaternion()).setFromAxisAngle(new THREE.Vector3(0, 1, 0), Math.sign(angle)*this.maxFrameTurn));
+    }
+    vecTo.y = y;
+    this.lookAt(this.position.clone().add(vecTo));
+
+    this.position.set(newPos.x, newPos.y, newPos.z);
   }
 };
 
