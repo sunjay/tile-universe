@@ -4,7 +4,7 @@ function CarActor(object, graph) {
 
   this.behaviour = null;
   this.behaviourData = {};
-  this.speed = 0.25;
+  this.speed = 0.40;
 
   this.targetPosition = null;
 
@@ -34,7 +34,25 @@ CarActor.prototype.update = function() {
   }
   if (this.targetPosition) {
     var newPos = this.position.clone().lerp(this.targetPosition, this.speed);
-    this.lookAt(newPos);
+
+    var average = this.targetPosition.clone().sub(this.position).normalize();
+    if (this.behaviourData.path) {
+      // the maximum number of nodes to average
+      var maxAverageLength = 3;
+      var last = this.targetPosition.clone();
+      var count = 1;
+      this.behaviourData.path.slice(0, maxAverageLength).forEach(function(nid) {
+        var node = this.graph.getNode(nid);
+        var direction = node.position.clone().sub(last).normalize();
+
+        average.add(direction);
+        count++;
+        last = node.position.clone();
+      }.bind(this));
+
+      average.divideScalar(count);
+    }
+    this.lookAt(this.position.clone().add(average));
     this.position.set(newPos.x, newPos.y, newPos.z);
   }
 };
