@@ -447,6 +447,7 @@ function refineGraph(nodes, boundingBox) {
 }
 
 function refineByDistance(nodes, boundingBox) {
+  // Merge adjacent vertices by distance
   var closenessThreshold = 0.38;
 
   // Technically we should clone nodes here...but oh well!
@@ -518,7 +519,7 @@ function refineByAdjacentEdges(nodes, boundingBox) {
 }
 
 function refineByAngle(nodes, boundingBox) {
-  // Merge adjacent node triples that form an angle that isn't traversable
+  // Merge adjacent node triples that form an angle that isn't traversable by certain characters (too steep turn)
   var maximumAngle = Math.PI/4;
 
   var isEdge = function(v) {
@@ -579,6 +580,7 @@ function refineByAngle(nodes, boundingBox) {
 
 function refineByOrphans(nodes, boundingBox) {
   // An orphan is a non-edge node with one or less adjacents
+  // These aren't usually useful because they don't lead anywhere
   Object.keys(nodes).forEach(function(nid) {
     if (!nodes[nid]) {
       return;
