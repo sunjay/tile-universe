@@ -11,6 +11,13 @@
 <body>
   <header>
     <div class="right">
+      <!-- Examples loader controls -->
+      <div class="examples-controls">
+        <button id="examples-list-toggle">Examples <i class="fa fa-caret-down"></i></button>
+        <ul id="examples-list">
+          <li class="examples-list-item template"><button class="btn-link">filename.json</button> <a href="http://filename.json" target="_blank" class="button btn-link"><i class="fa fa-external-link fa-fw"></i></a></li>
+        </ul>
+      </div>
       <!-- Play Controls -->
       <div class="actor-controls">
         <button id="play-random-position" class="btn-rainbow">Randomize</button>
@@ -107,6 +114,8 @@
   <script type="text/javascript" src="js/lib/xr/xr.js"></script>
   <script type="text/javascript" src="js/lib/uri/URI.js"></script>
   <script type="text/javascript" src="js/lib/filesaver/FileSaver.js"></script>
+  <script type="text/javascript" src="js/lib/githubjs/github.js"></script>
+
   <script type="text/javascript" src="js/lib/threejs/three.js"></script>
   <script type="text/javascript" src="js/lib/threejs/loaders/MTLLoader.js"></script>
   <script type="text/javascript" src="js/lib/threejs/loaders/OBJMTLLoader.js"></script>
