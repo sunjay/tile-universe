@@ -489,13 +489,15 @@ function refineByEdgeConnectedNodes(nodes, boundingBox) {
   var isEdge = function(v) {
     return isEdgeVertex(boundingBox, v);
   };
-  var edgeConnections = function(n, originId) {
+  var edgeConnections = function(n, seen) {
+    seen = seen || new Set();
+    seen.add(n.id);
     return n.adjacents.filter(function(aid) {
       var a = nodes[aid];
-      if (!a || aid === originId) {
+      if (!a || seen.has(aid)) {
         return false;
       }
-      return a && (isEdge(a.position) || edgeConnections(a, n.id) > 0);
+      return isEdge(a.position) || edgeConnections(a, seen) > 0;
     }).length;
   };
 
