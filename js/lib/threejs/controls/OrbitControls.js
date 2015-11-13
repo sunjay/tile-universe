@@ -350,6 +350,7 @@
 
 		// Set to false to disable panning
 		this.enablePan = true;
+    this.panSpeed = 1.0;
 		this.keyPanSpeed = 7.0;	// pixels moved per arrow key push
 
 		// Set to true to automatically rotate around the target
@@ -405,7 +406,7 @@
 
 			var element = scope.domElement === document ? scope.domElement.body : scope.domElement;
 
-			constraint.pan( deltaX, deltaY, element.clientWidth, element.clientHeight );
+      constraint.pan( scope.panSpeed * deltaX, scope.panSpeed * deltaY, element.clientWidth, element.clientHeight );
 
 		}
 
