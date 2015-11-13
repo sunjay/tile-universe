@@ -40,7 +40,9 @@ repo.contents(branch, "examples", function(err, contents) {
   contents.forEach(function(file) {
     var basename = file.name.split(".").slice(0, -1).join(".");
     if (file.name.endsWith(".png")) {
-
+      if (imageReferences[basename]) {
+        imageReferences[basename].src = file //TODO
+      }
     }
     else if (!file.name.endsWith(".json")) {
       return;
