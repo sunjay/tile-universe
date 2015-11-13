@@ -575,7 +575,12 @@ function refineByAdjacentEdges(nodes, boundingBox) {
 
 function refineByAngle(nodes, boundingBox) {
   // Merge adjacent node triples that form an angle that isn't traversable by certain characters (too steep turn)
-  var maximumAngle = Math.PI/4;
+  window.nodes = nodes;
+
+  // The smallest angle that can be successfully turned
+  var minimumAngle = 71*Math.PI/180;
+  // Any angle between this and pi will be straightened
+  var straighteningThreshold = 150*Math.PI/180;
 
   var isEdge = function(v) {
     return isEdgeVertex(boundingBox, v);
@@ -585,10 +590,12 @@ function refineByAngle(nodes, boundingBox) {
   // p1---p2---p3 where p2 is the angle vertex of the triple
 
   Object.keys(nodes).forEach(function(nid) {
-    if (!nodes[nid] || isEdge(nodes[nid].position)) {
+    if (!nodes[nid]) {
       return;
     }
     var node = nodes[nid];
+    // being an edge only matters when there is a possibility of merging
+    var nodeIsEdge = isEdge(nodes[nid].position);
     var p1 = node.position;
 
     var nodeAdjacents = node.adjacents;
@@ -605,7 +612,7 @@ function refineByAngle(nodes, boundingBox) {
       var adjAdjacents = adj.adjacents;
       for (var j = 0; j < adjAdjacents.length; j++) {
         var aid2 = adjAdjacents[j];
-        if (node.id === aid2 || !nodes[aid2] || isEdge(nodes[aid2].position)) {
+        if (node.id === aid2 || !nodes[aid2]) {
           continue;
         }
         adj2 = nodes[aid2];
@@ -615,18 +622,24 @@ function refineByAngle(nodes, boundingBox) {
         var vec2 = p3.clone().sub(p2);
         var angle = vec1.angleTo(vec2);
 
-        if (angle < maximumAngle) {
+        if (!isEdge(nodes[aid2].position) && !nodeIsEdge && angle < minimumAngle) {
           merging = true;
 
           adj.mergeWith(adj2, nodes);
           adj2.remove(nodes);
           break;
         }
+        else if (adjAdjacents.length <= 2 && angle > straighteningThreshold && angle <= Math.PI) {
+          adj.remove(nodes);
+          node.addAdjacent(adj2);
+          adj2.addAdjacent(node);
+          break;
+        }
       }
 
       if (merging) {
-          node.mergeWith(adj, nodes);
-          adj.remove(nodes);
+        node.mergeWith(adj, nodes);
+        adj.remove(nodes);
       }
     };
   });
