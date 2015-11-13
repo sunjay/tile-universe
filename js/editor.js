@@ -143,7 +143,9 @@ var editor = {
 
     return new Promise(function(resolve, reject) {
       setTimeout(function() {
+        console.time("graph-generation");
         this.generateGraph().then(function(graph) {
+          console.timeEnd("graph-generation");
           this.graph = graph;
 
           this.clearGraph();

@@ -26,9 +26,9 @@ var github = new Github({});
 var branch = "gh-pages";
 var repo = github.getRepo('sunjay', 'tile-universe');
 repo.contents(branch, "examples", function(err, contents) {
+  var listToggle = document.getElementById("examples-list-toggle");
   if (err) {
     console.error(err);
-    var listToggle = document.getElementById("examples-list-toggle");
     listToggle.parentElement.removeChild(listToggle);
     return;
   }
@@ -59,6 +59,10 @@ repo.contents(branch, "examples", function(err, contents) {
 
         data = JSON.parse(data);
         editor.loadDocument(data);
+
+        if (listToggle.classList.contains("active")) {
+          listToggle.click();
+        }
       });
     });
 
