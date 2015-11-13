@@ -2,7 +2,9 @@ var WINDOW_WIDTH = windowWidth();
 var WINDOW_HEIGHT = windowHeight();
 
 var scene = new THREE.Scene();
-var camera = new THREE.PerspectiveCamera(75, WINDOW_WIDTH / WINDOW_HEIGHT, 0.1, 1000);
+var camera = new THREE.OrthographicCamera(-WINDOW_WIDTH/2, WINDOW_WIDTH/2, WINDOW_HEIGHT/2, -WINDOW_HEIGHT/2, -10000, 10000);
+camera.zoom = 20;
+camera.updateProjectionMatrix();
 camera.position.set(16, 12, -24);
 camera.lookAt(scene.position);
 
@@ -45,7 +47,10 @@ function onWindowResize(event) {
   var width = windowWidth();
   var height = windowHeight();
 
-  camera.aspect = width / height;
+  camera.left = -WINDOW_WIDTH/2;
+  camera.right = WINDOW_WIDTH/2;
+  camera.top = WINDOW_HEIGHT/2;
+  camera.bottom = -WINDOW_HEIGHT/2;
   camera.updateProjectionMatrix();
 
   renderer.setSize(width, height);
