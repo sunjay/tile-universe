@@ -531,6 +531,48 @@ function refineByEdgeConnectedNodes(nodes, boundingBox) {
   return nodes;
 }
 
+function refineByAdjacentEdges(nodes, boundingBox) {
+  // Merge adjacent non-edge nodes that both have at least one adjacent edge node or orphan node
+  var isEdge = function(v) {
+    return isEdgeVertex(boundingBox, v);
+  };
+  var isOrphan = function(n) {
+    return n.adjacents.length === 1;
+  };
+  var hasEdgeAdjacentsOrOrphans = function(n) {
+    return n.adjacents.some(function(aid) {
+      return nodes[aid] && (isEdge(nodes[aid].position) || isOrphan(nodes[aid]));
+    });
+  };
+
+  var seen = new Set();
+  Object.keys(nodes).forEach(function(nid) {
+    if (!nodes[nid] || seen.has(nid)) {
+      return;
+    }
+    seen.add(nid);
+    var node = nodes[nid];
+    if (isEdge(node.position) || isOrphan(node) || !hasEdgeAdjacentsOrOrphans(node)) {
+      return;
+    }
+
+    Array.from(node.adjacents).forEach(function(aid) {
+      if (!nodes[aid] || seen.has(aid)) {
+        return;
+      }
+      seen.add(aid);
+      var adj = nodes[aid];
+      if (isEdge(adj.position) || isOrphan(node) || !hasEdgeAdjacentsOrOrphans(adj)) {
+        return;
+      }
+
+      node.mergeWith(adj, nodes);
+      adj.remove(nodes);
+    });
+  });
+  return nodes;
+}
+
 function refineByAngle(nodes, boundingBox) {
   // Merge adjacent node triples that form an angle that isn't traversable by certain characters (too steep turn)
   var maximumAngle = Math.PI/4;
