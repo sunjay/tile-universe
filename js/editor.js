@@ -99,6 +99,7 @@ var editor = {
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.showElements([
+      document.getElementsByClassName("examples-controls")[0],
       document.getElementsByClassName("history-controls")[0],
       document.getElementsByClassName("file-controls")[0],
       document.getElementById("tiles-container"),
@@ -131,6 +132,7 @@ var editor = {
       document.getElementsByClassName("view-controls")[0]
     ]);
     this.hideElements([
+      document.getElementsByClassName("examples-controls")[0],
       document.getElementsByClassName("history-controls")[0],
       document.getElementsByClassName("file-controls")[0],
       document.getElementById("tiles-container"),
