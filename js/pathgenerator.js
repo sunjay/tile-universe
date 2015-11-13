@@ -439,7 +439,7 @@ function tileInfo(target) {
 
 function refineGraph(nodes, boundingBox) {
   nodes = refineByDistance(nodes, boundingBox);
-  nodes = refineByAdjacentEdges(nodes, boundingBox);
+  nodes = refineByEdgeConnectedNodes(nodes, boundingBox);
   nodes = refineByAngle(nodes, boundingBox);
   nodes = refineByOrphans(nodes, boundingBox);
 
@@ -447,6 +447,7 @@ function refineGraph(nodes, boundingBox) {
 }
 
 function refineByDistance(nodes, boundingBox) {
+  // Merge adjacent vertices by distance
   var closenessThreshold = 0.38;
 
   // Technically we should clone nodes here...but oh well!
@@ -481,15 +482,23 @@ function refineByDistance(nodes, boundingBox) {
   return nodes;
 }
 
-function refineByAdjacentEdges(nodes, boundingBox) {
-  // Merge adjacent non-edge nodes that both have adjacent edge nodes
+function refineByEdgeConnectedNodes(nodes, boundingBox) {
+  // Maximizes the number of edge-connected vertices on any node by merging together adjacent vertices that both have more than 1 edge-connection
+  // An edge-connected vertex is just a vertex that has a path leading to an edge -- usually when considering two vertices, the other vertex is removed from consideration
+  // An edge-connection is just any adjacent that connects to an edge
   var isEdge = function(v) {
     return isEdgeVertex(boundingBox, v);
   };
-  var hasEdgeAdjacents = function(n) {
-    return n.adjacents.some(function(aid) {
-      return nodes[aid] && isEdge(nodes[aid].position);
-    });
+  var edgeConnections = function(n, seen) {
+    seen = seen || new Set();
+    seen.add(n.id);
+    return n.adjacents.filter(function(aid) {
+      var a = nodes[aid];
+      if (!a || seen.has(aid)) {
+        return false;
+      }
+      return isEdge(a.position) || edgeConnections(a, seen) > 0;
+    }).length;
   };
 
   Object.keys(nodes).forEach(function(nid) {
@@ -497,7 +506,9 @@ function refineByAdjacentEdges(nodes, boundingBox) {
       return;
     }
     var node = nodes[nid];
-    if (isEdge(node.position) || !hasEdgeAdjacents(node)) {
+    var connections = edgeConnections(node);
+    // Two edge connections is just a straight line
+    if (isEdge(node.position) || connections <= 2) {
       return;
     }
 
@@ -506,7 +517,52 @@ function refineByAdjacentEdges(nodes, boundingBox) {
         return;
       }
       var adj = nodes[aid];
-      if (isEdge(adj.position) || !hasEdgeAdjacents(adj)) {
+      var adjConnections = edgeConnections(adj);
+      // Adjacent nodes only require one more edge connection since they
+      // are already connected to node
+      if (isEdge(adj.position) || adjConnections <= 1) {
+        return;
+      }
+
+      node.mergeWith(adj, nodes);
+      adj.remove(nodes);
+    });
+  });
+  return nodes;
+}
+
+function refineByAdjacentEdges(nodes, boundingBox) {
+  // Merge adjacent non-edge nodes that both have at least one adjacent edge node or orphan node
+  var isEdge = function(v) {
+    return isEdgeVertex(boundingBox, v);
+  };
+  var isOrphan = function(n) {
+    return n.adjacents.length === 1;
+  };
+  var hasEdgeAdjacentsOrOrphans = function(n) {
+    return n.adjacents.some(function(aid) {
+      return nodes[aid] && (isEdge(nodes[aid].position) || isOrphan(nodes[aid]));
+    });
+  };
+
+  var seen = new Set();
+  Object.keys(nodes).forEach(function(nid) {
+    if (!nodes[nid] || seen.has(nid)) {
+      return;
+    }
+    seen.add(nid);
+    var node = nodes[nid];
+    if (isEdge(node.position) || isOrphan(node) || !hasEdgeAdjacentsOrOrphans(node)) {
+      return;
+    }
+
+    Array.from(node.adjacents).forEach(function(aid) {
+      if (!nodes[aid] || seen.has(aid)) {
+        return;
+      }
+      seen.add(aid);
+      var adj = nodes[aid];
+      if (isEdge(adj.position) || isOrphan(node) || !hasEdgeAdjacentsOrOrphans(adj)) {
         return;
       }
 
@@ -518,7 +574,7 @@ function refineByAdjacentEdges(nodes, boundingBox) {
 }
 
 function refineByAngle(nodes, boundingBox) {
-  // Merge adjacent node triples that form an angle that isn't traversable
+  // Merge adjacent node triples that form an angle that isn't traversable by certain characters (too steep turn)
   var maximumAngle = Math.PI/4;
 
   var isEdge = function(v) {
@@ -579,6 +635,7 @@ function refineByAngle(nodes, boundingBox) {
 
 function refineByOrphans(nodes, boundingBox) {
   // An orphan is a non-edge node with one or less adjacents
+  // These aren't usually useful because they don't lead anywhere
   Object.keys(nodes).forEach(function(nid) {
     if (!nodes[nid]) {
       return;
