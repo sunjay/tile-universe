@@ -35,8 +35,14 @@ repo.contents(branch, "examples", function(err, contents) {
 
   var examplesList = document.getElementById("examples-list");
   var template = examplesList.getElementsByClassName("template")[0];
+
+  var imageReferences = {};
   contents.forEach(function(file) {
-    if (!file.name.endsWith(".json")) {
+    var basename = file.name.split(".").slice(0, -1).join(".");
+    if (file.name.endsWith(".png")) {
+
+    }
+    else if (!file.name.endsWith(".json")) {
       return;
     }
     

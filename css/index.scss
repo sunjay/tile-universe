@@ -400,20 +400,28 @@ button
   display: none;
   position: absolute;
   top: 20px;
-  width: 200px;
+  min-width: 200px;
+  height: 300px;
   background: white;
   border-radius: $border-radius;
   box-shadow: $panel-box-shadow;
   list-style-type: none;
   padding-left: 0;
+  overflow-y: auto;
 
   .examples-list-item
   {
     position: relative;
+    padding-bottom: 5px;
     
     &:not(:last-child)
     {
       border-bottom: 1px solid lightgray;
+    }
+
+    img
+    {
+      width: 100%;
     }
 
     a
