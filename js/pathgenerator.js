@@ -518,7 +518,9 @@ function refineByEdgeConnectedNodes(nodes, boundingBox) {
       }
       var adj = nodes[aid];
       var adjConnections = edgeConnections(adj);
-      if (isEdge(adj.position) || adjConnections <= 2) {
+      // Adjacent nodes only require one more edge connection since they
+      // are already connected to node
+      if (isEdge(adj.position) || adjConnections <= 1) {
         return;
       }
 
