@@ -439,7 +439,7 @@ function tileInfo(target) {
 
 function refineGraph(nodes, boundingBox) {
   nodes = refineByDistance(nodes, boundingBox);
-  nodes = refineByAdjacentEdges(nodes, boundingBox);
+  nodes = refineByEdgeConnectedNodes(nodes, boundingBox);
   nodes = refineByAngle(nodes, boundingBox);
   nodes = refineByOrphans(nodes, boundingBox);
 
@@ -482,15 +482,21 @@ function refineByDistance(nodes, boundingBox) {
   return nodes;
 }
 
-function refineByAdjacentEdges(nodes, boundingBox) {
-  // Merge adjacent non-edge nodes that both have adjacent edge nodes
+function refineByEdgeConnectedNodes(nodes, boundingBox) {
+  // Maximizes the number of edge-connected vertices on any node by merging together adjacent vertices that both have more than 1 edge-connection
+  // An edge-connected vertex is just a vertex that has a path leading to an edge -- usually when considering two vertices, the other vertex is removed from consideration
+  // An edge-connection is just any adjacent that connects to an edge
   var isEdge = function(v) {
     return isEdgeVertex(boundingBox, v);
   };
-  var hasEdgeAdjacents = function(n) {
-    return n.adjacents.some(function(aid) {
-      return nodes[aid] && isEdge(nodes[aid].position);
-    });
+  var edgeConnections = function(n, originId) {
+    return n.adjacents.filter(function(aid) {
+      var a = nodes[aid];
+      if (!a || aid === originId) {
+        return false;
+      }
+      return a && (isEdge(a.position) || edgeConnections(a, n.id) > 0);
+    }).length;
   };
 
   Object.keys(nodes).forEach(function(nid) {
@@ -498,7 +504,9 @@ function refineByAdjacentEdges(nodes, boundingBox) {
       return;
     }
     var node = nodes[nid];
-    if (isEdge(node.position) || !hasEdgeAdjacents(node)) {
+    var connections = edgeConnections(node);
+    // Two edge connections is just a straight line
+    if (isEdge(node.position) || connections <= 2) {
       return;
     }
 
@@ -507,7 +515,8 @@ function refineByAdjacentEdges(nodes, boundingBox) {
         return;
       }
       var adj = nodes[aid];
-      if (isEdge(adj.position) || !hasEdgeAdjacents(adj)) {
+      var adjConnections = edgeConnections(adj);
+      if (isEdge(adj.position) || adjConnections <= 2) {
         return;
       }
 
