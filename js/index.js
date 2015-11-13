@@ -21,6 +21,60 @@ renderer.setSize(WINDOW_WIDTH, WINDOW_HEIGHT);
 renderer.setClearColor(0xEEEEFF, 1);
 document.getElementById("main-container").appendChild(renderer.domElement);
 
+// Examples list
+var github = new Github({});
+var branch = "gh-pages";
+var repo = github.getRepo('sunjay', 'tile-universe');
+repo.contents(branch, "examples", function(err, contents) {
+  if (err) {
+    console.error(err);
+    var listToggle = document.getElementById("examples-list-toggle");
+    listToggle.parentElement.removeChild(listToggle);
+    return;
+  }
+
+  var examplesList = document.getElementById("examples-list");
+  var template = examplesList.getElementsByClassName("template")[0];
+  contents.forEach(function(file) {
+    if (!file.name.endsWith(".json")) {
+      return;
+    }
+    
+    var item = template.cloneNode(true);
+    item.classList.remove('template');
+
+    var itemButton = item.getElementsByTagName("button")[0]
+    itemButton.textContent = file.name;
+    itemButton.addEventListener("click", function() {
+      if (!confirm("Clear everything and load example?")) {
+        return;
+      }
+
+      repo.read(branch, file.path, function(err, data) {
+        if (err) {
+          alert("An error occurred while loading the example. Please refresh the page and try again.");
+          console.error(err);
+          return;
+        }
+
+        data = JSON.parse(data);
+        editor.loadDocument(data);
+      });
+    });
+
+    var itemLink = item.getElementsByTagName("a")[0];
+    itemLink.href = file.html_url;
+
+    examplesList.appendChild(item);
+  });
+});
+
+var listToggle = document.getElementById("examples-list-toggle");
+listToggle.addEventListener("click", function() {
+  this.classList.toggle("active");
+  document.getElementById("examples-list").classList.toggle("open");
+});
+
 // Setup scene
 editor.setup(scene, renderer, camera);
 
