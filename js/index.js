@@ -45,7 +45,6 @@ repo.contents(branch, "examples", function(err, contents) {
       }
       else {
         imageReferences[basename] = file.download_url;
-        console.log("1 setting", file.download_url);
       }
     }
 
@@ -88,7 +87,6 @@ repo.contents(branch, "examples", function(err, contents) {
     }
     else {
       imageReferences[basename] = itemImage;
-      console.log("2 setting", file.download_url);
     }
 
     examplesList.appendChild(item);
