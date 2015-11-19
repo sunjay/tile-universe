@@ -113,10 +113,10 @@ function onWindowResize(event) {
   var width = windowWidth();
   var height = windowHeight();
 
-  camera.left = -WINDOW_WIDTH/2;
-  camera.right = WINDOW_WIDTH/2;
-  camera.top = WINDOW_HEIGHT/2;
-  camera.bottom = -WINDOW_HEIGHT/2;
+  camera.left = -width/2;
+  camera.right = width/2;
+  camera.top = height/2;
+  camera.bottom = -height/2;
   camera.updateProjectionMatrix();
 
   renderer.setSize(width, height);
