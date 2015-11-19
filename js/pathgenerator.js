@@ -162,12 +162,12 @@ function select(tileElement, displayInfo) {
     setTimeout(function() {
       setupDebugPaths(object, selected, info);
 
-      setTimeout(function() {
+      /*setTimeout(function() {
         var refinedNodes = refineGraph(info.nodes, info.boundingBox);
         var refinedInfo = Object.assign({}, info, {nodes: refinedNodes});
         object.remove(selected.debugPaths);
         setupDebugPaths(object, selected, refinedInfo);
-      }, 1000);
+        }, 1000);*/
     }, 100);
   });
 }
@@ -395,43 +395,78 @@ function tileInfo(target) {
   info.boundingBox = boundingBox;
 
   traverseGeometries(target, function(o) {
-    // edge hash : related node
-    var seenEdges = {};
+    // edge hash : [edge node 1, edge node 2, material, face]
+    var outsideEdges = {};
+    var boundaryEdges = {};
+    var seenEdges = new Set();
     applicableFaces(o.geometry.faces).forEach(function(f) {
       var v1 = o.geometry.vertices[f.a];
       var v2 = o.geometry.vertices[f.b];
       var v3 = o.geometry.vertices[f.c];
-      var midpoint = v1.clone().add(v2).add(v3).divideScalar(3);
 
-      var node = new Node(midpoint, o.material, f.clone());
-      info.nodes[node.id] = node;
+      var faceHash = [f.a, f.b, f.c].join(';');
 
       var faceVerts = [v1, v2, v3];
-      // This is a little wasteful because each hashedEdge is actually
-      // inserted twice
       faceVerts.forEach(function(va) {
         faceVerts.forEach(function(vb) {
           if (va.equals(vb)) {
             return;
           }
           var hashedEdge = hashEdge(va, vb);
-          if (!seenEdges[hashedEdge] && isOuterEdge(boundingBox, va, vb)) {
-            // create new outer node at the midpoint of this edge
-            var edgeMid = va.clone().add(vb).divideScalar(2);
-            var edgeNode = new Node(edgeMid, o.material);
-            info.nodes[edgeNode.id] = edgeNode;
 
-            node.addAdjacent(edgeNode);
-            edgeNode.addAdjacent(node);
+          var hashedEdgeAndFace = faceHash + '&' + hashedEdge;
+          if (seenEdges.has(hashedEdgeAndFace)) {
+            return;
+          }
+          seenEdges.add(hashedEdgeAndFace);
+
+          if (!boundaryEdges[hashedEdge] && isBoundaryEdge(boundingBox, va, vb)) {
+            boundaryEdges[hashedEdge] = true;
           }
 
-          if (seenEdges[hashedEdge] && seenEdges[hashedEdge] !== node) {
-            node.addAdjacent(seenEdges[hashedEdge]);
-            seenEdges[hashedEdge].addAdjacent(node);
+          outEdge = outsideEdges[hashedEdge];
+          if (!outEdge) {
+            outsideEdges[hashedEdge] = [va, vb, o.material.name, f];
           }
-          seenEdges[hashedEdge] = node;
+          else if (outEdge[3] !== f) {
+            // found connected face and therefore not an outside edge
+            delete outsideEdges[hashedEdge];
+          }
         });
       });
+    });
+
+    // vector hash : node ID
+    var vertNodes = {};
+    Object.keys(outsideEdges).forEach(function(edgeHash) {
+      var verts = outsideEdges[edgeHash];
+      var va = verts[0];
+      var vaHash = hashVector3(va);
+      var vb = verts[1];
+      var vbHash = hashVector3(vb);
+      var material = verts[2];
+
+      var nodeA, nodeB;
+      if (!vertNodes[vaHash]) {
+        nodeA = new Node(va.clone(), material, boundaryEdges[edgeHash] || false);
+        info.nodes[nodeA.id] = nodeA;
+        vertNodes[vaHash] = nodeA;
+      }
+      else {
+        nodeA = vertNodes[vaHash];
+      }
+
+      if (!vertNodes[vbHash]) {
+        nodeB = new Node(vb.clone(), material, boundaryEdges[edgeHash] || false);
+        info.nodes[nodeB.id] = nodeB;
+        vertNodes[vbHash] = nodeB;
+      }
+      else {
+        nodeB = vertNodes[vbHash];
+      }
+
+      nodeA.addAdjacent(nodeB);
+      nodeB.addAdjacent(nodeA);
     });
   });
   return info;
@@ -661,6 +696,10 @@ function refineByOrphans(nodes, boundingBox) {
   return nodes;
 }
 
+function hashVector3(v) {
+  return v.toArray().join(",");
+}
+
 function hashEdge(a, b) {
   return [[a.x, b.x], [a.y, b.y], [a.z, b.z]].map(hashPair).join(":");
 }
@@ -671,7 +710,7 @@ function hashPair(p) {
   return ((a < b) ? [a, b] : [b, a]).join(",");
 }
 
-function isOuterEdge(box, a, b) {
+function isBoundaryEdge(box, a, b) {
   return (a.x === box.min.x && b.x === box.min.x)
     || (a.x === box.max.x && b.x === box.max.x)
     || (a.z === box.min.z && b.z === box.min.z)
@@ -686,11 +725,11 @@ function isEdgeVertex(box, a) {
 }
 
 var idx = 1;
-function Node(position, material, face) {
+function Node(position, material, isBoundary) {
   this.id = idx++;
   this.position = position;
   this.material = material;
-  this.face = face;
+  this.isBoundary = isBoundary;
   this.adjacents = [];
 }
 
