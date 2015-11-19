@@ -41,10 +41,15 @@ repo.contents(branch, "examples", function(err, contents) {
     var basename = file.name.split(".").slice(0, -1).join(".");
     if (file.name.endsWith(".png")) {
       if (imageReferences[basename]) {
-        imageReferences[basename].src = file //TODO
+        imageReferences[basename].src = file.download_url;
+      }
+      else {
+        imageReferences[basename] = file.download_url;
+        console.log("1 setting", file.download_url);
       }
     }
-    else if (!file.name.endsWith(".json")) {
+
+    if (!file.name.endsWith(".json")) {
       return;
     }
     
@@ -76,6 +81,15 @@ repo.contents(branch, "examples", function(err, contents) {
 
     var itemLink = item.getElementsByTagName("a")[0];
     itemLink.href = file.html_url;
+
+    var itemImage = item.getElementsByTagName("img")[0];
+    if (imageReferences.hasOwnProperty(basename)) {
+      itemImage.src = imageReferences[basename];
+    }
+    else {
+      imageReferences[basename] = itemImage;
+      console.log("2 setting", file.download_url);
+    }
 
     examplesList.appendChild(item);
   });
