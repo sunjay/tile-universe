@@ -388,91 +388,114 @@ function traverseGeometries(object, callback) {
 }
 
 function tileInfo(target) {
-  var info = {nodes: {}, boundingBox: null};
+  var info = {boundingBox: null};
+  var edgeGraph = new Graph();
+  info.edgeGraph = edgeGraph;
+
   Node.reset_ids();
 
   var boundingBox = new THREE.Box3().setFromObject(target);
   info.boundingBox = boundingBox;
 
   traverseGeometries(target, function(o) {
-    // edge hash : [edge node 1, edge node 2, material, face]
-    var outsideEdges = {};
-    var boundaryEdges = {};
-    var seenEdges = new Set();
-    applicableFaces(o.geometry.faces).forEach(function(f) {
-      var v1 = o.geometry.vertices[f.a];
-      var v2 = o.geometry.vertices[f.b];
-      var v3 = o.geometry.vertices[f.c];
+    var edges = edgesInfo(o, boundingBox);
 
-      var faceHash = [f.a, f.b, f.c].join(';');
-
-      var faceVerts = [v1, v2, v3];
-      faceVerts.forEach(function(va) {
-        faceVerts.forEach(function(vb) {
-          if (va.equals(vb)) {
-            return;
-          }
-          var hashedEdge = hashEdge(va, vb);
-
-          var hashedEdgeAndFace = faceHash + '&' + hashedEdge;
-          if (seenEdges.has(hashedEdgeAndFace)) {
-            return;
-          }
-          seenEdges.add(hashedEdgeAndFace);
-
-          if (!boundaryEdges[hashedEdge] && isBoundaryEdge(boundingBox, va, vb)) {
-            boundaryEdges[hashedEdge] = true;
-          }
-
-          outEdge = outsideEdges[hashedEdge];
-          if (!outEdge) {
-            outsideEdges[hashedEdge] = [va, vb, o.material.name, f];
-          }
-          else if (outEdge[3] !== f) {
-            // found connected face and therefore not an outside edge
-            delete outsideEdges[hashedEdge];
-          }
-        });
-      });
-    });
-
-    // vector hash : node ID
-    var vertNodes = {};
-    Object.keys(outsideEdges).forEach(function(edgeHash) {
-      var verts = outsideEdges[edgeHash];
-      var va = verts[0];
-      var vaHash = hashVector3(va);
-      var vb = verts[1];
-      var vbHash = hashVector3(vb);
-      var material = verts[2];
-
-      var nodeA, nodeB;
-      if (!vertNodes[vaHash]) {
-        nodeA = new Node(va.clone(), material, boundaryEdges[edgeHash] || false);
-        info.nodes[nodeA.id] = nodeA;
-        vertNodes[vaHash] = nodeA;
-      }
-      else {
-        nodeA = vertNodes[vaHash];
-      }
-
-      if (!vertNodes[vbHash]) {
-        nodeB = new Node(vb.clone(), material, boundaryEdges[edgeHash] || false);
-        info.nodes[nodeB.id] = nodeB;
-        vertNodes[vbHash] = nodeB;
-      }
-      else {
-        nodeB = vertNodes[vbHash];
-      }
-
-      nodeA.addAdjacent(nodeB);
-      nodeB.addAdjacent(nodeA);
-    });
+    addEdgesInfoToGraph(edgeGraph, edges);
   });
+
+  var graph = graphFromEdgeGraph(edgeGraph);
+  info.graph = graph;
+  info.nodes = graph.nodes;
   return info;
 }
 
+function edgesInfo(object, boundingBox) {
+  // edge hash : [edge node 1, edge node 2, material, face]
+  var outsideEdges = {};
+  var boundaryEdges = {};
+  var seenEdges = new Set();
+  applicableFaces(object.geometry.faces).forEach(function(f) {
+    var v1 = object.geometry.vertices[f.a];
+    var v2 = object.geometry.vertices[f.b];
+    var v3 = object.geometry.vertices[f.c];
+
+    var faceHash = [f.a, f.b, f.c].join(';');
+
+    var faceVerts = [v1, v2, v3];
+    faceVerts.forEach(function(va) {
+      faceVerts.forEach(function(vb) {
+        if (va.equals(vb)) {
+          return;
+        }
+        var hashedEdge = hashEdge(va, vb);
+
+        var hashedEdgeAndFace = faceHash + '&' + hashedEdge;
+        if (seenEdges.has(hashedEdgeAndFace)) {
+          return;
+        }
+        seenEdges.add(hashedEdgeAndFace);
+
+        if (!boundaryEdges[hashedEdge] && isBoundaryEdge(boundingBox, va, vb)) {
+          boundaryEdges[hashedEdge] = true;
+        }
+
+        outEdge = outsideEdges[hashedEdge];
+        if (!outEdge) {
+          outsideEdges[hashedEdge] = [va, vb, object.material.name, f];
+        }
+        else if (outEdge[3] !== f) {
+          // found connected face and therefore not an outside edge
+          delete outsideEdges[hashedEdge];
+        }
+      });
+    });
+  });
+
+  return {outsideEdges: outsideEdges, boundaryEdges: boundaryEdges};
+}
+
+function addEdgesInfoToGraph(graph, edges) {
+  var outsideEdges = edges.outsideEdges;
+  var boundaryEdges = edges.boundaryEdges;
+
+  // vector hash : node ID
+  var vertNodes = {};
+  Object.keys(outsideEdges).forEach(function(edgeHash) {
+    var verts = outsideEdges[edgeHash];
+    var va = verts[0];
+    var vaHash = hashVector3(va);
+    var vb = verts[1];
+    var vbHash = hashVector3(vb);
+    var material = verts[2];
+
+    var nodeA, nodeB;
+    if (!vertNodes[vaHash]) {
+      nodeA = graph.createNode(va.clone(), material, boundaryEdges[edgeHash] || false);
+      vertNodes[vaHash] = nodeA;
+    }
+    else {
+      nodeA = vertNodes[vaHash];
+    }
+
+    if (!vertNodes[vbHash]) {
+      nodeB = graph.createNode(vb.clone(), material, boundaryEdges[edgeHash] || false);
+      vertNodes[vbHash] = nodeB;
+    }
+    else {
+      nodeB = vertNodes[vbHash];
+    }
+
+    graph.connect(nodeA, nodeB);
+  });
+}
+
+function graphFromEdgeGraph(edgeGraph) {
+  //TODO
+  return edgeGraph;
+}
+
 function refineGraph(nodes, boundingBox) {
+  throw new Error("These methods need to refactored for the new Graph API");
   nodes = refineByDistance(nodes, boundingBox);
   nodes = refineByEdgeConnectedNodes(nodes, boundingBox);
   nodes = refineByAngle(nodes, boundingBox);
@@ -724,6 +747,104 @@ function isEdgeVertex(box, a) {
     || a.z === box.max.z);
 }
 
+function Graph() {
+  this.nodes = {};
+  this.edges = {};
+}
+
+Graph.prototype.createNode = function(position, material, isBoundary) {
+  var node = new Node(position, material, isBoundary);
+  this.nodes[node.id] = node;
+  return node;
+};
+
+Graph.prototype.getNode = function(nid) {
+  return this.nodes[nid];
+};
+
+Graph.prototype.connect = function(nodeA, nodeB) {
+  nodeA.addAdjacent(nodeB);
+  nodeB.addAdjacent(nodeA);
+
+  var edge = new Edge(nodeA, nodeB);
+  this.edges[edge.hash()] = edge;
+  return edge;
+};
+
+Graph.prototype.disconnect = function(nodeA, nodeB) {
+  nodeA.removeAdjacent(nodeB);
+  nodeB.removeAdjacent(nodeA);
+
+  var edge = this.edgeFromNodes(nodeA, nodeB);
+  if (edge) {
+    delete this.edges[edge.hash()];
+  }
+};
+
+Graph.prototype.edgesList = function() {
+  return Object.keys(this.edges).map(function(hash) {
+    return this.edges[hash];
+  }.bind(this));
+};
+
+Graph.prototype.edgeFromNodes = function(nodeA, nodeB) {
+  var edgeHash = hashEdge(nodeA.position, nodeB.position);
+  return this.edges[edgeHash];
+};
+
+Graph.prototype.merge = function(nodeA, nodeB) {
+  if (nodeA.material !== nodeB.material) {
+    throw new Error("Attempt to merge two different materials");
+  }
+  nodeA.position.add(nodeB.position).divideScalar(2);
+
+  this.disconnect(nodeA, nodeB);
+
+  // merge adjacents
+  Array.from(nodeB.adjacents).forEach(function(aid) {
+    if (aid === nodeA.id) {
+      return;
+    }
+    var adj = this.getNode(aid);
+    if (!adj) {
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
+      return;
+    }
+    this.connect(nodeA, adj);
+  }.bind(this));
+
+  return nodeA;
+};
+
+Graph.prototype.remove = function(node) {
+  var id = node.id;
+  node.adjacents.forEach(function(aid) {
+    var adj = this.getNode(aid);
+    if (!adj) {
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
+      return;
+    }
+
+    this.disconnect(node, adj);
+  }.bind(this));
+
+  delete this.nodes[node.id];
+};
+
+function Edge(nodeA, nodeB) {
+  this.a = nodeA;
+  this.b = nodeB;
+}
+
+Edge.prototype.equals = function(other) {
+  return (this.a === other.a && this.b === other.b) ||
+    (this.a === other.b && this.b === other.a);
+};
+
+Edge.prototype.hash = function() {
+  return hashEdge(this.a.position, this.b.position);
+};
+
 var idx = 1;
 function Node(position, material, isBoundary) {
   this.id = idx++;
@@ -750,44 +871,12 @@ Node.prototype.addAdjacent = function(node) {
   this.adjacents.push(node.id);
 };
 
-Node.prototype.mergeWith = function(node, nodes) {
-  if (this.material !== node.material) {
-    throw new Error("Attempt to merge two different materials");
+Node.prototype.removeAdjacent = function(node) {
+  var index = this.adjacents.indexOf(node.id);
+  if (index < 0) {
+    throw new Error("Attempt to remove adjacent that doesn't exist");
   }
-  this.position.add(node.position).divideScalar(2);
-  //losing face information for other node
-
-  // merge adjacents
-  this.adjacents.push.apply(this.adjacents, node.adjacents);
-  var adjacentsSet = new Set(this.adjacents);
-  adjacentsSet.delete(this.id);
-  this.adjacents = Array.from(adjacentsSet);
-
-  Array.from(this.adjacents).forEach(function(aid) {
-    var adj = nodes[aid];
-    if (!adj) {
-      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
-      return;
-    }
-    adj.addAdjacent(this);
-  }.bind(this));
-};
-
-Node.prototype.remove = function(nodes) {
-  var id = this.id;
-  this.adjacents.forEach(function(aid) {
-    var adj = nodes[aid];
-    if (!adj) {
-      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
-      return;
-    }
-    var index = adj.adjacents.indexOf(id);
-    if (index < 0) {
-      throw new Error("Attempt to remove adjacent that doesn't exist");
-    }
-    adj.adjacents.splice(index, 1);
-  }.bind(this));
-  delete nodes[this.id];
+  this.adjacents.splice(index, 1);
 };
 
 Node.prototype.toJSON = function() {
