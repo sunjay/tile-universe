@@ -470,7 +470,7 @@ function addEdgesInfoToGraph(graph, edges) {
 
     var nodeA, nodeB;
     if (!vertNodes[vaHash]) {
-      nodeA = graph.createNode(va.clone(), material, boundaryEdges[edgeHash] || false);
+      nodeA = graph.createNode(va.clone(), material);
       vertNodes[vaHash] = nodeA;
     }
     else {
@@ -478,7 +478,7 @@ function addEdgesInfoToGraph(graph, edges) {
     }
 
     if (!vertNodes[vbHash]) {
-      nodeB = graph.createNode(vb.clone(), material, boundaryEdges[edgeHash] || false);
+      nodeB = graph.createNode(vb.clone(), material);
       vertNodes[vbHash] = nodeB;
     }
     else {
@@ -752,14 +752,20 @@ function Graph() {
   this.edges = {};
 }
 
-Graph.prototype.createNode = function(position, material, isBoundary) {
-  var node = new Node(position, material, isBoundary);
+Graph.prototype.createNode = function(position, material) {
+  var node = new Node(position, material);
   this.nodes[node.id] = node;
   return node;
 };
 
 Graph.prototype.getNode = function(nid) {
   return this.nodes[nid];
+};
+
+Graph.prototype.nodesList = function() {
+  return Object.keys(this.nodes).map(function(nid) {
+    return this.getNode(nid);
+  }.bind(this));
 };
 
 Graph.prototype.connect = function(nodeA, nodeB) {
@@ -785,6 +791,12 @@ Graph.prototype.edgesList = function() {
   return Object.keys(this.edges).map(function(hash) {
     return this.edges[hash];
   }.bind(this));
+};
+
+Graph.prototype.boundaryEdges = function() {
+  return this.edgesList().filter(function(edge) {
+    return edge.isBoundary;
+  });
 };
 
 Graph.prototype.edgeFromNodes = function(nodeA, nodeB) {
@@ -834,8 +846,8 @@ Graph.prototype.remove = function(node) {
 function Edge(nodeA, nodeB) {
   this.a = nodeA;
   this.b = nodeB;
-
   this.length = this.a.position.distanceTo(this.b.position);
+
   this._hash = hashEdge(this.a.position, this.b.position);
 }
 
@@ -851,6 +863,10 @@ Edge.prototype.midpoint = function() {
 
 Edge.prototype.hash = function() {
   return this._hash;
+};
+
+Edge.prototype.isBoundary = function(boundingBox) {
+  return isBoundaryEdge(boundingBox, this.a.position, this.b.position);
 };
 
 Edge.prototype.adjacents = function(graph) {
@@ -876,11 +892,10 @@ Edge.prototype._adjacentEdges = function(graph, node, ignore) {
 };
 
 var idx = 1;
-function Node(position, material, isBoundary) {
+function Node(position, material) {
   this.id = idx++;
   this.position = position;
   this.material = material;
-  this.isBoundary = isBoundary;
   this.adjacents = [];
 }
 
