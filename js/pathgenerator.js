@@ -834,10 +834,14 @@ Graph.prototype.remove = function(node) {
 function Edge(nodeA, nodeB) {
   this.a = nodeA;
   this.b = nodeB;
+
+  this.length = this.a.position.distanceTo(this.b.position);
+  this._hash = hashEdge(this.a.position, this.b.position);
 }
 
 Edge.prototype.equals = function(other) {
-  return (this.a === other.a && this.b === other.b) ||
+  return (this.hash() === other.hash()) ||
+    (this.a === other.a && this.b === other.b) ||
     (this.a === other.b && this.b === other.a);
 };
 
@@ -846,7 +850,29 @@ Edge.prototype.midpoint = function() {
 };
 
 Edge.prototype.hash = function() {
-  return hashEdge(this.a.position, this.b.position);
+  return this._hash;
+};
+
+Edge.prototype.adjacents = function(graph) {
+  return this._adjacentEdges(graph, this.a, this.b).concat(this._adjacentEdges(graph, this.b, this.a));
+};
+
+Edge.prototype._adjacentEdges = function(graph, node, ignore) {
+  var adjacents = [];
+  node.adjacents.forEach(function(aid) {
+    var adj = graph.getNode(aid);
+    if (!adj) {
+      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + node.id + ")");
+      return;
+    }
+    if (adj.id === ignore.id) {
+      return;
+    }
+
+    adjacents.push(graph.edgeFromNodes(node, adj));
+  }.bind(this));
+
+  return adjacents;
 };
 
 var idx = 1;
