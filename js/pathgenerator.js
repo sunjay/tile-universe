@@ -841,6 +841,10 @@ Edge.prototype.equals = function(other) {
     (this.a === other.b && this.b === other.a);
 };
 
+Edge.prototype.midpoint = function() {
+  return this.a.position.clone().add(this.b.position).divideScalar(2);
+};
+
 Edge.prototype.hash = function() {
   return hashEdge(this.a.position, this.b.position);
 };
