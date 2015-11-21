@@ -389,13 +389,13 @@ function traverseGeometries(object, callback) {
 
 function tileInfo(target) {
   var info = {boundingBox: null};
-  var edgeGraph = new Graph();
+  var boundingBox = new THREE.Box3().setFromObject(target);
+  info.boundingBox = boundingBox;
+
+  var edgeGraph = new Graph(boundingBox);
   info.edgeGraph = edgeGraph;
 
   Node.reset_ids();
-
-  var boundingBox = new THREE.Box3().setFromObject(target);
-  info.boundingBox = boundingBox;
 
   traverseGeometries(target, function(o) {
     var edges = edgesInfo(o, boundingBox);
@@ -490,8 +490,49 @@ function addEdgesInfoToGraph(graph, edges) {
 }
 
 function graphFromEdgeGraph(edgeGraph) {
-  //TODO
-  return edgeGraph;
+  var graph = new Graph();
+  
+  var seen = new Set();
+  graph.boundaryEdges().forEach(function(edge) {
+    var edgeHash = edge.hash();
+    if (seen.has(edgeHash)) {
+      return;
+    }
+    seen.add(edgeHash);
+
+    var targetEdge = selectTargetEdge(graph, edge);
+    if (!targetEdge) {
+      // do not remove edge from seen (to cause it to be searched again)
+      // since the assumption is that if there was a compatible edge, it would get selected
+      // whether this edge was passed in or that edge was (the
+      // selection criteria function is orthogonal)
+      // This is also why seen doesn't need to be passed into the select
+      // function
+      return;
+    }
+    seen.add(targetEdge.hash());
+
+    //TODO: Generate path by going from edge to edge
+    //TODO: Handle when that path intersects an existing path
+  });
+  
+  return graph;
+}
+
+function selectTargetEdge(graph, baseEdge) {
+  var baseHash = baseEdge.hash();
+  var baseNormal = baseEdge.normal();
+  var best = null;
+  var bestAngle = Infinity;
+  graph.boundaryEdges().forEach(function(edge) {
+    if (edge.hash() === baseHash) {
+      return;
+    }
+
+    //TODO: Calculate the angle between the vector to this edge from the
+    //TODO: base and the base normal vector and then compare it some
+    //TODO: threshold and the bestAngle
+  });
 }
 
 function refineGraph(nodes, boundingBox) {
@@ -747,9 +788,10 @@ function isEdgeVertex(box, a) {
     || a.z === box.max.z);
 }
 
-function Graph() {
+function Graph(boundingBox) {
   this.nodes = {};
   this.edges = {};
+  this.boundingBox = boundingBox;
 }
 
 Graph.prototype.createNode = function(position, material) {
@@ -772,7 +814,7 @@ Graph.prototype.connect = function(nodeA, nodeB) {
   nodeA.addAdjacent(nodeB);
   nodeB.addAdjacent(nodeA);
 
-  var edge = new Edge(nodeA, nodeB);
+  var edge = new Edge(nodeA, nodeB, this.boundingBox);
   this.edges[edge.hash()] = edge;
   return edge;
 };
@@ -843,13 +885,36 @@ Graph.prototype.remove = function(node) {
   delete this.nodes[node.id];
 };
 
-function Edge(nodeA, nodeB) {
+function Edge(nodeA, nodeB, boundingBox) {
   this.a = nodeA;
   this.b = nodeB;
+  this.boundingBox = boundingBox;
   this.length = this.a.position.distanceTo(this.b.position);
+  this.isBoundary = isBoundaryEdge(this.boundingBox, this.a.position, this.b.position);
+
+  // this normal calculation does not apply to non-boundary edges
+  this._normal = this.isBoundary ? this._calculateNormal() : null;
 
   this._hash = hashEdge(this.a.position, this.b.position);
+  this._midpoint = this.a.position.clone().add(this.b.position).divideScalar(2);
 }
+
+Edge.prototype._calculateNormal = function() {
+  var midpoint = this.midpoint();
+  var center = this.boundingBox.max.clone().sub(this.boundingBox.min).divideScalar(2);
+  var normal = center.clone().sub(midpoint);
+  if (normal.x > normal.z) {
+    normal.z = 0;
+  }
+  else {
+    normal.x = 0;
+  }
+
+  // horizontal normal
+  normal.y = 0;
+
+  return normal.normalize();
+};
 
 Edge.prototype.equals = function(other) {
   return (this.hash() === other.hash()) ||
@@ -857,16 +922,16 @@ Edge.prototype.equals = function(other) {
     (this.a === other.b && this.b === other.a);
 };
 
+Edge.prototype.normal = function() {
+  return this._normal.clone();
+};
+
 Edge.prototype.midpoint = function() {
-  return this.a.position.clone().add(this.b.position).divideScalar(2);
+  return this._midpoint.clone();
 };
 
 Edge.prototype.hash = function() {
   return this._hash;
-};
-
-Edge.prototype.isBoundary = function(boundingBox) {
-  return isBoundaryEdge(boundingBox, this.a.position, this.b.position);
 };
 
 Edge.prototype.adjacents = function(graph) {
