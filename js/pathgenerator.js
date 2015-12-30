@@ -411,7 +411,10 @@ function tileInfo(target) {
 
 function edgesInfo(object, boundingBox) {
   // edge hash : [edge node 1, edge node 2, material, face]
+  // An outside edge is part of the shape outline whereas an
+  // inside edge is usually between two connected faces within the shape
   var outsideEdges = {};
+  // A boundary edge is on the boundary of the tile itself
   var boundaryEdges = {};
   var seenEdges = new Set();
   applicableFaces(object.geometry.faces).forEach(function(f) {
@@ -458,7 +461,7 @@ function addEdgesInfoToGraph(graph, edges) {
   var outsideEdges = edges.outsideEdges;
   var boundaryEdges = edges.boundaryEdges;
 
-  // vector hash : node ID
+  // vertex vector hash : node ID
   var vertNodes = {};
   Object.keys(outsideEdges).forEach(function(edgeHash) {
     var verts = outsideEdges[edgeHash];
@@ -489,18 +492,22 @@ function addEdgesInfoToGraph(graph, edges) {
   });
 }
 
+/**
+ * Generates a path through the shape outline
+ * The edge graph provided here is the outline of the path
+ */
 function graphFromEdgeGraph(edgeGraph) {
   var graph = new Graph();
   
-  var seen = new Set();
-  graph.boundaryEdges().forEach(function(edge) {
+  var seenEdges = new Set();
+  edgeGraph.boundaryEdges().forEach(function(edge) {
     var edgeHash = edge.hash();
-    if (seen.has(edgeHash)) {
+    if (seenEdges.has(edgeHash)) {
       return;
     }
-    seen.add(edgeHash);
+    seenEdges.add(edgeHash);
 
-    var targetEdge = selectTargetEdge(graph, edge);
+    var targetEdge = selectTargetEdge(edgeGraph, edge);
     if (!targetEdge) {
       // do not remove edge from seen (to cause it to be searched again)
       // since the assumption is that if there was a compatible edge, it would get selected
@@ -510,7 +517,7 @@ function graphFromEdgeGraph(edgeGraph) {
       // function
       return;
     }
-    seen.add(targetEdge.hash());
+    seenEdges.add(targetEdge.hash());
 
     //TODO: Generate path by going from edge to edge
     //TODO: Handle when that path intersects an existing path
@@ -522,6 +529,7 @@ function graphFromEdgeGraph(edgeGraph) {
 function selectTargetEdge(graph, baseEdge) {
   var baseHash = baseEdge.hash();
   var baseNormal = baseEdge.normal();
+  var baseMidpoint = baseEdge.midpoint();
   var best = null;
   var bestAngle = Infinity;
   graph.boundaryEdges().forEach(function(edge) {
@@ -529,9 +537,13 @@ function selectTargetEdge(graph, baseEdge) {
       return;
     }
 
-    //TODO: Calculate the angle between the vector to this edge from the
-    //TODO: base and the base normal vector and then compare it some
-    //TODO: threshold and the bestAngle
+    // need to setY to zero so that this vector is also horizontal
+    // like the baseNormal will be
+    var vecTo = edge.midpoint().sub(baseMidpoint).setY(0).normalize();
+    var angle = baseNormal.angleTo(vecTo);
+
+    // the smaller the angle is, the closer to the normal it is
+    //TODO: Compare angle to bestAngle...finish this method...
   });
 }
 
@@ -899,6 +911,11 @@ function Edge(nodeA, nodeB, boundingBox) {
   this._midpoint = this.a.position.clone().add(this.b.position).divideScalar(2);
 }
 
+/**
+ * Calculates the horizontal vector to the center of the tile
+ * Normalized to be either an x direction or a z direction
+ * The normal only applies to boundary edges
+ */
 Edge.prototype._calculateNormal = function() {
   var midpoint = this.midpoint();
   var center = this.boundingBox.max.clone().sub(this.boundingBox.min).divideScalar(2);
