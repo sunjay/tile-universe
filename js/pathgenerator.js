@@ -405,7 +405,9 @@ function tileInfo(target) {
 
   var graph = graphFromEdgeGraph(edgeGraph);
   info.graph = graph;
-  info.nodes = graph.nodes;
+  //TODO: These nodes cannot just be the nodes from the paths
+  //TODO: Make sure any nodes that are at the same position are merged
+  info.nodes = []; //TODO
   return info;
 }
 
@@ -499,6 +501,7 @@ function addEdgesInfoToGraph(graph, edges) {
 function graphFromEdgeGraph(edgeGraph) {
   var graph = new Graph();
   
+  //TODO: Handle case with just a single boundary edge
   var seenEdges = new Set();
   edgeGraph.boundaryEdges().forEach(function(edge) {
     var edgeHash = edge.hash();
@@ -800,179 +803,6 @@ function isEdgeVertex(box, a) {
     || a.z === box.max.z);
 }
 
-function Graph(boundingBox) {
-  this.nodes = {};
-  this.edges = {};
-  this.boundingBox = boundingBox;
-}
-
-Graph.prototype.createNode = function(position, material) {
-  var node = new Node(position, material);
-  this.nodes[node.id] = node;
-  return node;
-};
-
-Graph.prototype.getNode = function(nid) {
-  return this.nodes[nid];
-};
-
-Graph.prototype.nodesList = function() {
-  return Object.keys(this.nodes).map(function(nid) {
-    return this.getNode(nid);
-  }.bind(this));
-};
-
-Graph.prototype.connect = function(nodeA, nodeB) {
-  nodeA.addAdjacent(nodeB);
-  nodeB.addAdjacent(nodeA);
-
-  var edge = new Edge(nodeA, nodeB, this.boundingBox);
-  this.edges[edge.hash()] = edge;
-  return edge;
-};
-
-Graph.prototype.disconnect = function(nodeA, nodeB) {
-  nodeA.removeAdjacent(nodeB);
-  nodeB.removeAdjacent(nodeA);
-
-  var edge = this.edgeFromNodes(nodeA, nodeB);
-  if (edge) {
-    delete this.edges[edge.hash()];
-  }
-};
-
-Graph.prototype.edgesList = function() {
-  return Object.keys(this.edges).map(function(hash) {
-    return this.edges[hash];
-  }.bind(this));
-};
-
-Graph.prototype.boundaryEdges = function() {
-  return this.edgesList().filter(function(edge) {
-    return edge.isBoundary;
-  });
-};
-
-Graph.prototype.edgeFromNodes = function(nodeA, nodeB) {
-  var edgeHash = hashEdge(nodeA.position, nodeB.position);
-  return this.edges[edgeHash];
-};
-
-Graph.prototype.merge = function(nodeA, nodeB) {
-  if (nodeA.material !== nodeB.material) {
-    throw new Error("Attempt to merge two different materials");
-  }
-  nodeA.position.add(nodeB.position).divideScalar(2);
-
-  this.disconnect(nodeA, nodeB);
-
-  // merge adjacents
-  Array.from(nodeB.adjacents).forEach(function(aid) {
-    if (aid === nodeA.id) {
-      return;
-    }
-    var adj = this.getNode(aid);
-    if (!adj) {
-      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
-      return;
-    }
-    this.connect(nodeA, adj);
-  }.bind(this));
-
-  return nodeA;
-};
-
-Graph.prototype.remove = function(node) {
-  var id = node.id;
-  node.adjacents.forEach(function(aid) {
-    var adj = this.getNode(aid);
-    if (!adj) {
-      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + this.id + ")");
-      return;
-    }
-
-    this.disconnect(node, adj);
-  }.bind(this));
-
-  delete this.nodes[node.id];
-};
-
-function Edge(nodeA, nodeB, boundingBox) {
-  this.a = nodeA;
-  this.b = nodeB;
-  this.boundingBox = boundingBox;
-  this.length = this.a.position.distanceTo(this.b.position);
-  this.isBoundary = isBoundaryEdge(this.boundingBox, this.a.position, this.b.position);
-
-  // this normal calculation does not apply to non-boundary edges
-  this._normal = this.isBoundary ? this._calculateNormal() : null;
-
-  this._hash = hashEdge(this.a.position, this.b.position);
-  this._midpoint = this.a.position.clone().add(this.b.position).divideScalar(2);
-}
-
-/**
- * Calculates the horizontal vector to the center of the tile
- * Normalized to be either an x direction or a z direction
- * The normal only applies to boundary edges
- */
-Edge.prototype._calculateNormal = function() {
-  var midpoint = this.midpoint();
-  var center = this.boundingBox.max.clone().sub(this.boundingBox.min).divideScalar(2);
-  var normal = center.clone().sub(midpoint);
-  if (normal.x > normal.z) {
-    normal.z = 0;
-  }
-  else {
-    normal.x = 0;
-  }
-
-  // horizontal normal
-  normal.y = 0;
-
-  return normal.normalize();
-};
-
-Edge.prototype.equals = function(other) {
-  return (this.hash() === other.hash()) ||
-    (this.a === other.a && this.b === other.b) ||
-    (this.a === other.b && this.b === other.a);
-};
-
-Edge.prototype.normal = function() {
-  return this._normal.clone();
-};
-
-Edge.prototype.midpoint = function() {
-  return this._midpoint.clone();
-};
-
-Edge.prototype.hash = function() {
-  return this._hash;
-};
-
-Edge.prototype.adjacents = function(graph) {
-  return this._adjacentEdges(graph, this.a, this.b).concat(this._adjacentEdges(graph, this.b, this.a));
-};
-
-Edge.prototype._adjacentEdges = function(graph, node, ignore) {
-  var adjacents = [];
-  node.adjacents.forEach(function(aid) {
-    var adj = graph.getNode(aid);
-    if (!adj) {
-      throw new Error("Expected the adjacent with ID = " + aid + " to exist (node ID = " + node.id + ")");
-      return;
-    }
-    if (adj.id === ignore.id) {
-      return;
-    }
-
-    adjacents.push(graph.edgeFromNodes(node, adj));
-  }.bind(this));
-
-  return adjacents;
-};
-
 var idx = 1;
 function Node(position, material) {
   this.id = idx++;
@@ -1015,6 +845,24 @@ Node.prototype.toJSON = function() {
   };
 };
 
+/**** Polygon ****/
+
+/**
+ * A closed polygon class
+ * Assumes the first polygon vertex connects to the last one
+ */
+function Polygon() {
+  this.vertices = [];
+
+  Object.defineProperty(this, 'length', {
+    get: function get() {
+      return this.vertices.length;
+    }.bind(this),
+    configurable: true,
+    enumerable: true
+  });
+}
+
 /**** Exporting ****/
 document.getElementById("export-paths").addEventListener("click", function() {
   disableAll();
@@ -1034,7 +882,6 @@ document.getElementById("export-paths").addEventListener("click", function() {
     alert(e);
     reenableAll();
   });
-
 });
 
 function exportNext(tiles, currentIndex, aggregate) {
