@@ -178,6 +178,13 @@ header .header-space
 .button,
 button
 {
+  text-decoration: none;
+
+  > *
+  {
+    vertical-align: middle;
+  }
+
   &:focus
   {
     outline: none;
